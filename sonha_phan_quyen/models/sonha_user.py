@@ -4,8 +4,8 @@ from odoo import api, fields, models
 class SonhaUser(models.Model):
     _name = 'sonha.user'
 
-    name = fields.Char(string="Tên User")
-    user_id = fields.Many2one("res.users", string="Người dùng")
+    name = fields.Char(string="Tên User", store=True)
+    user_id = fields.Many2one("res.users", string="Người dùng", store=True)
 
     def action_phan_quyen(self):
         for r in self:

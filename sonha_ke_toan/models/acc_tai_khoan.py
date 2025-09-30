@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError
 
 class AccTaiKhoan(models.Model):
     _name = 'acc.tai.khoan'
+    _order = 'MA,CAP,DVCS'
 
     CAP = fields.Integer(string="Cấp", store=True)
     MA = fields.Char(string="Mã", store=True)
@@ -19,9 +20,8 @@ class AccTaiKhoan(models.Model):
         nguoi_dung = self.env.uid
 
         # Gọi function PostgreSQL
-        # query = "SELECT * FROM public.fn_acc_tai_khoan(%s,%s) ORDER BY "MA"::text, "DVCS", "CAP", (p_dvcs, p_user))"
-        self.env.cr.execute("""SELECT * FROM public.fn_acc_tai_khoan(%s,%s) ORDER BY "CAP" DESC """, (dvcs, nguoi_dung))
-        # self.env.cr.execute(query, (dvcs, nguoi_dung))
+        query = "SELECT * FROM public.fn_acc_tai_khoan(%s, %s)"
+        self.env.cr.execute(query, (dvcs, nguoi_dung))
         rows = self.env.cr.dictfetchall()
 
         # Lấy danh sách id từ function

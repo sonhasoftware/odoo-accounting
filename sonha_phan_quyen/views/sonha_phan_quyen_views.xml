@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <tree string="Phân quyền" editable="bottom">
                 <field name="NGUOI_DUNG"/>
+                <field name="MA_BANG"/>
                 <field name="TEN_BANG"/>
                 <field name="XEM_DM"/>
                 <field name="THEM_DM"/>
