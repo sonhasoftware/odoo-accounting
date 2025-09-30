@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="rule_acc_tai_khoan_company_current" model="ir.rule">
+        <field name="name">acc.tai.khoan - only current company</field>
+        <field name="model_id" ref="model_acc_tai_khoan"/>
+        <field name="domain_force">[('DVCS', '=', company_id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+</odoo>

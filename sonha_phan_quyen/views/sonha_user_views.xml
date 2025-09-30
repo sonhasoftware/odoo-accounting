@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_sonha_user_tree" model="ir.ui.view">
+        <field name="name">sonha.user.tree</field>
+        <field name="model">sonha.user</field>
+        <field name="arch" type="xml">
+            <tree string="Thông tin user">
+                <field name="name"/>
+                <field name="user_id"/>
+                <button name="action_phan_quyen" type="object" string="Phân quyền" class="btn-primary"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="sonha_user_action" model="ir.actions.act_window">
+        <field name="name">Thông tin user</field>
+        <field name="res_model">sonha.user</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem id="menu_sonha_phan_quyen_user"
+              name="Bảng phân quyền"
+              sequence="200"/>
+
+    <menuitem id="menu_sonha_user"
+              name="Thông tin User"
+              parent="menu_sonha_phan_quyen_user"
+              action="sonha_user_action"
+              sequence="1"/>
+</odoo>

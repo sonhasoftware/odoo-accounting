@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_acc_kho_tree" model="ir.ui.view">
+        <field name="name">acc.kho.tree</field>
+        <field name="model">acc.kho</field>
+        <field name="arch" type="xml">
+            <tree string="Danh mục kho">
+                <field name="CAP"/>
+                <field name="MA"/>
+                <field name="TEN"/>
+                <field name="KHO"/>
+                <field name="DVCS"/>
+                <field name="ACTIVE"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="acc_kho_action" model="ir.actions.act_window">
+        <field name="name">Danh mục kho</field>
+        <field name="res_model">acc.kho</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+</odoo>

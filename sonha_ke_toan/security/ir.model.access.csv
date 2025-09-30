@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+
+access_acc_tai_khoan,acc.tai.khoan,model_acc_tai_khoan,,1,1,1,1
+access_acc_kho,acc.kho,model_acc_kho,,1,1,1,1

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_sonha_phan_quyen_tree" model="ir.ui.view">
+        <field name="name">sonha.phan.quyen.tree</field>
+        <field name="model">sonha.phan.quyen</field>
+        <field name="arch" type="xml">
+            <tree string="Phân quyền" editable="bottom">
+                <field name="NGUOI_DUNG"/>
+                <field name="TEN_BANG"/>
+                <field name="XEM_DM"/>
+                <field name="THEM_DM"/>
+                <field name="SUA_DM"/>
+                <field name="DVCS"/>
+                <field name="THEM_DL"/>
+                <field name="XEM_DL" widget="many2many_tags"/>
+                <field name="SUA_DL" widget="many2many_tags"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="sonha_phan_quyen_action" model="ir.actions.act_window">
+        <field name="name">Phân Quyền</field>
+        <field name="res_model">sonha.phan.quyen</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem id="menu_sonha_phan_quyen"
+              name="Phân quyền"
+              parent="menu_sonha_phan_quyen_user"
+              action="sonha_phan_quyen_action"
+              sequence="2"/>
+</odoo>

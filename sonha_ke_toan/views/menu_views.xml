@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <menuitem id="menu_sonha_accounting"
+              name="Kế toán"
+              sequence="1"/>
+
+    <menuitem id="menu_danh_muc_accounting"
+              name="Danh mục"
+              parent="menu_sonha_accounting"
+              sequence="10"/>
+
+    <menuitem id="menu_acc_tai_khoan"
+              name="Danh mục tài khoản"
+              parent="menu_danh_muc_accounting"
+              action="acc_tai_khoan_action"
+              sequence="1"/>
+
+    <menuitem id="menu_acc_kho"
+              name="Danh mục kho"
+              parent="menu_danh_muc_accounting"
+              action="acc_kho_action"
+              sequence="2"/>
+</odoo>
