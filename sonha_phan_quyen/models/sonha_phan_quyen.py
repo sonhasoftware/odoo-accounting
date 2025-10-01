@@ -20,6 +20,7 @@ class SonhaPhanQuyen(models.Model):
                                  string="Xem DL của User", store=True)
     SUA_DL = fields.Many2many('sonha.user', 'sua_dl_rel', 'sua_dl_phan_quyen', 'sua_dl_id',
                               string="Sửa DL của User", store=True)
+    ACTIVE = fields.Boolean(string="ACTIVE", default=False, store=True)
 
     _sql_constraints = [
         ('unique_user_model', 'unique(NGUOI_DUNG, TEN_BANG)',

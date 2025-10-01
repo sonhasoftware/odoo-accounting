@@ -10,8 +10,14 @@
         'security/ir.model.access.csv',
         'views/acc_tai_khoan_views.xml',
         'views/acc_kho_views.xml',
+        'views/acc_bo_phan_views.xml',
         'views/menu_views.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'sonha_ke_toan/static/src/js/field_confirm_list_patch.js',
+        ],
+    },
     'installable': True,
     'application': False,
 }
