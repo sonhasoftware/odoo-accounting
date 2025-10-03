@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_acc_loaidl_tree" model="ir.ui.view">
+        <field name="name">acc.loaidl.tree</field>
+        <field name="model">acc.loaidl</field>
+        <field name="arch" type="xml">
+            <tree string="Danh mục loại dữ liệu" editable="bottom" decoration-danger="CAP == 1" decoration-bf="CAP == 1">
+                <field name="CAP"/>
+                <field name="MA"/>
+                <field name="TEN"/>
+                <field name="LOAIDL"/>
+                <field name="STT"/>
+                <field name="DVCS"/>
+                <field name="ACTIVE"/>
+                <field name="create_uid" string="Người tạo" optional="hide"/>
+                <field name="write_uid" string="Người sửa" optional="hide"/>
+                <field name="create_date" string="Ngày tạo" optional="hide"/>
+                <field name="write_date" string="Ngày sửa" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="acc_loaidl_action" model="ir.actions.act_window">
+        <field name="name">Danh mục loại dữ liệu</field>
+        <field name="res_model">acc.loaidl</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+</odoo>

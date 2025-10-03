@@ -2,4 +2,9 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 
 access_acc_tai_khoan,acc.tai.khoan,model_acc_tai_khoan,,1,1,1,1
 access_acc_kho,acc.kho,model_acc_kho,,1,1,1,1
+access_acc_khoan_muc,acc.khoan.muc,model_acc_khoan_muc,,1,1,1,1
+access_acc_tinh,acc.tinh,model_acc_tinh,,1,1,1,1
+access_acc_tien_te,acc.tien.te,model_acc_tien_te,,1,1,1,1
+access_acc_nvbh,acc.nvbh,model_acc_nvbh,,1,1,1,1
+access_acc_loaidl,acc.loaidl,model_acc_loaidl,,1,1,1,1
 access_acc_bo_phan,acc.bo.phan,model_acc_bo_phan,,1,1,1,1

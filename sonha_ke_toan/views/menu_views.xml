@@ -21,6 +21,35 @@
               action="acc_kho_action"
               sequence="2"/>
 
+    <menuitem id="menu_acc_khoan_muc"
+              name="Danh mục khoản mục"
+              parent="menu_danh_muc_accounting"
+              action="acc_khoan_muc_action"
+              sequence="4"/>
+
+    <menuitem id="menu_acc_tinh"
+              name="Danh mục tỉnh"
+              parent="menu_danh_muc_accounting"
+              action="acc_tinh_action"
+              sequence="5"/>
+
+    <menuitem id="menu_acc_tien_te"
+              name="Danh mục tiền tệ"
+              parent="menu_danh_muc_accounting"
+              action="acc_tien_te_action"
+              sequence="6"/>
+
+    <menuitem id="menu_acc_nvbh"
+              name="Danh mục NVBH"
+              parent="menu_danh_muc_accounting"
+              action="acc_nvbh_action"
+              sequence="7"/>
+
+    <menuitem id="menu_acc_loaidl"
+              name="Danh mục loại dữ liệu"
+              parent="menu_danh_muc_accounting"
+              action="acc_loaidl_action"
+              sequence="7"/>
     <menuitem id="menu_acc_bo_phan"
               name="Danh mục bộ phận"
               parent="menu_danh_muc_accounting"
