@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_acc_tinh_tree" model="ir.ui.view">
+        <field name="name">acc.tinh.tree</field>
+        <field name="model">acc.tinh</field>
+        <field name="arch" type="xml">
+            <tree string="Danh mục tỉnh" editable="bottom" decoration-danger="CAP == 1" decoration-bf="CAP == 1">
+                <field name="CAP"/>
+                <field name="MA"/>
+                <field name="TEN"/>
+                <field name="TINH"/>
+                <field name="DVCS"/>
+                <field name="ACTIVE"/>
+                <field name="create_uid" string="Người tạo" optional="hide"/>
+                <field name="write_uid" string="Người sửa" optional="hide"/>
+                <field name="create_date" string="Ngày tạo" optional="hide"/>
+                <field name="write_date" string="Ngày sửa" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="acc_tinh_action" model="ir.actions.act_window">
+        <field name="name">Danh mục tỉnh</field>
+        <field name="res_model">acc.tinh</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+</odoo>
