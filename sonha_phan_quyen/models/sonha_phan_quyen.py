@@ -9,6 +9,7 @@ class SonhaPhanQuyen(models.Model):
     # đây là mã bảng model
     MA_BANG = fields.Char(related='TEN_BANG.model', string="Tên Bảng", store=True)
     # đây là tên bảng
+    MENU = fields.Many2one('ir.ui.menu', string="Màn Hình", store=True)
     XEM_DM = fields.Boolean(string="Xem DM", default=False, store=True)
     THEM_DM = fields.Boolean(string="Thêm DM", default=False, store=True)
     SUA_DM = fields.Boolean(string="Sửa DM", default=False, store=True)
@@ -20,6 +21,7 @@ class SonhaPhanQuyen(models.Model):
                                  string="Xem DL của User", store=True)
     SUA_DL = fields.Many2many('sonha.user', 'sua_dl_rel', 'sua_dl_phan_quyen', 'sua_dl_id',
                               string="Sửa DL của User", store=True)
+    ACTIVE = fields.Boolean(string="ACTIVE", default=False, store=True)
 
     _sql_constraints = [
         ('unique_user_model', 'unique(NGUOI_DUNG, TEN_BANG)',

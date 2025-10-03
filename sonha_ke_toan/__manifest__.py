@@ -15,8 +15,14 @@
         'views/acc_tien_te_views.xml',
         'views/acc_nvbh_views.xml',
         'views/acc_loaidl_views.xml',
+        'views/acc_bo_phan_views.xml',
         'views/menu_views.xml',
     ],
+    'assets': {
+        'web.assets_backend': [
+            'sonha_ke_toan/static/src/js/field_confirm_list_patch.js',
+        ],
+    },
     'installable': True,
     'application': False,
 }

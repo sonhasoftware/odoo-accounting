@@ -10,6 +10,7 @@
         'security/ir.model.access.csv',
         'views/sonha_user_views.xml',
         'views/sonha_phan_quyen_views.xml',
+        'views/field_confirm_views.xml',
     ],
     'installable': True,
     'application': False,

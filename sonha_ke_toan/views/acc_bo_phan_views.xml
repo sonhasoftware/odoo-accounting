@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="view_acc_kho_tree" model="ir.ui.view">
-        <field name="name">acc.kho.tree</field>
-        <field name="model">acc.kho</field>
+    <record id="view_acc_bo_phan_tree" model="ir.ui.view">
+        <field name="name">acc.bo.phan.tree</field>
+        <field name="model">acc.bo.phan</field>
         <field name="arch" type="xml">
-            <tree string="Danh mục kho" editable="bottom" decoration-danger="CAP == 1" decoration-bf="CAP == 1">
+            <tree string="Danh mục bộ phận" editable="bottom" decoration-danger="CAP == 1" decoration-bf="CAP == 1">
                 <field name="CAP"/>
                 <field name="MA"/>
                 <field name="TEN"/>
-                <field name="KHO"/>
+                <field name="BO_PHAN"/>
                 <field name="DVCS"/>
                 <field name="ACTIVE"/>
                 <field name="create_uid" string="Người tạo" optional="hide"/>
@@ -19,9 +19,9 @@
         </field>
     </record>
 
-    <record id="acc_kho_action" model="ir.actions.act_window">
-        <field name="name">Danh mục kho</field>
-        <field name="res_model">acc.kho</field>
+    <record id="acc_bo_phan_action" model="ir.actions.act_window">
+        <field name="name">Danh mục bộ phận</field>
+        <field name="res_model">acc.bo.phan</field>
         <field name="view_mode">tree</field>
     </record>
 

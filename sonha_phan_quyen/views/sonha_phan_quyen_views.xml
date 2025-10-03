@@ -8,6 +8,7 @@
                 <field name="NGUOI_DUNG"/>
                 <field name="MA_BANG"/>
                 <field name="TEN_BANG"/>
+                <field name="MENU"/>
                 <field name="XEM_DM"/>
                 <field name="THEM_DM"/>
                 <field name="SUA_DM"/>
@@ -15,6 +16,7 @@
                 <field name="THEM_DL"/>
                 <field name="XEM_DL" widget="many2many_tags"/>
                 <field name="SUA_DL" widget="many2many_tags"/>
+                <field name="ACTIVE"/>
             </tree>
         </field>
     </record>

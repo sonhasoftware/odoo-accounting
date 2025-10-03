@@ -50,4 +50,9 @@
               parent="menu_danh_muc_accounting"
               action="acc_loaidl_action"
               sequence="7"/>
+    <menuitem id="menu_acc_bo_phan"
+              name="Danh mục bộ phận"
+              parent="menu_danh_muc_accounting"
+              action="acc_bo_phan_action"
+              sequence="3"/>
 </odoo>
