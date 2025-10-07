@@ -1,7 +1,7 @@
 <odoo>
-    <record id="view_field_confirm_tree" model="ir.ui.view">
-        <field name="name">field.confirm.config.tree</field>
-        <field name="model">field.confirm.config</field>
+    <record id="view_sonha_xac_nhan" model="ir.ui.view">
+        <field name="name">view.sonha.xac.nhan</field>
+        <field name="model">sonha.xac.nhan</field>
         <field name="arch" type="xml">
             <tree editable="bottom">
                 <field name="model_id"/>
@@ -11,17 +11,17 @@
         </field>
     </record>
 
-    <record id="action_field_confirm_config" model="ir.actions.act_window">
-        <field name="name">Field Confirm Config</field>
-        <field name="res_model">field.confirm.config</field>
+    <record id="action_sonha_xac_nhan" model="ir.actions.act_window">
+        <field name="name">Xác nhận trường</field>
+        <field name="res_model">sonha.xac.nhan</field>
         <field name="view_mode">tree,form</field>
         <field name="target">current</field>
     </record>
 
-    <menuitem id="menu_confirm_config"
+    <menuitem id="menu_sonha_xac_nhan"
               name="Xác nhận trường"
               parent="menu_sonha_phan_quyen_user"
-              action="action_field_confirm_config"
+              action="action_sonha_xac_nhan"
               sequence="3"/>
 
 

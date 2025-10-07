@@ -2,4 +2,4 @@ id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
 
 access_sonha_user,sonha.user,model_sonha_user,,1,1,1,1
 access_sonha_phan_quyen,sonha.phan.quyen,model_sonha_phan_quyen,,1,1,1,1
-access_field_confirm_config,access_field_confirm_config,model_field_confirm_config,,1,1,1,1
+access_sonha_xac_nhan,sonha_xac_nhan,model_sonha_xac_nhan,,1,1,1,1

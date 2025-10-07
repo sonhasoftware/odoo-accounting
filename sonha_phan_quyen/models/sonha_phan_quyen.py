@@ -9,7 +9,7 @@ class SonhaPhanQuyen(models.Model):
     # đây là mã bảng model
     MA_BANG = fields.Char(related='TEN_BANG.model', string="Tên Bảng", store=True)
     # đây là tên bảng
-    MENU = fields.Many2one('ir.ui.menu', string="Màn Hình", store=True)
+    MENU = fields.Many2one('ir.ui.menu', string="ID MENU", store=True)
     XEM_DM = fields.Boolean(string="Xem DM", default=False, store=True)
     THEM_DM = fields.Boolean(string="Thêm DM", default=False, store=True)
     SUA_DM = fields.Boolean(string="Sửa DM", default=False, store=True)

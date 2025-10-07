@@ -49,10 +49,65 @@
               name="Danh mục loại dữ liệu"
               parent="menu_danh_muc_accounting"
               action="acc_loaidl_action"
-              sequence="7"/>
+              sequence="8"/>
+
     <menuitem id="menu_acc_bo_phan"
               name="Danh mục bộ phận"
               parent="menu_danh_muc_accounting"
               action="acc_bo_phan_action"
               sequence="3"/>
+
+    <menuitem id="menu_acc_loaihd"
+              name="Danh mục loại hợp đồng"
+              parent="menu_danh_muc_accounting"
+              action="acc_loaihd_action"
+              sequence="8"/>
+
+    <menuitem id="menu_acc_vviec"
+              name="Danh mục vụ việc"
+              parent="menu_danh_muc_accounting"
+              action="acc_vviec_action"
+              sequence="9"/>
+
+    <menuitem id="menu_acc_loai_nx"
+              name="Danh mục phân xưởng"
+              parent="menu_danh_muc_accounting"
+              action="acc_loai_nx_action"
+              sequence="10"/>
+
+    <menuitem id="menu_acc_tscd"
+              name="Danh mục TSCĐ/CCDC"
+              parent="menu_danh_muc_accounting"
+              action="acc_tscd_action"
+              sequence="11"/>
+
+    <menuitem id="menu_acc_loai_kh"
+              name="Danh mục loại KH"
+              parent="menu_danh_muc_accounting"
+              action="acc_loai_kh_action"
+              sequence="12"/>
+
+    <menuitem id="menu_acc_chi_nhanh"
+              name="Danh mục chi nhánh"
+              parent="menu_danh_muc_accounting"
+              action="acc_chi_nhanh_action"
+              sequence="13"/>
+
+    <menuitem id="menu_acc_khach_hang"
+              name="Danh mục khách hàng, ncc"
+              parent="menu_danh_muc_accounting"
+              action="acc_khach_hang_action"
+              sequence="14"/>
+
+    <menuitem id="menu_acc_loai_sp"
+              name="Danh mục loại SP"
+              parent="menu_danh_muc_accounting"
+              action="acc_loai_sp_action"
+              sequence="15"/>
+
+    <menuitem id="menu_acc_san_pham"
+              name="Danh mục sản phẩm"
+              parent="menu_danh_muc_accounting"
+              action="acc_san_pham_action"
+              sequence="16"/>
 </odoo>

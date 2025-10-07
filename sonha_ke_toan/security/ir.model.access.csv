@@ -8,3 +8,12 @@ access_acc_tien_te,acc.tien.te,model_acc_tien_te,,1,1,1,1
 access_acc_nvbh,acc.nvbh,model_acc_nvbh,,1,1,1,1
 access_acc_loaidl,acc.loaidl,model_acc_loaidl,,1,1,1,1
 access_acc_bo_phan,acc.bo.phan,model_acc_bo_phan,,1,1,1,1
+access_acc_loaihd,acc.loaihd,model_acc_loaihd,,1,1,1,1
+access_acc_vviec,acc.vviec,model_acc_vviec,,1,1,1,1
+access_acc_loai_nx,acc.loai.nx,model_acc_loai_nx,,1,1,1,1
+access_acc_tscd,acc.tscd,model_acc_tscd,,1,1,1,1
+access_acc_loai_kh,acc.loai.kh,model_acc_loai_kh,,1,1,1,1
+access_acc_chi_nhanh,acc.chi.nhanh,model_acc_chi_nhanh,,1,1,1,1
+access_acc_khach_hang,acc.khach.hang,model_acc_khach_hang,,1,1,1,1
+access_acc_loai_sp,acc.loai.sp,model_acc_loai_sp,,1,1,1,1
+access_acc_san_pham,acc.san.pham,model_acc_san_pham,,1,1,1,1

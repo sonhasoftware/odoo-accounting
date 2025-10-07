@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_acc_loai_sp_tree" model="ir.ui.view">
+        <field name="name">acc.loai.sp.tree</field>
+        <field name="model">acc.loai.sp</field>
+        <field name="arch" type="xml">
+            <tree string="Danh mục loại SP" editable="bottom" decoration-danger="CAP == 1" decoration-bf="CAP == 1">
+                <field name="CAP"/>
+                <field name="MA"/>
+                <field name="TEN"/>
+                <field name="LOAI_SP"/>
+                <field name="DVCS"/>
+                <field name="ACTIVE"/>
+                <field name="create_uid" string="Người tạo" optional="hide" class="check_cr"/>
+                <field name="write_uid" string="Người sửa" optional="hide" class="check_wt"/>
+                <field name="create_date" string="Ngày tạo" optional="hide" class="check_cd"/>
+                <field name="write_date" string="Ngày sửa" optional="hide" class="check_wd"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="acc_loai_sp_action" model="ir.actions.act_window">
+        <field name="name">Danh mục loại SP</field>
+        <field name="res_model">acc.loai.sp</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+</odoo>

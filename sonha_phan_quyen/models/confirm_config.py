@@ -1,8 +1,8 @@
 from odoo import models, fields, api
 
 
-class FieldConfirmConfig(models.Model):
-    _name = "field.confirm.config"
+class SonhaConfirmConfig(models.Model):
+    _name = "sonha.xac.nhan"
     _description = "Cấu hình xác nhận sửa field"
 
     model_id = fields.Many2one(

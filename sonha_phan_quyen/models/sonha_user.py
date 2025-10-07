@@ -9,7 +9,8 @@ class SonhaUser(models.Model):
 
     def action_phan_quyen(self):
         for r in self:
-            list_model = self.env['ir.model'].sudo().search([('model', '=', 'acc.tai.khoan')])
+            list_model = self.env['ir.model'].sudo().search([])
+            list_fields = list_model.filtered(lambda x: x.modules == 'sonha_ke_toan').mapped('fields')
             for model in list_model:
                 list_company = r.user_id.company_ids
                 for company in list_company:

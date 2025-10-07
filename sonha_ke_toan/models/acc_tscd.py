@@ -2,14 +2,29 @@ from odoo import api, fields, models, exceptions, _
 from odoo.exceptions import ValidationError
 
 
-class AccNVBH(models.Model):
-    _name = 'acc.nvbh'
+class AccTSCD(models.Model):
+    _name = 'acc.tscd'
 
     CAP = fields.Integer(string="Cấp", store=True)
     MA = fields.Char(string="Mã", store=True)
     TEN = fields.Char(string="Tên", store=True)
-    NVBH = fields.Integer(string="NVBH", store=True)
-    QL_NVBH = fields.Many2one('acc.nvbh', string="Quản lý", store=True)
+    DVT = fields.Char("DVT", store=True)
+    NGAY_SD = fields.Date("Ngày SD", store=True)
+    NUOC_SX = fields.Char("Nước SX", store=True)
+    NOI_SX = fields.Char("Nơi SX", store=True)
+    SO_LUONG = fields.Integer("Số lượng", store=True)
+    TIEU_THUC = fields.Integer("Tiêu thức KH", store=True)
+    TONG_KH = fields.Integer("Tổng tháng KH", store=True)
+    TK_KHNO_ID = fields.Many2one('acc.tai.khoan', string="TK Nợ KH", store=True)
+    TK_KHNO = fields.Char(related='TK_KHNO_ID.MA', string="TK Nợ KH", store=True)
+    TK_KHCO_ID = fields.Many2one('acc.tai.khoan', string="TK Có KH", store=True)
+    TK_KHCO = fields.Char(related='TK_KHCO_ID.MA', string="TK Có KH", store=True)
+    KHOAN_MUC = fields.Many2one('acc.khoan.muc', string="Khoản mục", store=True)
+    BO_PHAN = fields.Many2one('acc.bo.phan', string="Bộ phận", store=True)
+    LOAI_PX = fields.Many2one('acc.loai.nx', string="Phân xưởng", store=True)
+    VVIEC = fields.Many2one('acc.vviec', string="Vụ việc", store=True)
+    CONLAI_VND = fields.Integer(string="Giá trị còn lại", store=True)
+    TSCD = fields.Integer(string="TSCĐ", store=True)
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)
 
@@ -19,7 +34,7 @@ class AccNVBH(models.Model):
     #     nguoi_dung = self.env.uid
     #
     #     # Gọi function PostgreSQL
-    #     query = "SELECT * FROM public.fn_acc_tai_khoan(%s, %s)"
+    #     query = "SELECT * FROM public.fn_acc_kho(%s, %s)"
     #     self.env.cr.execute(query, (dvcs, nguoi_dung))
     #     rows = self.env.cr.dictfetchall()
     #
@@ -29,7 +44,7 @@ class AccNVBH(models.Model):
     #     # Trả domain ép buộc Odoo chỉ lấy các bản ghi này
     #     new_domain = args + [("id", "in", ids)] if ids else [("id", "=", 0)]
     #
-    #     return super(AccNVBH, self)._search(
+    #     return super(AccTSCD, self)._search(
     #         new_domain,
     #         offset=offset,
     #         limit=limit,
@@ -37,23 +52,30 @@ class AccNVBH(models.Model):
     #         access_rights_uid=access_rights_uid,
     #     )
 
+    # @api.model
+    # def search_count(self, args):
+    #     ids = self._search(args)
+    #     return len(ids)
+
     def create(self, vals):
-        rec = super(AccNVBH, self).create(vals)
+        rec = super(AccTSCD, self).create(vals)
+        rec.TSCD = rec.id
         dvcs = rec.DVCS.id
-        self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_nvbh', dvcs])
+        # self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_kho', dvcs])
 
         return rec
 
     def write(self, vals):
-        res = super(AccNVBH, self).write(vals)
+        res = super(AccTSCD, self).write(vals)
         dvcs = self.DVCS.id
-        self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_nvbh', dvcs])
+        # self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_kho', dvcs])
 
         return res
 
     def unlink(self):
-        res = super(AccNVBH, self).unlink()
-        self.env.cr.execute("CALL public.update_cap(acc.nvbh);")
+        res = super(AccTSCD, self).unlink()
+        dvcs = self.DVCS.id
+        # self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_kho', dvcs])
         return res
 
     @api.constrains('MA')
