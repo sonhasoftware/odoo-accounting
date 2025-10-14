@@ -3,6 +3,7 @@ from odoo import api, fields, models
 
 class SonhaUser(models.Model):
     _name = 'sonha.user'
+    _rec_name = 'NAME'
 
     ID_USER = fields.Integer(string="User id", store=True)
     NAME = fields.Char(string="Tên", store=True)
@@ -31,7 +32,7 @@ class SonhaUser(models.Model):
 
     def create(self, vals):
         rec = super(SonhaUser, self).create(vals)
-        rec.USER_ID = rec.id
+        rec.ID_USER = rec.id
         return rec
 
 

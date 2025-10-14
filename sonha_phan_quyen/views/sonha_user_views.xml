@@ -4,9 +4,9 @@
         <field name="name">sonha.user.tree</field>
         <field name="model">sonha.user</field>
         <field name="arch" type="xml">
-            <tree string="Thông tin user">
+            <tree string="Thông tin user" editable="bottom">
                 <field name="NAME"/>
-                <field name="user_id" invisible="1"/>
+                <field name="user_id"/>
                 <field name="NGAY_KHOA"/>
                 <field name="SO_NGAY_KHOA"/>
                 <field name="USER_KHAI_THAC"/>
