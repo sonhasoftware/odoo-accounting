@@ -110,4 +110,55 @@
               parent="menu_danh_muc_accounting"
               action="acc_san_pham_action"
               sequence="16"/>
+
+    <menuitem id="menu_acc_dong_hang"
+              name="Danh mục dòng hàng"
+              parent="menu_danh_muc_accounting"
+              action="acc_dong_hang_action"
+              sequence="17"/>
+
+    <menuitem id="menu_acc_loai_hh"
+              name="Danh mục loại hàng hóa"
+              parent="menu_danh_muc_accounting"
+              action="acc_loai_hh_action"
+              sequence="18"/>
+
+    <menuitem id="menu_acc_hang_hoa"
+              name="Danh mục hàng hóa"
+              parent="menu_danh_muc_accounting"
+              action="acc_hang_hoa_action"
+              sequence="19"/>
+
+    <menuitem id="menu_acc_gia_mua"
+              name="Danh mục giá mua"
+              parent="menu_danh_muc_accounting"
+              action="acc_gia_mua_action"
+              sequence="20"/>
+
+    <menuitem id="menu_acc_gia_ban"
+              name="Danh mục giá bán"
+              parent="menu_danh_muc_accounting"
+              action="acc_gia_ban_action"
+              sequence="21"/>
+
+    <menuitem id="menu_acc_bom"
+              name="Danh mục BOM"
+              parent="menu_danh_muc_accounting"
+              action="v_acc_san_pham_action"
+              sequence="22"/>
+
+
+
+<!--    menu cho nhập liệu-->
+
+    <menuitem id="menu_nhap_lieu"
+              name="Nhập liệu"
+              parent="menu_sonha_accounting"
+              sequence="1"/>
+
+    <menuitem id="menu_acc_ap_h"
+              name="Phiếu nhập kho"
+              parent="menu_nhap_lieu"
+              action="acc_ap_h_action"
+              sequence="1"/>
 </odoo>

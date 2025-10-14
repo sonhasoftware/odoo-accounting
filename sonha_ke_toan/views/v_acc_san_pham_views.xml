@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_v_acc_san_pham_tree" model="ir.ui.view">
+        <field name="name">v.acc.san.pham.tree</field>
+        <field name="model">v.acc.san.pham</field>
+        <field name="arch" type="xml">
+            <tree string="Danh mục sản phẩm" editable="bottom">
+                <field name="MA" optional="show"/>
+                <field name="TEN" optional="show"/>
+                <field name="SAN_PHAM" optional="show"/>
+                <button name="action_view_bom" type="object" string="Mở BOM" class="btn-primary"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="v_acc_san_pham_action" model="ir.actions.act_window">
+        <field name="name">Danh mục sản phẩm</field>
+        <field name="res_model">v.acc.san.pham</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+</odoo>

@@ -10,8 +10,10 @@
         'security/ir.model.access.csv',
         'views/sonha_user_views.xml',
         'views/sonha_phan_quyen_views.xml',
-        'views/field_confirm_views.xml',
+        'views/sonha_xac_nhan_views.xml',
+        'views/sonha_bt_them_views.xml',
     ],
+    'post_init_hook': 'post_init_hook',
     'installable': True,
     'application': False,
 }

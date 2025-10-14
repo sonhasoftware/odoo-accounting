@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError
 
 class AccKhachHang(models.Model):
     _name = 'acc.khach.hang'
+    _rec_name = 'MA'
 
     CAP = fields.Integer(string="Cấp", store=True)
     MA = fields.Char(string="Mã", store=True)

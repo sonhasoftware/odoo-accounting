@@ -4,6 +4,7 @@ from odoo.exceptions import ValidationError
 
 class AccSanPham(models.Model):
     _name = 'acc.san.pham'
+    _rec_name = 'MA'
 
     CAP = fields.Integer(string="Cấp", store=True)
     MA = fields.Char(string="Mã", store=True)
@@ -12,7 +13,7 @@ class AccSanPham(models.Model):
     SPCAP = fields.Integer(string="SP cấp", store=True)
     LOAI_SP = fields.Many2one('acc.loai.sp', string="Loại SP", store=True)
     DINH_MUC = fields.Integer(string="Định mức PB", store=True)
-    HANG_HOA = fields.Integer(string="Hàng hóa", store=True)
+    HANG_HOA = fields.Many2one('acc.hang.hoa', string="Hàng hóa", store=True)
     SAN_PHAM = fields.Integer(string="Sản phẩm", store=True, readonly=True)
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)
@@ -50,6 +51,10 @@ class AccSanPham(models.Model):
         rec = super(AccSanPham, self).create(vals)
         rec.SAN_PHAM = rec.id
         dvcs = rec.DVCS.id
+        hang_hoa = self.env['acc.hang.hoa'].sudo().create({
+            'SAN_PHAM': rec.id
+        })
+        rec.HANG_HOA = hang_hoa.id
         # self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_kho', dvcs])
 
         return rec

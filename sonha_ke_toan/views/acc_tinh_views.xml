@@ -5,12 +5,12 @@
         <field name="model">acc.tinh</field>
         <field name="arch" type="xml">
             <tree string="Danh mục tỉnh" editable="bottom" decoration-danger="CAP == 1" decoration-bf="CAP == 1">
-                <field name="CAP"/>
-                <field name="MA"/>
-                <field name="TEN"/>
-                <field name="TINH"/>
-                <field name="DVCS"/>
-                <field name="ACTIVE"/>
+                <field name="CAP" optional="show"/>
+                <field name="MA" optional="show"/>
+                <field name="TEN" optional="show"/>
+                <field name="TINH" optional="show"/>
+                <field name="DVCS" optional="show"/>
+                <field name="ACTIVE" optional="show"/>
                 <field name="create_uid" string="Người tạo" optional="hide"/>
                 <field name="write_uid" string="Người sửa" optional="hide"/>
                 <field name="create_date" string="Ngày tạo" optional="hide"/>

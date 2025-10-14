@@ -1,0 +1,26 @@
+<odoo>
+    <record id="view_loai_dm_wizard_form" model="ir.ui.view">
+        <field name="name">loai.dm.wizard.form</field>
+        <field name="model">loai.dm.wizard</field>
+        <field name="arch" type="xml">
+            <form string="Chọn loại DM">
+                <sheet>
+                    <group>
+                        <field name="LOAI_DM"/>
+                    </group>
+                </sheet>
+                <footer>
+                    <button string="Hủy" class="btn-secondary" special="cancel"/>
+                    <button string="OK" type="object" name="action_confirm_open" class="btn-primary"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_loai_dm_wizard" model="ir.actions.act_window">
+        <field name="name">Chọn loại DM</field>
+        <field name="res_model">loai.dm.wizard</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+</odoo>

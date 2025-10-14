@@ -12,10 +12,24 @@
                 <field name="XEM_DM"/>
                 <field name="THEM_DM"/>
                 <field name="SUA_DM"/>
+                <field name="THEM_DM"/>
+                <field name="KHO"/>
+                <field name="KHOAN_MUC"/>
+                <field name="VVIEC"/>
+                <field name="LOAI_NX"/>
+                <field name="LOAI_DL"/>
+                <field name="CHI_NHANH"/>
+                <field name="MA_TK0_ID"/>
+                <field name="MA_TK1_ID"/>
+                <field name="TIEN_TE"/>
+                <field name="KT_SL"/>
+                <field name="GIA_MUA"/>
+                <field name="GIA_BAN"/>
+                <field name="MOT_VE"/>
+                <field name="KHONG_TINH_GV"/>
+                <field name="CT_KHONG_TD"/>
+                <field name="PT_VAT"/>
                 <field name="DVCS"/>
-                <field name="THEM_DL"/>
-                <field name="XEM_DL" widget="many2many_tags"/>
-                <field name="SUA_DL" widget="many2many_tags"/>
                 <field name="ACTIVE"/>
             </tree>
         </field>

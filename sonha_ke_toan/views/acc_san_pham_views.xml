@@ -3,19 +3,19 @@
     <record id="view_acc_san_pham_tree" model="ir.ui.view">
         <field name="name">acc.san.pham.tree</field>
         <field name="model">acc.san.pham</field>
-        <field name="arch" ty8pe="xml">
+        <field name="arch" type="xml">
             <tree string="Danh mục sẩn phẩm" editable="bottom" decoration-danger="CAP == 1" decoration-bf="CAP == 1">
-                <field name="CAP"/>
-                <field name="MA"/>
-                <field name="TEN"/>
-                <field name="DVT"/>
-                <field name="SPCAP"/>
-                <field name="LOAI_SP"/>
-                <field name="DINH_MUC"/>
-                <field name="HANG_HOA"/>
-                <field name="SAN_PHAM"/>
-                <field name="DVCS"/>
-                <field name="ACTIVE"/>
+                <field name="CAP" optional="show"/>
+                <field name="MA" optional="show"/>
+                <field name="TEN" optional="show"/>
+                <field name="DVT" optional="show"/>
+                <field name="SPCAP" optional="show"/>
+                <field name="LOAI_SP" optional="show"/>
+                <field name="DINH_MUC" optional="show"/>
+                <field name="HANG_HOA" optional="show"/>
+                <field name="SAN_PHAM" optional="show"/>
+                <field name="DVCS" optional="show"/>
+                <field name="ACTIVE" optional="show"/>
                 <field name="create_uid" string="Người tạo" optional="hide" class="check_cr"/>
                 <field name="write_uid" string="Người sửa" optional="hide" class="check_wt"/>
                 <field name="create_date" string="Ngày tạo" optional="hide" class="check_cd"/>

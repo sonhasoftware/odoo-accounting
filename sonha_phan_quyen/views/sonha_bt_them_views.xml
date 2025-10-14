@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_sonha_bt_them_tree" model="ir.ui.view">
+        <field name="name">sonha.bt.them.tree</field>
+        <field name="model">sonha.bt.them</field>
+        <field name="arch" type="xml">
+            <tree string="Bút toán thêm" editable="bottom">
+                <field name="MENU"/>
+                <field name="MA_TK0_ID"/>
+                <field name="MA_TK1_ID"/>
+                <field name="DK"/>
+                <field name="CO_SL"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="sonha_bt_them_action" model="ir.actions.act_window">
+        <field name="name">Bút toán thêm</field>
+        <field name="res_model">sonha.bt.them</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <menuitem id="menu_sonha_bt_them"
+              name="Bút toán thêm"
+              parent="menu_sonha_phan_quyen_user"
+              action="sonha_bt_them_action"
+              sequence="4"/>
+</odoo>

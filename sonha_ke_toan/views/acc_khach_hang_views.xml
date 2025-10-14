@@ -5,25 +5,25 @@
         <field name="model">acc.khach.hang</field>
         <field name="arch" type="xml">
             <tree string="Danh mục khách hàng, ncc" editable="bottom" decoration-danger="CAP == 1" decoration-bf="CAP == 1">
-                <field name="CAP"/>
-                <field name="MA"/>
-                <field name="TEN"/>
-                <field name="DIA_CHI"/>
-                <field name="MST"/>
-                <field name="SDT"/>
-                <field name="TK_KHNO_ID"/>
-                <field name="TK_KHCO_ID"/>
-                <field name="LOAI_KH"/>
-                <field name="NHOM_KH"/>
-                <field name="NVBH"/>
-                <field name="SO_NGAY_NO"/>
-                <field name="SO_TIEN_NO"/>
-                <field name="TINH"/>
-                <field name="CHI_NHANH"/>
-                <field name="STT"/>
-                <field name="KHACH_HANG"/>
-                <field name="DVCS"/>
-                <field name="ACTIVE"/>
+                <field name="CAP" optional="show"/>
+                <field name="MA" optional="show"/>
+                <field name="TEN" optional="show"/>
+                <field name="DIA_CHI" optional="show"/>
+                <field name="MST" optional="show"/>
+                <field name="SDT" optional="show"/>
+                <field name="TK_KHNO_ID" optional="show"/>
+                <field name="TK_KHCO_ID" optional="show"/>
+                <field name="LOAI_KH" optional="show"/>
+                <field name="NHOM_KH" optional="show"/>
+                <field name="NVBH" optional="show"/>
+                <field name="SO_NGAY_NO" optional="show"/>
+                <field name="SO_TIEN_NO" optional="show"/>
+                <field name="TINH" optional="show"/>
+                <field name="CHI_NHANH" optional="show"/>
+                <field name="STT" optional="show"/>
+                <field name="KHACH_HANG" optional="show"/>
+                <field name="DVCS" optional="show"/>
+                <field name="ACTIVE" optional="show"/>
                 <field name="create_uid" string="Người tạo" optional="hide" class="check_cr"/>
                 <field name="write_uid" string="Người sửa" optional="hide" class="check_wt"/>
                 <field name="create_date" string="Ngày tạo" optional="hide" class="check_cd"/>

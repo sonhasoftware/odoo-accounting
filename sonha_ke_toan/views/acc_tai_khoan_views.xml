@@ -5,13 +5,13 @@
         <field name="model">acc.tai.khoan</field>
         <field name="arch" type="xml">
             <tree string="Danh mục tài khoản" editable="bottom" decoration-danger="CAP == 1" decoration-bf="CAP == 1">
-                <field name="CAP" class="check_cap"/>
-                <field name="MA" class="check_ma"/>
-                <field name="TEN" class="check_ten"/>
-                <field name="KHO" class="check_kho"/>
-                <field name="CN" class="check_cn"/>
-                <field name="DVCS" class="check_dv"/>
-                <field name="ACTIVE" class="check_at"/>
+                <field name="CAP" class="check_cap" optional="show"/>
+                <field name="MA" class="check_ma" optional="true"/>
+                <field name="TEN" class="check_ten" optional="true"/>
+                <field name="KHO" class="check_kho" optional="true"/>
+                <field name="CN" class="check_cn" optional="true"/>
+                <field name="DVCS" class="check_dv" optional="true"/>
+                <field name="ACTIVE" class="check_at" optional="true"/>
                 <field name="create_uid" string="Người tạo" optional="hide" class="check_cr"/>
                 <field name="write_uid" string="Người sửa" optional="hide" class="check_wt"/>
                 <field name="create_date" string="Ngày tạo" optional="hide" class="check_cd"/>

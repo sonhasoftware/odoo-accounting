@@ -5,13 +5,13 @@
         <field name="model">acc.nvbh</field>
         <field name="arch" type="xml">
             <tree string="Danh mục NVBH" editable="bottom" decoration-danger="CAP == 1" decoration-bf="CAP == 1">
-                <field name="CAP"/>
-                <field name="MA"/>
-                <field name="TEN"/>
-                <field name="NVBH"/>
-                <field name="QL_NVBH"/>
-                <field name="DVCS"/>
-                <field name="ACTIVE"/>
+                <field name="CAP" optional="show"/>
+                <field name="MA" optional="show"/>
+                <field name="TEN" optional="show"/>
+                <field name="NVBH" optional="show"/>
+                <field name="QL_NVBH" optional="show"/>
+                <field name="DVCS" optional="show"/>
+                <field name="ACTIVE" optional="show"/>
                 <field name="create_uid" string="Người tạo" optional="hide"/>
                 <field name="write_uid" string="Người sửa" optional="hide"/>
                 <field name="create_date" string="Ngày tạo" optional="hide"/>

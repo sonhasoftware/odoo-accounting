@@ -5,6 +5,7 @@ from odoo.exceptions import ValidationError
 class AccTaiKhoan(models.Model):
     _name = 'acc.tai.khoan'
     _order = 'MA,CAP,DVCS'
+    _rec_name = 'MA'
 
     CAP = fields.Integer(string="Cấp", store=True)
     MA = fields.Char(string="Mã", store=True)
@@ -53,7 +54,7 @@ class AccTaiKhoan(models.Model):
     def write(self, vals):
         res = super(AccTaiKhoan, self).write(vals)
         dvcs = self.DVCS.id
-        self.env.cr.execute("CALL public.update_cap(%s, %s);",['acc_tai_khoan', dvcs])
+        self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_tai_khoan', dvcs])
 
         return res
 
