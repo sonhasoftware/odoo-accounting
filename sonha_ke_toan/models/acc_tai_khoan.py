@@ -40,8 +40,14 @@ class AccTaiKhoan(models.Model):
         )
 
     @api.model
-    def search_count(self, args):
-        ids = self._search(args)
+    def search_count(self, args, offset=0, limit=None, order=None, access_rights_uid=None):
+        ids = self._search(
+            args,
+            offset=offset,
+            limit=limit,
+            order=order,
+            access_rights_uid=access_rights_uid,
+        )
         return len(ids)
 
     def create(self, vals):
@@ -83,7 +89,7 @@ class AccTaiKhoan(models.Model):
 
         # tìm quyền phân bổ cho user hiện tại và đúng đơn vị
         access = self.env['sonha.phan.quyen'].sudo().search([
-            ('NGUOI_DUNG.user_id', '=', self.env.uid),
+            ('NGUOI_DUNG', '=', self.env.uid),
             ('TEN_BANG', '=', self._name),
             ('DVCS', '=', company_id),
         ], limit=1)

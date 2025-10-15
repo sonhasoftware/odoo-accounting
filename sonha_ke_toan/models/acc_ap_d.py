@@ -14,7 +14,7 @@ class AccApD(models.Model):
 
     SO_LUONG = fields.Float("SL", store=True)
     DON_GIA = fields.Float("Đơn giá", store=True)
-    THANH_TIEN = fields.Integer("Thành tiền", store=True)
+    PS_NO1 = fields.Integer("Thành tiền", store=True)
     TIEN_NTE = fields.Float("Ngoại tệ", store=True)
     VAT = fields.Integer("Vat", store=True)
 

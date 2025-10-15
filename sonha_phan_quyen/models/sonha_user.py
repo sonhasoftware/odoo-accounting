@@ -5,9 +5,9 @@ class SonhaUser(models.Model):
     _name = 'sonha.user'
     _rec_name = 'NAME'
 
-    ID_USER = fields.Integer(string="User id", store=True)
+    SONHA_USER = fields.Integer(string="User id", store=True)
     NAME = fields.Char(string="Tên", store=True)
-    user_id = fields.Many2one("res.users", string="Người dùng", store=True)
+    NGUOI_DUNG = fields.Many2one("res.users", string="Người dùng", store=True)
     NGAY_KHOA = fields.Date(string="Ngày khóa", store=True)
     SO_NGAY_KHOA = fields.Integer(string="Số ngày khóa", store=True)
     USER_KHAI_THAC = fields.Boolean(string="User khai thác", store=True)
@@ -17,22 +17,24 @@ class SonhaUser(models.Model):
             list_model = self.env['ir.model'].sudo().search([])
             list_model = list_model.filtered(lambda x: x.modules == 'sonha_ke_toan')
             for model in list_model:
-                list_company = r.user_id.company_ids
+                list_company = self.env.company
                 for company in list_company:
                     check = self.env['sonha.phan.quyen'].sudo().search([('TEN_BANG', '=', model.id),
-                                                                        ('NGUOI_DUNG', '=', r.id),
+                                                                        ('NGUOI_DUNG_ID', '=', r.id),
                                                                         ('DVCS', '=', company.id),])
 
                     if not check:
                         self.env['sonha.phan.quyen'].sudo().create({
-                            'NGUOI_DUNG': r.id,
+                            'NGUOI_DUNG_ID': r.id,
                             'TEN_BANG': model.id,
                             'DVCS': company.id,
+                            'NGUOI_DUNG': r.NGUOI_DUNG.id or 0,
+                            'SONHA_USER': r.id or 0,
                         })
 
     def create(self, vals):
         rec = super(SonhaUser, self).create(vals)
-        rec.ID_USER = rec.id
+        rec.SONHA_USER = rec.id
         return rec
 
 
@@ -44,7 +46,7 @@ class ResUsers(models.Model):
         user = super(ResUsers, self).create(vals)
         self.env['sonha.user'].sudo().create({
             "NAME": user.name,
-            "user_id": user.id
+            "NGUOI_DUNG": user.id
         })
 
         return user

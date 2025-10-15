@@ -7,6 +7,7 @@ class AccApH(models.Model):
 
     NGAY_CT = fields.Date(string="Ngày CT", store=True)
     CHUNG_TU = fields.Char(string="Chứng từ", store=True)
+    CTGS = fields.Char(string="CTGS", store=True)
     SO_HD = fields.Char(string="Số HĐ", store=True)
     SERI_HD = fields.Char(string="Seri HĐ", store=True)
     NGAY_HD = fields.Date(string="Ngày HĐ", store=True)

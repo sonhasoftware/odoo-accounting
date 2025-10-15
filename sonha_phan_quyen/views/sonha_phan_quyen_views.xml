@@ -5,7 +5,7 @@
         <field name="model">sonha.phan.quyen</field>
         <field name="arch" type="xml">
             <tree string="Phân quyền" editable="bottom">
-                <field name="NGUOI_DUNG"/>
+                <field name="NGUOI_DUNG_ID"/>
                 <field name="MA_BANG"/>
                 <field name="TEN_BANG"/>
                 <field name="MENU"/>
