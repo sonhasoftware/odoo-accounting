@@ -42,6 +42,11 @@ class AccKhoanMuc(models.Model):
         ids = self._search(args)
         return len(ids)
 
+    # @api.model
+    # def search_count(self, args):
+    #     ids = self._search(args)
+    #     return len(ids)
+
     def create(self, vals):
         rec = super(AccKhoanMuc, self).create(vals)
         dvcs = rec.DVCS.id
