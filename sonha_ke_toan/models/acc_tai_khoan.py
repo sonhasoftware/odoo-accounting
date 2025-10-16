@@ -10,6 +10,7 @@ class AccTaiKhoan(models.Model):
     CAP = fields.Integer(string="Cấp", store=True)
     MA = fields.Char(string="Mã", store=True)
     TEN = fields.Char(string="Tên", store=True)
+    MA_TEN = fields.Char(string="Mã - Tên", store=True, readonly=True)
     KHO = fields.Boolean(string="Kho", store=True)
     CN = fields.Boolean(string="CN", store=True)
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
@@ -51,6 +52,12 @@ class AccTaiKhoan(models.Model):
         return len(ids)
 
     def create(self, vals):
+        # === SONPV: cập nhật MA_TEN tự động ===
+        ma = vals.get('MA', '')
+        ten = vals.get('TEN', '')
+        vals['MA_TEN'] = f"{ma} - {ten}" if (ma or ten) else ''
+        # === END SONPV ===
+
         rec = super(AccTaiKhoan, self).create(vals)
         dvcs = rec.DVCS.id
         self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_tai_khoan', dvcs])
@@ -59,6 +66,20 @@ class AccTaiKhoan(models.Model):
 
     def write(self, vals):
         res = super(AccTaiKhoan, self).write(vals)
+
+        # === SONPV: cập nhật MA_TEN sau khi ghi ===
+        for rec in self:
+            ma = rec.MA or ''
+            ten = rec.TEN or ''
+            ma_ten = f"{ma} - {ten}" if (ma or ten) else ''
+            # Cập nhật trực tiếp không gọi lại write()
+            self.env.cr.execute("""
+                                UPDATE acc_tai_khoan
+                                SET "MA_TEN" = %s
+                                WHERE id = %s
+                                """, (ma_ten, rec.id))
+        # === END SONPV ===
+
         dvcs = self.DVCS.id
         self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_tai_khoan', dvcs])
 

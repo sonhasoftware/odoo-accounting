@@ -4,11 +4,13 @@ from odoo.exceptions import ValidationError
 
 class AccLoaiNX(models.Model):
     _name = 'acc.loai.nx'
+    _order = 'MA,CAP,DVCS'
     _rec_name = 'MA'
 
     CAP = fields.Integer(string="Cấp", store=True)
     MA = fields.Char(string="Mã", store=True)
     TEN = fields.Char(string="Tên", store=True)
+    MA_TEN = fields.Char(string="Mã - Tên", store=True, readonly=True)
     LOAI_NX = fields.Integer(string="Loại phân xưởng", store=True, readonly=True)
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)
@@ -43,6 +45,12 @@ class AccLoaiNX(models.Model):
         return len(ids)
 
     def create(self, vals):
+        # === SONPV: cập nhật MA_TEN tự động ===
+        ma = vals.get('MA', '')
+        ten = vals.get('TEN', '')
+        vals['MA_TEN'] = f"{ma} - {ten}" if (ma or ten) else ''
+        # === END SONPV ===
+
         rec = super(AccLoaiNX, self).create(vals)
         rec.LOAI_NX = rec.id
         dvcs = rec.DVCS.id
@@ -52,6 +60,20 @@ class AccLoaiNX(models.Model):
 
     def write(self, vals):
         res = super(AccLoaiNX, self).write(vals)
+
+        # === SONPV: cập nhật MA_TEN sau khi ghi ===
+        for rec in self:
+            ma = rec.MA or ''
+            ten = rec.TEN or ''
+            ma_ten = f"{ma} - {ten}" if (ma or ten) else ''
+            # Cập nhật trực tiếp không gọi lại write()
+            self.env.cr.execute("""
+                                UPDATE acc_loai_nx
+                                SET "MA_TEN" = %s
+                                WHERE id = %s
+                                """, (ma_ten, rec.id))
+        # === END SONPV ===
+
         dvcs = self.DVCS.id
         self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_loai_nx', dvcs])
 

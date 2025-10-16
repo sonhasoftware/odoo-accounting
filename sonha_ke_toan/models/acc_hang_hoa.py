@@ -4,11 +4,13 @@ from odoo.exceptions import ValidationError
 
 class AccHangHoa(models.Model):
     _name = 'acc.hang.hoa'
+    _order = 'MA,CAP,DVCS'
     _rec_name = 'MA'
 
     CAP = fields.Integer(string="Cấp", store=True)
     MA = fields.Char(string="Mã", store=True)
     TEN = fields.Char(string="Tên", store=True)
+    MA_TEN = fields.Char(string="Mã - Tên", store=True, readonly=True)
     DVT = fields.Char(string="DVT", store=True)
     HS_QUY_DOI = fields.Float(string="HS quy đổi", store=True)
     DINH_MUC = fields.Float(string="Định mức PB", store=True)
@@ -62,6 +64,12 @@ class AccHangHoa(models.Model):
         return len(ids)
 
     def create(self, vals):
+        # === SONPV: cập nhật MA_TEN tự động ===
+        ma = vals.get('MA', '')
+        ten = vals.get('TEN', '')
+        vals['MA_TEN'] = f"{ma} - {ten}" if (ma or ten) else ''
+        # === END SONPV ===
+
         rec = super(AccHangHoa, self).create(vals)
         rec.HANG_HOA = rec.id
         dvcs = rec.DVCS.id
@@ -71,6 +79,20 @@ class AccHangHoa(models.Model):
 
     def write(self, vals):
         res = super(AccHangHoa, self).write(vals)
+
+        # === SONPV: cập nhật MA_TEN sau khi ghi ===
+        for rec in self:
+            ma = rec.MA or ''
+            ten = rec.TEN or ''
+            ma_ten = f"{ma} - {ten}" if (ma or ten) else ''
+            # Cập nhật trực tiếp không gọi lại write()
+            self.env.cr.execute("""
+                                UPDATE acc_hang_hoa
+                                SET "MA_TEN" = %s
+                                WHERE id = %s
+                                """, (ma_ten, rec.id))
+        # === END SONPV ===
+
         dvcs = self.DVCS.id
         self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_hang_hoa', dvcs])
 
