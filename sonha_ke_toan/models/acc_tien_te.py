@@ -39,6 +39,11 @@ class AccTienTe(models.Model):
     #         access_rights_uid=access_rights_uid,
     #     )
 
+    # @api.model
+    # def search_count(self, args):
+    #     ids = self._search(args)
+    #     return len(ids)
+
     def create(self, vals):
         rec = super(AccTienTe, self).create(vals)
         dvcs = rec.DVCS.id
