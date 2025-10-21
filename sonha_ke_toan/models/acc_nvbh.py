@@ -4,41 +4,49 @@ from odoo.exceptions import ValidationError
 
 class AccNVBH(models.Model):
     _name = 'acc.nvbh'
+    _order = 'MA,CAP,DVCS'
     _rec_name = 'MA'
 
     CAP = fields.Integer(string="Cấp", store=True)
     MA = fields.Char(string="Mã", store=True)
     TEN = fields.Char(string="Tên", store=True)
+    MA_TEN =  fields.Char(string="Mã - Tên", store=True, readonly=True)
     NVBH = fields.Integer(string="NVBH", store=True)
     QL_NVBH = fields.Many2one('acc.nvbh', string="Quản lý", store=True)
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)
 
-    @api.model
-    def _search(self, args, offset=0, limit=None, order=None, access_rights_uid=None):
-        dvcs = self.env.company.id
-        nguoi_dung = self.env.uid
-
-        # Gọi function PostgreSQL
-        query = "SELECT * FROM public.fn_acc_nvbh(%s, %s)"
-        self.env.cr.execute(query, (dvcs, nguoi_dung))
-        rows = self.env.cr.dictfetchall()
-
-        # Lấy danh sách id từ function
-        ids = [row["id"] for row in rows if "id" in row]
-
-        # Trả domain ép buộc Odoo chỉ lấy các bản ghi này
-        new_domain = args + [("id", "in", ids)] if ids else [("id", "=", 0)]
-
-        return super(AccNVBH, self)._search(
-            new_domain,
-            offset=offset,
-            limit=limit,
-            order=order,
-            access_rights_uid=access_rights_uid,
-        )
+    # @api.model
+    # def _search(self, args, offset=0, limit=None, order=None, access_rights_uid=None):
+    #     dvcs = self.env.company.id
+    #     nguoi_dung = self.env.uid
+    #
+    #     # Gọi function PostgreSQL
+    #     query = "SELECT * FROM public.fn_acc_nvbh(%s, %s)"
+    #     self.env.cr.execute(query, (dvcs, nguoi_dung))
+    #     rows = self.env.cr.dictfetchall()
+    #
+    #     # Lấy danh sách id từ function
+    #     ids = [row["id"] for row in rows if "id" in row]
+    #
+    #     # Trả domain ép buộc Odoo chỉ lấy các bản ghi này
+    #     new_domain = args + [("id", "in", ids)] if ids else [("id", "=", 0)]
+    #
+    #     return super(AccNVBH, self)._search(
+    #         new_domain,
+    #         offset=offset,
+    #         limit=limit,
+    #         order=order,
+    #         access_rights_uid=access_rights_uid,
+    #     )
 
     def create(self, vals):
+        # === SONPV: cập nhật MA_TEN tự động ===
+        ma = vals.get('MA', '')
+        ten = vals.get('TEN', '')
+        vals['MA_TEN'] = f"{ma} - {ten}" if (ma or ten) else ''
+        # === END SONPV ===
+
         rec = super(AccNVBH, self).create(vals)
         dvcs = rec.DVCS.id
         self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_nvbh', dvcs])
@@ -47,6 +55,20 @@ class AccNVBH(models.Model):
 
     def write(self, vals):
         res = super(AccNVBH, self).write(vals)
+
+        # === SONPV: cập nhật MA_TEN sau khi ghi ===
+        for rec in self:
+            ma = rec.MA or ''
+            ten = rec.TEN or ''
+            ma_ten = f"{ma} - {ten}" if (ma or ten) else ''
+            # Cập nhật trực tiếp không gọi lại write()
+            self.env.cr.execute("""
+                                UPDATE acc_nvbh
+                                SET "MA_TEN" = %s
+                                WHERE id = %s
+                                """, (ma_ten, rec.id))
+        # === END SONPV ===
+
         dvcs = self.DVCS.id
         self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_nvbh', dvcs])
 

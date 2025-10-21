@@ -4,11 +4,13 @@ from odoo.exceptions import ValidationError
 
 class AccTSCD(models.Model):
     _name = 'acc.tscd'
+    _order = 'MA,CAP,DVCS'
     _rec_name = 'MA'
 
     CAP = fields.Integer(string="Cấp", store=True)
     MA = fields.Char(string="Mã", store=True)
     TEN = fields.Char(string="Tên", store=True)
+    MA_TEN = fields.Char(string="Mã - Tên", store=True, readonly=True)
     DVT = fields.Char("DVT", store=True)
     NGAY_SD = fields.Date("Ngày SD", store=True)
     NUOC_SX = fields.Char("Nước SX", store=True)
@@ -59,6 +61,12 @@ class AccTSCD(models.Model):
         return len(ids)
 
     def create(self, vals):
+        # === SONPV: cập nhật MA_TEN tự động ===
+        ma = vals.get('MA', '')
+        ten = vals.get('TEN', '')
+        vals['MA_TEN'] = f"{ma} - {ten}" if (ma or ten) else ''
+        # === END SONPV ===
+
         rec = super(AccTSCD, self).create(vals)
         rec.TSCD = rec.id
         dvcs = rec.DVCS.id
@@ -68,6 +76,20 @@ class AccTSCD(models.Model):
 
     def write(self, vals):
         res = super(AccTSCD, self).write(vals)
+
+        # === SONPV: cập nhật MA_TEN sau khi ghi ===
+        for rec in self:
+            ma = rec.MA or ''
+            ten = rec.TEN or ''
+            ma_ten = f"{ma} - {ten}" if (ma or ten) else ''
+            # Cập nhật trực tiếp không gọi lại write()
+            self.env.cr.execute("""
+                                UPDATE acc_tscd
+                                SET "MA_TEN" = %s
+                                WHERE id = %s
+                                """, (ma_ten, rec.id))
+        # === END SONPV ===
+
         dvcs = self.DVCS.id
         self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_tscd', dvcs])
 
