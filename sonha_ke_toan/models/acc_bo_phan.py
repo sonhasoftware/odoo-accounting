@@ -4,11 +4,13 @@ from odoo.exceptions import ValidationError
 
 class AccBoPhan(models.Model):
     _name = 'acc.bo.phan'
+    _order = 'MA,CAP,DVCS'
     _rec_name = 'MA'
 
     CAP = fields.Integer(string="Cấp", store=True)
     MA = fields.Char(string="Mã", store=True)
     TEN = fields.Char(string="Tên", store=True)
+    MA_TEN = fields.Char(string="Mã - Tên", store=True, readonly=True)
     BO_PHAN = fields.Integer(string="Bộ phận", store=True, compute="_get_bo_phan")
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)
@@ -43,8 +45,16 @@ class AccBoPhan(models.Model):
         return len(ids)
 
     def create(self, vals):
+        # === SONPV: cập nhật MA_TEN sau khi ghi ===
+        for rec in self:
+            ma = rec.MA or ''
+            ten = rec.TEN or ''
+            ma_ten = f"{ma} - {ten}" if (ma or ten) else ''
+            rec.MA_TEN = ma_ten
+        # === END SONPV ===
+
         rec = super(AccBoPhan, self).create(vals)
-        rec.KHO = rec.id
+        rec.BO_PHAN = rec.id
         dvcs = rec.DVCS.id
         self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_bo_phan', dvcs])
 
@@ -52,6 +62,20 @@ class AccBoPhan(models.Model):
 
     def write(self, vals):
         res = super(AccBoPhan, self).write(vals)
+
+        # === SONPV: cập nhật MA_TEN sau khi ghi ===
+        for rec in self:
+            ma = rec.MA or ''
+            ten = rec.TEN or ''
+            ma_ten = f"{ma} - {ten}" if (ma or ten) else ''
+            # Cập nhật trực tiếp không gọi lại write()
+            self.env.cr.execute("""
+                                UPDATE acc_bo_phan
+                                SET "MA_TEN" = %s
+                                WHERE id = %s
+                                """, (ma_ten, rec.id))
+        # === END SONPV ===
+
         dvcs = self.DVCS.id
         self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_bo_phan', dvcs])
 

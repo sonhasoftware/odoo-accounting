@@ -4,11 +4,13 @@ from odoo.exceptions import ValidationError
 
 class AccSanPham(models.Model):
     _name = 'acc.san.pham'
+    _order = 'MA,CAP,DVCS'
     _rec_name = 'MA'
 
     CAP = fields.Integer(string="Cấp", store=True)
     MA = fields.Char(string="Mã", store=True)
     TEN = fields.Char(string="Tên", store=True)
+    MA_TEN = fields.Char(string="Mã - Tên", store=True, readonly=True)
     DVT = fields.Char(string="DVT", store=True)
     SPCAP = fields.Integer(string="SP cấp", store=True)
     LOAI_SP = fields.Many2one('acc.loai.sp', string="Loại SP", store=True)
@@ -18,29 +20,29 @@ class AccSanPham(models.Model):
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)
 
-    @api.model
-    def _search(self, args, offset=0, limit=None, order=None, access_rights_uid=None):
-        dvcs = self.env.company.id
-        nguoi_dung = self.env.uid
-
-        # Gọi function PostgreSQL
-        query = "SELECT * FROM public.fn_acc_san_pham(%s, %s)"
-        self.env.cr.execute(query, (dvcs, nguoi_dung))
-        rows = self.env.cr.dictfetchall()
-
-        # Lấy danh sách id từ function
-        ids = [row["id"] for row in rows if "id" in row]
-
-        # Trả domain ép buộc Odoo chỉ lấy các bản ghi này
-        new_domain = args + [("id", "in", ids)] if ids else [("id", "=", 0)]
-
-        return super(AccSanPham, self)._search(
-            new_domain,
-            offset=offset,
-            limit=limit,
-            order=order,
-            access_rights_uid=access_rights_uid,
-        )
+    # @api.model
+    # def _search(self, args, offset=0, limit=None, order=None, access_rights_uid=None):
+    #     dvcs = self.env.company.id
+    #     nguoi_dung = self.env.uid
+    #
+    #     # Gọi function PostgreSQL
+    #     query = "SELECT * FROM public.fn_acc_san_pham(%s, %s)"
+    #     self.env.cr.execute(query, (dvcs, nguoi_dung))
+    #     rows = self.env.cr.dictfetchall()
+    #
+    #     # Lấy danh sách id từ function
+    #     ids = [row["id"] for row in rows if "id" in row]
+    #
+    #     # Trả domain ép buộc Odoo chỉ lấy các bản ghi này
+    #     new_domain = args + [("id", "in", ids)] if ids else [("id", "=", 0)]
+    #
+    #     return super(AccSanPham, self)._search(
+    #         new_domain,
+    #         offset=offset,
+    #         limit=limit,
+    #         order=order,
+    #         access_rights_uid=access_rights_uid,
+    #     )
 
     @api.model
     def search_count(self, args):
@@ -48,6 +50,12 @@ class AccSanPham(models.Model):
         return len(ids)
 
     def create(self, vals):
+        # === SONPV: cập nhật MA_TEN tự động ===
+        ma = vals.get('MA', '')
+        ten = vals.get('TEN', '')
+        vals['MA_TEN'] = f"{ma} - {ten}" if (ma or ten) else ''
+        # === END SONPV ===
+
         rec = super(AccSanPham, self).create(vals)
         rec.SAN_PHAM = rec.id
         dvcs = rec.DVCS.id
@@ -61,6 +69,20 @@ class AccSanPham(models.Model):
 
     def write(self, vals):
         res = super(AccSanPham, self).write(vals)
+
+        # === SONPV: cập nhật MA_TEN sau khi ghi ===
+        for rec in self:
+            ma = rec.MA or ''
+            ten = rec.TEN or ''
+            ma_ten = f"{ma} - {ten}" if (ma or ten) else ''
+            # Cập nhật trực tiếp không gọi lại write()
+            self.env.cr.execute("""
+                                UPDATE acc_san_pham
+                                SET "MA_TEN" = %s
+                                WHERE id = %s
+                                """, (ma_ten, rec.id))
+        # === END SONPV ===
+
         dvcs = self.DVCS.id
         self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_san_pham', dvcs])
 
