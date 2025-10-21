@@ -13,29 +13,34 @@ class AccKhoanMuc(models.Model):
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)
 
-    # @api.model
-    # def _search(self, args, offset=0, limit=None, order=None, access_rights_uid=None):
-    #     dvcs = self.env.company.id
-    #     nguoi_dung = self.env.uid
-    #
-    #     # Gọi function PostgreSQL
-    #     query = "SELECT * FROM public.fn_acc_tai_khoan(%s, %s)"
-    #     self.env.cr.execute(query, (dvcs, nguoi_dung))
-    #     rows = self.env.cr.dictfetchall()
-    #
-    #     # Lấy danh sách id từ function
-    #     ids = [row["id"] for row in rows if "id" in row]
-    #
-    #     # Trả domain ép buộc Odoo chỉ lấy các bản ghi này
-    #     new_domain = args + [("id", "in", ids)] if ids else [("id", "=", 0)]
-    #
-    #     return super(AccKhoanMuc, self)._search(
-    #         new_domain,
-    #         offset=offset,
-    #         limit=limit,
-    #         order=order,
-    #         access_rights_uid=access_rights_uid,
-    #     )
+    @api.model
+    def _search(self, args, offset=0, limit=None, order=None, access_rights_uid=None):
+        dvcs = self.env.company.id
+        nguoi_dung = self.env.uid
+
+        # Gọi function PostgreSQL
+        query = "SELECT * FROM public.fn_acc_khoan_muc(%s, %s)"
+        self.env.cr.execute(query, (dvcs, nguoi_dung))
+        rows = self.env.cr.dictfetchall()
+
+        # Lấy danh sách id từ function
+        ids = [row["id"] for row in rows if "id" in row]
+
+        # Trả domain ép buộc Odoo chỉ lấy các bản ghi này
+        new_domain = args + [("id", "in", ids)] if ids else [("id", "=", 0)]
+
+        return super(AccKhoanMuc, self)._search(
+            new_domain,
+            offset=offset,
+            limit=limit,
+            order=order,
+            access_rights_uid=access_rights_uid,
+        )
+
+    @api.model
+    def search_count(self, args):
+        ids = self._search(args)
+        return len(ids)
 
     # @api.model
     # def search_count(self, args):
@@ -52,13 +57,14 @@ class AccKhoanMuc(models.Model):
     def write(self, vals):
         res = super(AccKhoanMuc, self).write(vals)
         dvcs = self.DVCS.id
-        self.env.cr.execute("CALL public.update_cap(%s, %s);",['acc_khoan_muc', dvcs])
+        self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_khoan_muc', dvcs])
 
         return res
 
     def unlink(self):
         res = super(AccKhoanMuc, self).unlink()
-        self.env.cr.execute("CALL public.update_cap(acc.khoan.muc);")
+        dvcs = self.DVCS.id
+        self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_khoan_muc', dvcs])
         return res
 
     @api.constrains('MA')
@@ -81,7 +87,7 @@ class AccKhoanMuc(models.Model):
 
         # tìm quyền phân bổ cho user hiện tại và đúng đơn vị
         access = self.env['sonha.phan.quyen'].sudo().search([
-            ('NGUOI_DUNG.user_id', '=', self.env.uid),
+            ('NGUOI_DUNG', '=', self.env.uid),
             ('TEN_BANG', '=', self._name),
             ('DVCS', '=', company_id),
         ], limit=1)

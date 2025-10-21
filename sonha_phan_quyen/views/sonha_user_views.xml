@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <tree string="Thông tin user" editable="bottom">
                 <field name="NAME"/>
-                <field name="user_id"/>
+                <field name="NGUOI_DUNG"/>
                 <field name="NGAY_KHOA"/>
                 <field name="SO_NGAY_KHOA"/>
                 <field name="USER_KHAI_THAC"/>

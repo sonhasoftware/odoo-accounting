@@ -83,7 +83,7 @@ class AccBoPhan(models.Model):
 
         # tìm quyền phân bổ cho user hiện tại và đúng đơn vị
         access = self.env['sonha.phan.quyen'].sudo().search([
-            ('NGUOI_DUNG.user_id', '=', self.env.uid),
+            ('NGUOI_DUNG', '=', self.env.uid),
             ('TEN_BANG', '=', self._name),
             ('DVCS', '=', company_id),
         ], limit=1)

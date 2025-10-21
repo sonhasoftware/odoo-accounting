@@ -4,7 +4,9 @@ from odoo import api, fields, models
 class SonhaPhanQuyen(models.Model):
     _name = 'sonha.phan.quyen'
 
-    NGUOI_DUNG = fields.Many2one('sonha.user', string="Người dùng", store=True)
+    NGUOI_DUNG_ID = fields.Many2one('sonha.user', string="Người dùng", store=True)
+    NGUOI_DUNG = fields.Integer(string="Người dùng (Base)", store=True)
+    SONHA_USER = fields.Integer(string="Người dùng Sơn Hà", store=True)
     TEN_BANG = fields.Many2one('ir.model', string="Mã Bảng", store=True)
     # đây là mã bảng model
     MA_BANG = fields.Char(related='TEN_BANG.model', string="Tên Bảng", store=True)
@@ -46,9 +48,9 @@ class SonhaPhanQuyen(models.Model):
     CT_KHONG_TD = fields.Boolean(string="CT không tự động", store=True)
     PT_VAT = fields.Char(string="%VAT", store=True)
 
-    _sql_constraints = [
-        ('unique_user_menu', 'unique(user_id, menu_id)', 'Mỗi người dùng chỉ có 1 bản ghi phân quyền cho 1 menu.')
-    ]
+    # _sql_constraints = [
+    #     ('unique_user_menu', 'unique(user_id, menu_id)', 'Mỗi người dùng chỉ có 1 bản ghi phân quyền cho 1 menu.')
+    # ]
 
     # @api.model
     # def sync_permissions(self, module_name='sonha_ke_toan'):
