@@ -34,6 +34,7 @@
         'views/acc_bom_views.xml',
         'wizard/loai_dm_wizard_views.xml',
         'views/acc_ap_h_views.xml',
+        'wizard/thong_bao_wizard_views.xml',
         'views/menu_views.xml',
     ],
     'assets': {
