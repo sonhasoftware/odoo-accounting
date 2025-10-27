@@ -26,11 +26,16 @@ access_acc_bom,acc.bom,model_acc_bom,,1,1,1,1
 
 access_v_acc_san_pham,v.acc.san.pham,model_v_acc_san_pham,,1,1,1,1
 
+access_acc_thue,acc.thue,model_acc_thue,,1,1,1,1
+
 
 access_loai_dm_wizard,loai.dm.wizard,model_loai_dm_wizard,,1,1,1,1
 
 
 
 
-access_acc_ap_h,acc.ap.h,model_acc_ap_h,,1,1,1,1
-access_acc_ap_d,acc.ap.d,model_acc_ap_d,,1,1,1,1
+access_nl_acc_ap_h,acc.nl.ap.h,model_nl_acc_ap_h,,1,1,1,1
+access_nl_acc_ap_d,nl.acc.ap.d,model_nl_acc_ap_d,,1,1,1,1
+
+access_nl_acc_tong_hop,nl.acc.tong.hop,model_nl_acc_tong_hop,,1,1,1,1
+access_nl_acc_tong_hop_log,nl.acc.tong.hop.log,model_nl_acc_tong_hop_log,,1,1,1,1

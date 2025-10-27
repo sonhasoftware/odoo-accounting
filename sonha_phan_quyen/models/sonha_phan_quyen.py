@@ -47,6 +47,7 @@ class SonhaPhanQuyen(models.Model):
     KHONG_TINH_GV = fields.Boolean(string="Không tính GV", store=True)
     CT_KHONG_TD = fields.Boolean(string="CT không tự động", store=True)
     PT_VAT = fields.Char(string="%VAT", store=True)
+    CHUNG_TU = fields.Char(string="Chứng từ", store=True)
 
     # _sql_constraints = [
     #     ('unique_user_menu', 'unique(user_id, menu_id)', 'Mỗi người dùng chỉ có 1 bản ghi phân quyền cho 1 menu.')

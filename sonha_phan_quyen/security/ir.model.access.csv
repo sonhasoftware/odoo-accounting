@@ -4,3 +4,5 @@ access_sonha_user,sonha.user,model_sonha_user,,1,1,1,1
 access_sonha_phan_quyen,sonha.phan.quyen,model_sonha_phan_quyen,,1,1,1,1
 access_sonha_xac_nhan,sonha_xac_nhan,model_sonha_xac_nhan,,1,1,1,1
 access_sonha_bt_them,sonha.sonha.bt.them,model_sonha_bt_them,,1,1,1,1
+
+access_sonha_phan_quyen_nl,sonha.phan.quyen.nl,model_sonha_phan_quyen_nl,,1,1,1,1

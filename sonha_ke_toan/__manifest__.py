@@ -32,6 +32,7 @@
         'views/acc_gia_ban_views.xml',
         'views/v_acc_san_pham_views.xml',
         'views/acc_bom_views.xml',
+        'views/acc_thue_views.xml',
         'wizard/loai_dm_wizard_views.xml',
         'views/acc_ap_h_views.xml',
         'views/menu_views.xml',
