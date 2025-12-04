@@ -23,6 +23,10 @@ from . import acc_gia_ban
 from . import acc_bom
 from . import v_acc_san_pham
 
+from . import acc_thue
+
 
 from . import acc_ap_h
 from . import acc_ap_d
+from . import nl_acc_tong_hop
+from . import nl_acc_tong_hop_log

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="view_acc_ap_h_tree" model="ir.ui.view">
-        <field name="name">acc.ap.h.tree</field>
-        <field name="model">acc.ap.h</field>
+    <record id="view_nl_acc_ap_h_tree" model="ir.ui.view">
+        <field name="name">nl.acc.ap.h.tree</field>
+        <field name="model">nl.acc.ap.h</field>
         <field name="arch" type="xml">
-            <tree string="Phiếu nhập kho">
+            <tree string="Phiếu nhập mua hàng">
                 <field name="NGAY_CT" optional="show"/>
                 <field name="CHUNG_TU" optional="show"/>
                 <field name="SO_HD" optional="show"/>
@@ -20,11 +20,11 @@
     </record>
 
 
-    <record id="view_acc_ap_h_form" model="ir.ui.view">
-        <field name="name">acc.ap.h.form</field>
-        <field name="model">acc.ap.h</field>
+    <record id="view_nl_acc_ap_h_form" model="ir.ui.view">
+        <field name="name">nl.acc.ap.h.form</field>
+        <field name="model">nl.acc.ap.h</field>
         <field name="arch" type="xml">
-            <form string="Phiếu nhập kho">
+            <form string="Phiếu nhập mua hàng">
                 <div class="two-column-form">
                     <!-- Cột trái -->
                     <div class="left-col">
@@ -108,11 +108,18 @@
                             <label for="DC_THUE">DC thuế</label>
                             <field name="DC_THUE"/>
                         </div>
-                        <div class="form-row">
-                            <label for="DC_THUE">Kho</label>
-                            <field name="DC_THUE"/>
-                        </div>
+
                     </div>
+                </div>
+                <div style="border-top: 2px solid black;">
+
+                </div>
+
+                <div class="form-row">
+                    <label for="DG_THEO_TIEN" style="margin-left: 20px;">DG theo tiền</label>
+                    <field name="DG_THEO_TIEN" widget="boolean_toggle" string="ĐG theo tiền" class="oe_inline"/>
+                    <label for="TOTAL_VAT" style="margin-left: 20px;">Tổng tiền</label>
+                    <field name="TOTAL_VAT"/>
                 </div>
                 <field name="ACC_SP_D">
                     <tree editable="bottom">
@@ -149,9 +156,9 @@
         </field>
     </record>
 
-    <record id="acc_ap_h_action" model="ir.actions.act_window">
-        <field name="name">Phiếu nhập kho</field>
-        <field name="res_model">acc.ap.h</field>
+    <record id="acc_nl_ap_h_action" model="ir.actions.act_window">
+        <field name="name">Phiếu nhập mua hàng</field>
+        <field name="res_model">nl.acc.ap.h</field>
         <field name="view_mode">tree,form</field>
     </record>
 

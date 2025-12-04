@@ -1,18 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="view_sonha_phan_quyen_tree" model="ir.ui.view">
-        <field name="name">sonha.phan.quyen.tree</field>
-        <field name="model">sonha.phan.quyen</field>
+    <record id="view_sonha_phan_quyen_nl_tree" model="ir.ui.view">
+        <field name="name">sonha.phan.quyen.nl.tree</field>
+        <field name="model">sonha.phan.quyen.nl</field>
         <field name="arch" type="xml">
             <tree string="Phân quyền" editable="bottom">
-                <field name="NGUOI_DUNG_ID"/>
-                <field name="MA_BANG"/>
-                <field name="TEN_BANG"/>
                 <field name="MENU"/>
-                <field name="XEM_DM"/>
-                <field name="THEM_DM"/>
-                <field name="SUA_DM"/>
-                <field name="THEM_DM"/>
                 <field name="BO_PHAN"/>
                 <field name="KHO"/>
                 <field name="KHOAN_MUC"/>
@@ -20,8 +13,8 @@
                 <field name="LOAI_NX"/>
                 <field name="LOAI_DL"/>
                 <field name="CHI_NHANH"/>
-                <field name="MA_TK0_ID"/>
-                <field name="MA_TK1_ID"/>
+                <field name="MA_TK0_ID" domain="[(1, '=', 1)]"/>
+                <field name="MA_TK1_ID" domain="[(1, '=', 1)]"/>
                 <field name="TIEN_TE"/>
                 <field name="KT_SL"/>
                 <field name="GIA_MUA"/>
@@ -30,22 +23,22 @@
                 <field name="KHONG_TINH_GV"/>
                 <field name="CT_KHONG_TD"/>
                 <field name="PT_VAT"/>
+                <field name="CHUNG_TU"/>
                 <field name="DVCS"/>
                 <field name="ACTIVE"/>
-                <field name="CHUNG_TU"/>
             </tree>
         </field>
     </record>
 
-    <record id="sonha_phan_quyen_action" model="ir.actions.act_window">
-        <field name="name">Phân Quyền</field>
-        <field name="res_model">sonha.phan.quyen</field>
+    <record id="sonha_phan_quyen_nl_action" model="ir.actions.act_window">
+        <field name="name">Phân Quyền Nhập Liệu</field>
+        <field name="res_model">sonha.phan.quyen.nl</field>
         <field name="view_mode">tree</field>
     </record>
 
-    <menuitem id="menu_sonha_phan_quyen"
-              name="Phân quyền"
+    <menuitem id="menu_sonha_phan_quyen_nl"
+              name="Phân quyền nhập liệu"
               parent="menu_sonha_phan_quyen_user"
-              action="sonha_phan_quyen_action"
-              sequence="2"/>
+              action="sonha_phan_quyen_nl_action"
+              sequence="3"/>
 </odoo>

@@ -7,9 +7,12 @@
             <tree string="Bút toán thêm" editable="bottom">
                 <field name="MENU"/>
                 <field name="MA_TK0_ID"/>
+                <field name="MA_TK00"/>
                 <field name="MA_TK1_ID"/>
+                <field name="MA_TK11"/>
                 <field name="DK"/>
                 <field name="CO_SL"/>
+                <field name="GIA_TRI"/>
             </tree>
         </field>
     </record>

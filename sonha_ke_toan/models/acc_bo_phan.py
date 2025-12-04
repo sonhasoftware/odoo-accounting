@@ -98,40 +98,40 @@ class AccBoPhan(models.Model):
                 if exists:
                     raise ValidationError("Mã %s đã tồn tại, vui lòng nhập mã khác!" % rec.MA)
 
-    def check_access_rights(self, operation, raise_exception=True):
-        # gọi super để giữ nguyên quyền mặc định nếu cần
-        res = super().check_access_rights(operation, raise_exception=False)
-
-        # lấy đơn vị của bản ghi (nếu có field company_id / dv / đơn vị)
-        company_id = self.env.company.id  # mặc định là công ty hiện tại của user
-
-        # tìm quyền phân bổ cho user hiện tại và đúng đơn vị
-        access = self.env['sonha.phan.quyen'].sudo().search([
-            ('NGUOI_DUNG', '=', self.env.uid),
-            ('TEN_BANG', '=', self._name),
-            ('DVCS', '=', company_id),
-        ], limit=1)
-
-        allowed = False
-        if access:
-            if operation == 'read' and access.XEM_DM:
-                allowed = True
-            elif operation == 'create' and access.THEM_DM:
-                allowed = True
-            elif operation == 'write' and access.SUA_DM:
-                allowed = True
-            elif operation == 'unlink' and access.XOA_DM:
-                allowed = True
-        else:
-            allowed = False
-
-        if not allowed:
-            if raise_exception:
-                raise exceptions.AccessError(
-                    _("Bạn không có quyền %s trên %s (Đơn vị: %s)") %
-                    (operation, self._description, self.env.company.name)
-                )
-            return False
-
-        return True
+    # def check_access_rights(self, operation, raise_exception=True):
+    #     # gọi super để giữ nguyên quyền mặc định nếu cần
+    #     res = super().check_access_rights(operation, raise_exception=False)
+    #
+    #     # lấy đơn vị của bản ghi (nếu có field company_id / dv / đơn vị)
+    #     company_id = self.env.company.id  # mặc định là công ty hiện tại của user
+    #
+    #     # tìm quyền phân bổ cho user hiện tại và đúng đơn vị
+    #     access = self.env['sonha.phan.quyen'].sudo().search([
+    #         ('NGUOI_DUNG', '=', self.env.uid),
+    #         ('TEN_BANG', '=', self._name),
+    #         ('DVCS', '=', company_id),
+    #     ], limit=1)
+    #
+    #     allowed = False
+    #     if access:
+    #         if operation == 'read' and access.XEM_DM:
+    #             allowed = True
+    #         elif operation == 'create' and access.THEM_DM:
+    #             allowed = True
+    #         elif operation == 'write' and access.SUA_DM:
+    #             allowed = True
+    #         elif operation == 'unlink' and access.XOA_DM:
+    #             allowed = True
+    #     else:
+    #         allowed = False
+    #
+    #     if not allowed:
+    #         if raise_exception:
+    #             raise exceptions.AccessError(
+    #                 _("Bạn không có quyền %s trên %s (Đơn vị: %s)") %
+    #                 (operation, self._description, self.env.company.name)
+    #             )
+    #         return False
+    #
+    #     return True
 

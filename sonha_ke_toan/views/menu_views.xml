@@ -147,6 +147,12 @@
               action="v_acc_san_pham_action"
               sequence="22"/>
 
+    <menuitem id="menu_acc_thue"
+              name="Danh mục thuế"
+              parent="menu_danh_muc_accounting"
+              action="acc_thue_action"
+              sequence="23"/>
+
 
 
 <!--    menu cho nhập liệu-->
@@ -156,9 +162,9 @@
               parent="menu_sonha_accounting"
               sequence="1"/>
 
-    <menuitem id="menu_acc_ap_h"
-              name="Phiếu nhập kho"
+    <menuitem id="menu_nl_acc_ap_h"
+              name="Phiếu nhập mua hàng"
               parent="menu_nhap_lieu"
-              action="acc_ap_h_action"
+              action="acc_nl_ap_h_action"
               sequence="1"/>
 </odoo>
