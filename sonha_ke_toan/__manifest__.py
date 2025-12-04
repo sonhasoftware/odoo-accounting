@@ -35,12 +35,14 @@
         'views/acc_thue_views.xml',
         'wizard/loai_dm_wizard_views.xml',
         'views/acc_ap_h_views.xml',
+        'wizard/thong_bao_wizard_views.xml',
         'views/menu_views.xml',
     ],
     'assets': {
         'web.assets_backend': [
             'sonha_ke_toan/static/src/js/field_confirm_list_patch.js',
             'sonha_ke_toan/static/src/js/menu_item_patch.js',
+            'sonha_ke_toan/static/src/js/confirm_before_save.js',
             'sonha_ke_toan/static/src/css/style.css',
         ],
     },

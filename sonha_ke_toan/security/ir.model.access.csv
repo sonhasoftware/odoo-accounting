@@ -26,6 +26,7 @@ access_acc_bom,acc.bom,model_acc_bom,,1,1,1,1
 
 access_v_acc_san_pham,v.acc.san.pham,model_v_acc_san_pham,,1,1,1,1
 
+access_thong_bao_wizard,thong.bao.wizard,model_thong_bao_wizard,,1,1,1,1
 access_acc_thue,acc.thue,model_acc_thue,,1,1,1,1
 
 

@@ -5,7 +5,7 @@ from odoo.exceptions import ValidationError
 class AccHangHoa(models.Model):
     _name = 'acc.hang.hoa'
     _order = 'MA,CAP,DVCS'
-    _rec_name = 'MA'
+    _rec_name = 'MA_TEN'
 
     CAP = fields.Integer(string="Cấp", store=True)
     MA = fields.Char(string="Mã", store=True)

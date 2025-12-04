@@ -57,6 +57,10 @@
     border-color: var(--border-color, #ccc) !important;
 }
 
+.modal .modal-dialog:has(.o_form_view.form-thong-bao) .modal-content {
+    max-width: 35% !important;
+    width: 35% !important;
+}
 
 
 

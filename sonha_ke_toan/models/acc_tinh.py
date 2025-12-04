@@ -5,7 +5,7 @@ from odoo.exceptions import ValidationError
 class AccTinh(models.Model):
     _name = 'acc.tinh'
     _order = 'MA,CAP,DVCS'
-    _rec_name = 'MA'
+    _rec_name = 'MA_TEN'
 
     CAP = fields.Integer(string="Cấp", store=True)
     MA = fields.Char(string="Mã", store=True)
@@ -38,6 +38,11 @@ class AccTinh(models.Model):
             order=order,
             access_rights_uid=access_rights_uid,
         )
+
+    # @api.model
+    # def search_count(self, args):
+    #     ids = self._search(args)
+    #     return len(ids)
 
     def create(self, vals):
         # === SONPV: cập nhật MA_TEN tự động ===

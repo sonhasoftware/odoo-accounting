@@ -1,5 +1,6 @@
 from odoo import http
 from odoo.http import request
+import json
 
 
 class FieldConfirmController(http.Controller):
@@ -18,3 +19,10 @@ class FieldConfirmController(http.Controller):
             ("XEM_DM", "=", True),
         ]).mapped("TEN_BANG")
         return models
+
+    @http.route('/field_confirm/get_confirm_fields', type='json', auth='user')
+    def get_confirm_fields(self, model):
+        fields = request.env['sonha.xac.nhan'].sudo().search([('MODEL_ID.model', '=', model),
+                                                              ('REQUIRE_CONFIRM', '=', True)])
+        field_names = fields.mapped('FIELD_ID.name')
+        return field_names
