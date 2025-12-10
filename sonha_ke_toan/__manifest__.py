@@ -40,6 +40,7 @@
     ],
     'assets': {
         'web.assets_backend': [
+            'sonha_ke_toan/static/src/js/auto_toggle_parent_fields.js',
             'sonha_ke_toan/static/src/js/field_confirm_list_patch.js',
             'sonha_ke_toan/static/src/js/menu_item_patch.js',
             'sonha_ke_toan/static/src/js/confirm_before_save.js',

@@ -21,140 +21,143 @@
 
 
     <record id="view_nl_acc_ap_h_form" model="ir.ui.view">
-        <field name="name">nl.acc.ap.h.form</field>
-        <field name="model">nl.acc.ap.h</field>
-        <field name="arch" type="xml">
-            <form string="Phiếu nhập mua hàng">
-                <div class="two-column-form">
-                    <!-- Cột trái -->
-                    <div class="left-col">
-                        <div class="form-row">
-                            <label for="NGAY_CT">Ngày chứng từ</label>
-                            <field name="NGAY_CT"/>
-                        </div>
+    <field name="name">nl.acc.ap.h.form</field>
+    <field name="model">nl.acc.ap.h</field>
+    <field name="arch" type="xml">
+        <form string="Phiếu nhập mua hàng">
+            <div class="two-column-form">
 
-                        <div class="form-row">
-                            <label for="CHUNG_TU">Chứng từ</label>
-                            <field name="CHUNG_TU"/>
-                            <label for="CTGS">CTGS</label>
-                            <field name="CTGS"/>
-                        </div>
-
-                        <div class="form-row">
-                            <label for="SO_HD">Số hợp đồng</label>
-                            <field name="SO_HD"/>
-                            <label for="SERI_HD">SERI</label>
-                            <field name="SERI_HD"/>
-                            <label for="NGAY_HD">Ngày HĐ</label>
-                            <field name="NGAY_HD"/>
-                            <label for="PT_THUE">% Thuế</label>
-                            <field name="PT_THUE"/>
-                        </div>
-
-                        <div class="form-row">
-                            <label for="ONG_BA">Ông bà</label>
-                            <field name="ONG_BA"/>
-                        </div>
-                        <div class="form-row">
-                            <label for="GHI_CHU">Diễn giải</label>
-                            <field name="GHI_CHU"/>
-                        </div>
-                        <div class="form-row">
-                            <label for="KHACH_HANG">Khách hàng</label>
-                            <field name="KHACH_HANG"/>
-                        </div>
-                        <div class="form-row">
-                            <label for="KHOAN_MUC">Khoản mục</label>
-                            <field name="KHOAN_MUC"/>
-                        </div>
-                        <div class="form-row">
-                            <label for="BO_PHAN">Bộ phận</label>
-                            <field name="BO_PHAN"/>
-                        </div>
+                <!-- Cột trái -->
+                <div class="left-col parent-fields">
+                    <div class="form-row">
+                        <label for="NGAY_CT">Ngày chứng từ</label>
+                        <field name="NGAY_CT"/>
                     </div>
 
-                    <!-- Cột phải -->
-                    <div class="right-col">
-                        <div class="form-row">
-                            <label for="VVIEC">Vụ việc</label>
-                            <field name="VVIEC"/>
-                        </div>
+                    <div class="form-row">
+                        <label for="CHUNG_TU">Chứng từ</label>
+                        <field name="CHUNG_TU"/>
+<!--                        <label for="CTGS">CTGS</label>-->
+<!--                        <field name="CTGS"/>-->
+                        <label for="PT_THUE">% Thuế</label>
+                        <field name="PT_THUE"/>
+                    </div>
 
-                        <div class="form-row">
-                            <label for="KHO">Kho</label>
-                            <field name="KHO"/>
-                        </div>
+                    <div class="form-row">
+                        <label for="SO_HD">Số hợp đồng</label>
+                        <field name="SO_HD"/>
+                        <label for="SERI_HD">SERI</label>
+                        <field name="SERI_HD"/>
+                        <label for="NGAY_HD">Ngày HĐ</label>
+                        <field name="NGAY_HD"/>
+                    </div>
 
-                        <div class="form-row">
-                            <label for="TIEN_TE">Tiền tệ</label>
-                            <field name="TIEN_TE"/>
-                            <label for="TY_GIA">Tỷ giá</label>
-                            <field name="TY_GIA"/>
-                        </div>
-
-                        <div class="form-row">
-                            <label for="MA_TK1_ID">Kho</label>
-                            <field name="MA_TK1_ID"/>
-                        </div>
-                        <div class="form-row">
-                            <label for="KH_THUE">KH thuế</label>
-                            <field name="KH_THUE"/>
-                        </div>
-                        <div class="form-row">
-                            <label for="MS_THUE">MS thuế</label>
-                            <field name="MS_THUE"/>
-                        </div>
-                        <div class="form-row">
-                            <label for="DC_THUE">DC thuế</label>
-                            <field name="DC_THUE"/>
-                        </div>
-
+                    <div class="form-row">
+                        <label for="ONG_BA">Ông bà</label>
+                        <field name="ONG_BA"/>
+                    </div>
+                    <div class="form-row">
+                        <label for="GHI_CHU">Diễn giải</label>
+                        <field name="GHI_CHU"/>
+                    </div>
+                    <div class="form-row">
+                        <label for="KHACH_HANG">Khách hàng</label>
+                        <field name="KHACH_HANG"/>
+                    </div>
+                    <div class="form-row">
+                        <label for="KHOAN_MUC">Khoản mục</label>
+                        <field name="KHOAN_MUC"/>
+                    </div>
+                    <div class="form-row">
+                        <label for="BO_PHAN">Bộ phận</label>
+                        <field name="BO_PHAN"/>
                     </div>
                 </div>
-                <div style="border-top: 2px solid black;">
 
+                <!-- Cột phải -->
+                <div class="right-col parent-fields">
+                    <div class="form-row">
+                        <label for="VVIEC">Vụ việc</label>
+                        <field name="VVIEC"/>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="KHO">Kho</label>
+                        <field name="KHO"/>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="TIEN_TE">Tiền tệ</label>
+                        <field name="TIEN_TE"/>
+                        <label for="TY_GIA">Tỷ giá</label>
+                        <field name="TY_GIA"/>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="MA_TK1_ID">Kho</label>
+                        <field name="MA_TK1_ID"/>
+                    </div>
+                    <div class="form-row">
+                        <label for="KH_THUE">KH thuế</label>
+                        <field name="KH_THUE"/>
+                    </div>
+                    <div class="form-row">
+                        <label for="MS_THUE">MS thuế</label>
+                        <field name="MS_THUE"/>
+                    </div>
+                    <div class="form-row">
+                        <label for="DC_THUE">DC thuế</label>
+                        <field name="DC_THUE"/>
+                    </div>
                 </div>
+            </div>
 
-                <div class="form-row">
-                    <label for="DG_THEO_TIEN" style="margin-left: 20px;">DG theo tiền</label>
-                    <field name="DG_THEO_TIEN" widget="boolean_toggle" string="ĐG theo tiền" class="oe_inline"/>
-                    <label for="TOTAL_VAT" style="margin-left: 20px;">Tổng tiền</label>
-                    <field name="TOTAL_VAT"/>
-                </div>
-                <field name="ACC_SP_D">
-                    <tree editable="bottom">
-                        <field name="HANG_HOA"/>
-                        <field name="MA_TK0_ID"/>
-                        <field name="SO_LUONG" widget="float"/>
-                        <field name="DON_GIA" widget="float"/>
-                        <field name="PS_NO1" widget="float"/>
-                        <field name="TIEN_NTE" widget="float"/>
-                        <field name="VAT" widget="float"/>
+            <div style="border-top: 2px solid black;"></div>
 
-<!--                        <field name="NGAY_CT" option="hide"/>-->
-<!--                        <field name="CHUNG_TU" option="hide"/>-->
-<!--                        <field name="SO_HD" option="hide"/>-->
-<!--                        <field name="SERI_HD" option="hide"/>-->
-<!--                        <field name="NGAY_HD" option="hide"/>-->
-<!--                        <field name="MAU_SO" option="hide"/>-->
-<!--                        <field name="PT_THUE" option="hide"/>-->
-<!--                        <field name="ONG_BA" option="hide"/>-->
-<!--                        <field name="GHI_CHU" option="hide"/>-->
-<!--                        <field name="KHACH_HANG" option="hide"/>-->
-<!--                        <field name="KH_THUE" option="hide"/>-->
-<!--                        <field name="MS_THUE" option="hide"/>-->
-<!--                        <field name="DC_THUE" option="hide"/>-->
-<!--                        <field name="BO_PHAN" option="hide"/>-->
-<!--                        <field name="VVIEC" option="hide"/>-->
-<!--                        <field name="KHO" option="hide"/>-->
-<!--                        <field name="KHOAN_MUC" option="hide"/>-->
-<!--                        <field name="TIEN_TE" option="hide"/>-->
-<!--                        <field name="TY_GIA" option="hide"/>-->
-                        </tree>
-                </field>
-            </form>
-        </field>
-    </record>
+            <div class="form-row">
+                <label for="DG_THEO_TIEN" style="margin-left: 20px;">DG theo tiền</label>
+                <field name="DG_THEO_TIEN" widget="boolean_toggle" class="oe_inline"/>
+                <label for="TOTAL_VAT" style="margin-left: 20px;">Tổng tiền</label>
+                <field name="TOTAL_VAT"/>
+            </div>
+
+            <!-- ONE2MANY -->
+            <field name="ACC_SP_D">
+                <tree editable="bottom" toggle_visibility="true" class="o_list_view parent-one2many">
+                    <field name="HANG_HOA"/>
+                    <field name="MA_TK0_ID"/>
+                    <field name="SO_LUONG" widget="float"/>
+                    <field name="DON_GIA" widget="float"/>
+                    <field name="PS_NO1" widget="float"/>
+                    <field name="TIEN_NTE" widget="float"/>
+                    <field name="VAT" widget="float"/>
+
+                    <!-- Các field cần đồng bộ -->
+                    <field name="NGAY_CT" optional="hide"/>
+                    <field name="CHUNG_TU" optional="hide"/>
+                    <field name="SO_HD" optional="hide"/>
+                    <field name="SERI_HD" optional="hide"/>
+                    <field name="NGAY_HD" optional="hide"/>
+                    <field name="MAU_SO" optional="hide"/>
+                    <field name="PT_THUE" optional="hide"/>
+                    <field name="ONG_BA" optional="hide"/>
+                    <field name="GHI_CHU" optional="hide"/>
+                    <field name="KHACH_HANG" optional="hide"/>
+                    <field name="KH_THUE" optional="hide"/>
+                    <field name="MS_THUE" optional="hide"/>
+                    <field name="DC_THUE" optional="hide"/>
+                    <field name="BO_PHAN" optional="hide"/>
+                    <field name="VVIEC" optional="hide"/>
+                    <field name="KHO" optional="hide"/>
+                    <field name="KHOAN_MUC" optional="hide"/>
+                    <field name="TIEN_TE" optional="hide"/>
+                    <field name="TY_GIA" optional="hide"/>
+                </tree>
+            </field>
+
+        </form>
+    </field>
+</record>
 
     <record id="acc_nl_ap_h_action" model="ir.actions.act_window">
         <field name="name">Phiếu nhập mua hàng</field>

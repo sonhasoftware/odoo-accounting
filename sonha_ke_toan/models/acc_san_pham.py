@@ -10,7 +10,7 @@ class AccSanPham(models.Model):
     CAP = fields.Integer(string="Cấp", store=True)
     MA = fields.Char(string="Mã", store=True)
     TEN = fields.Char(string="Tên", store=True)
-    MA_TEN = fields.Char(string="Mã - Tên", store=True, readonly=True)
+    MA_TEN = fields.Char(string="Mã - Tên", store=True, readonly=True, compute="get_ma_ten")
     DVT = fields.Char(string="DVT", store=True)
     SPCAP = fields.Integer(string="SP cấp", store=True)
     LOAI_SP = fields.Many2one('acc.loai.sp', string="Loại SP", store=True)
@@ -19,6 +19,11 @@ class AccSanPham(models.Model):
     SAN_PHAM = fields.Integer(string="Sản phẩm", store=True, readonly=True)
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)
+
+    @api.depends('MA', 'TEN')
+    def get_ma_ten(self):
+        for r in self:
+            r.MA_TEN = f"{r.MA} - {r.TEN}" if (r.MA and r.TEN) else ""
 
     # @api.model
     # def _search(self, args, offset=0, limit=None, order=None, access_rights_uid=None):
@@ -44,10 +49,10 @@ class AccSanPham(models.Model):
     #         access_rights_uid=access_rights_uid,
     #     )
 
-    @api.model
-    def search_count(self, args):
-        ids = self._search(args)
-        return len(ids)
+    # @api.model
+    # def search_count(self, args):
+    #     ids = self._search(args)
+    #     return len(ids)
 
     def create(self, vals):
         # === SONPV: cập nhật MA_TEN tự động ===

@@ -20,8 +20,8 @@ class AccApD(models.Model):
     HANG_HOA = fields.Many2one('acc.hang.hoa', string="Hàng hóa", store=True)
 
     SO_LUONG = fields.Float("SL", store=True)
-    DON_GIA = fields.Float("Đơn giá", store=True)
-    PS_NO1 = fields.Integer("Thành tiền", store=True, compute="_get_ps_no1")
+    DON_GIA = fields.Float("Đơn giá", store=True, readonly=False, compute="_get_don_gia")
+    PS_NO1 = fields.Integer("Thành tiền", store=True, compute="_get_ps_no1", readonly=False)
     TIEN_NTE = fields.Float("Ngoại tệ", store=True, compute="_get_tien_nte")
     VAT = fields.Float("Vat", store=True, compute="_get_vat")
 
@@ -92,27 +92,49 @@ class AccApD(models.Model):
             else:
                 pass
 
-    @api.onchange('SO_LUONG', 'DON_GIA')
+    @api.onchange('SO_LUONG', 'DON_GIA' 'ACC_AP_H.TIEN_TE')
     @api.depends('SO_LUONG', 'DON_GIA')
     def _get_tien_nte(self):
-        pass
-        # for r in self:
-        #     if r.TIEN_TE.MA != "VND":
-        #         r.TIEN_NTE = r.SO_LUONG * r.DON_GIA
-        #     else:
-        #         pass
+        for r in self:
+            if r.ACC_AP_H.TIEN_TE.MA != "VNĐ":
+                r.TIEN_NTE = r.SO_LUONG * r.DON_GIA
+            else:
+                pass
 
-    @api.onchange('SO_LUONG', 'DON_GIA', 'ACC_AP_H.TY_GIA')
-    @api.depends('SO_LUONG', 'DON_GIA', 'ACC_AP_H.TY_GIA')
+    @api.onchange('SO_LUONG', 'DON_GIA', 'ACC_AP_H.TY_GIA', 'TY_GIA', 'ACC_AP_H.DG_THEO_TIEN')
+    @api.depends('SO_LUONG', 'DON_GIA', 'TY_GIA')
     def _get_ps_no1(self):
         for r in self:
-            r.PS_NO1 = r.SO_LUONG * r.DON_GIA * r.ACC_AP_H.TY_GIA
+            if not r.ACC_AP_H.DG_THEO_TIEN:
+                r.PS_NO1 = r.SO_LUONG * r.DON_GIA * r.ACC_AP_H.TY_GIA
+            else:
+                pass
 
-    @api.onchange('PS_NO1', 'ACC_AP_H.PT_THUE')
-    @api.depends('PS_NO1', 'ACC_AP_H.PT_THUE')
+    @api.onchange('SO_LUONG', 'PS_NO1', 'ACC_AP_H.DG_THEO_TIEN', 'HANG_HOA')
+    @api.depends('SO_LUONG', 'PS_NO1', 'HANG_HOA')
+    def _get_don_gia(self):
+        for r in self:
+            check = self.env['sonha.phan.quyen.nl'].sudo().search([('MENU', '=', 337),
+                                                                   ('GIA_MUA', '=', True)])
+            if r.ACC_AP_H.DG_THEO_TIEN:
+                r.DON_GIA = r.PS_NO1 / (r.SO_LUONG * r.TY_GIA)
+            elif r.ACC_AP_H.KHACH_HANG and r.ACC_AP_H.NGAY_CT and r.HANG_HOA and check:
+                query = "SELECT * FROM fn_get_don_gia_mua(%s, %s, %s, %s)"
+                self.env.cr.execute(query, (r.DVCS.id, r.HANG_HOA.id, r.ACC_AP_H.KHACH_HANG.id, str(r.ACC_AP_H.NGAY_CT)))
+                rows = self.env.cr.fetchall()
+                if rows:
+                    r.DON_GIA = rows[0][0]
+            else:
+                pass
+
+    @api.onchange('PS_NO1', 'ACC_AP_H.PT_THUE', 'PT_THUE')
+    @api.depends('PS_NO1', 'ACC_AP_H.PT_THUE', 'PT_THUE')
     def _get_vat(self):
         for r in self:
-            r.VAT = r.PS_NO1 * (r.ACC_AP_H.PT_THUE.PT_THUE / 100)
+            if r.PT_THUE:
+                r.VAT = r.PS_NO1 * (r.PT_THUE.PT_THUE / 100)
+            else:
+                r.VAT = r.PS_NO1 * (r.ACC_AP_H.PT_THUE.PT_THUE / 100)
 
     def create_dynamic_fields(self, table_name, data_dict):
         """Tự động tạo cột đúng định dạng theo kiểu dữ liệu Odoo."""
@@ -294,9 +316,9 @@ class AccApD(models.Model):
         placeholders = ', '.join(['%s'] * len(clean_data))
         values = list(clean_data.values())
 
-        sql = f'INSERT INTO "{table_name}" ({", ".join(cols)}) VALUES ({placeholders});'
-        self._cr.execute(sql, values)
-        self._cr.commit()
+        # sql = f'INSERT INTO "{table_name}" ({", ".join(cols)}) VALUES ({placeholders});'
+        # self._cr.execute(sql, values)
+        # self._cr.commit()
 
         _logger.info(f"[AUTO] Inserted acc.ap.d id={rec.id} into {table_name}")
 

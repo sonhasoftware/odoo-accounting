@@ -62,6 +62,18 @@
     width: 35% !important;
 }
 
+.left-col {
+    max-width: 50% !important;
+    width: 50% !important;
+}
+
+.right-col {
+    width: -webkit-fill-available;
+}
+
+.right-col {
+    max-width: 50% !important;
+}
 
 
 
