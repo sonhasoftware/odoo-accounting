@@ -29,7 +29,7 @@ class AccHangHoa(models.Model):
                                   ('phu', "Phụ")],
                                string="Chính/Phụ", store=True)
     SL_MIN = fields.Integer(string="Tồn tối thiểu", store=True)
-    HANG_HOA = fields.Integer(string="Hàng hóa", store=True)
+    HANG_HOA = fields.Integer(string="Hàng hóa", store=True, readonly=True)
     SAN_PHAM = fields.Many2one('acc.san.pham', string="Sản phẩm", store=True)
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)

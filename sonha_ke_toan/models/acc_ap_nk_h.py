@@ -10,20 +10,20 @@ _logger = logging.getLogger(__name__)
 from odoo.exceptions import ValidationError
 
 
-class AccApH(models.Model):
-    _name = 'nl.acc.ap.h'
+class AccApNkH(models.Model):
+    _name = 'acc.ap.nk.h'
     _order = 'NGAY_CT DESC'
     _rec_name = 'CHUNG_TU'
 
     NGAY_CT = fields.Date(string="Ngày CT", store=True, default=lambda self: datetime.date.today())
-    CHUNG_TU = fields.Char(string="Chứng từ", store=True, readonly=True)
+    CHUNG_TU = fields.Char(string="Chứng từ", store=True, readonly=True, size=30)
     CTGS = fields.Char(string="CTGS", store=True, size=30)
     SO_HD = fields.Char(string="Số HĐ", store=True, size=10)
     SERI_HD = fields.Char(string="Seri HĐ", store=True, size=10)
     NGAY_HD = fields.Date(string="Ngày HĐ", store=True)
     MAU_SO = fields.Char(string="Mẫu số", store=True, size=10)
     PT_THUE = fields.Many2one('acc.thue', string="% Thuế", store=True)
-    ONG_BA = fields.Char(string="Ông bà", store=True, size=60)
+    ONG_BA = fields.Char(string="Ông bà", store=True , size=60)
     GHI_CHU = fields.Char(string="Ghi chú", store=True, default="Phiếu nhập mua hàng", size=200)
 
     KHACH_HANG = fields.Many2one('acc.khach.hang', string="Khách hàng", store=True)
@@ -56,7 +56,7 @@ class AccApH(models.Model):
     CHI_NHANH = fields.Many2one('acc.chi.nhanh', string="Chi nhánh", store=True)
 
     ACC_SP_D = fields.One2many(
-        comodel_name="nl.acc.ap.d",
+        comodel_name="acc.ap.nk.d",
         inverse_name="ACC_AP_H",
         string="Bảng chi tiết",
         store=True
@@ -99,17 +99,10 @@ class AccApH(models.Model):
     #     return [('id', 'in', ids)]
 
     def default_get(self, fields_list):
-        """
-        Tự động lấy các giá trị mặc định từ bảng phân quyền acc.phan.quyen
-        dựa theo người dùng đang đăng nhập.
-        """
-        res = super(AccApH, self).default_get(fields_list)
-        current_user = self.env.user
-        company_id = self.env.company
-
+        res = super(AccApNkH, self).default_get(fields_list)
         # Tìm phân quyền của user hiện tại
         permission = self.env['sonha.phan.quyen.nl'].sudo().search([
-            ('MENU', '=', 337),
+            ('MENU', '=', 378),
         ], limit=1)
         dl = self.env['acc.loaidl'].sudo().search([('id', '=', 5)])
 
@@ -189,7 +182,6 @@ class AccApH(models.Model):
     # 2️⃣ SAO LƯU DỮ LIỆU CHI TIẾT SANG BẢNG LOG
     # ==========================================================
     def _copy_to_tong_hop_abc(self, d_records):
-        """Sao lưu dữ liệu nl.acc.ap.d sang bảng nl_acc_tong_hop_log với đúng định dạng."""
         if not d_records:
             return
 
@@ -264,10 +256,9 @@ class AccApH(models.Model):
     # ==========================================================
     # 3️⃣ GHI DỮ LIỆU HEADER + SAO LƯU LOG
     # ==========================================================
-    @api.model
     def create(self, vals):
-        temp_rec = self.new(vals)
 
+        temp_rec = self.new(vals)
         for recs in temp_rec.ACC_SP_D:
 
             vals_dict = {
@@ -301,27 +292,29 @@ class AccApH(models.Model):
                 "MA_TK1": temp_rec.MA_TK1 or "",
                 "DVCS": temp_rec.DVCS.id or 1,
                 "CHI_NHANH": temp_rec.CHI_NHANH.id or 0,
-                "MENU_ID": temp_rec.MENU_ID.id or 337,
-                "NGUOI_TAO": self.env.uid,
-                "NGUOI_SUA": self.env.uid,
+                "MENU_ID": temp_rec.MENU_ID.id or 378,
+                "NGUOI_TAO": self.env.uid or None,
+                "NGUOI_SUA": self.env.uid or None,
             }
 
-            self.env.cr.execute(
-                """SELECT * FROM fn_check_nl(%s::text, %s::jsonb);""",
-                ('nl.acc.ap.h', json.dumps(vals_dict))
-            )
+            table_name = 'acc.ap.nk.h'
 
+            json_data = json.dumps(vals_dict)
+
+            self.env.cr.execute("""SELECT * FROM fn_check_nl(%s::text, %s::jsonb);""", (table_name, json_data))
             check = self.env.cr.dictfetchall()
             if check:
-                loi = list(check[0].values())[0]
-                if loi:
+                result = check[0]
+                loi = list(result.values())[0]
+                if loi == None:
+                    pass
+                else:
                     raise ValidationError(loi)
 
-        rec = super(AccApH, self).create(vals)
-        self.env.cr.execute(
-            "SELECT * FROM fn_chung_tu_tu_dong(%s, %s)",
-            ('menu_337', str(rec.NGAY_CT))
-        )
+        # Gọi function sinh chứng từ tự động
+        rec = super(AccApNkH, self).create(vals)
+        query = "SELECT * FROM fn_chung_tu_tu_dong(%s, %s)"
+        self.env.cr.execute(query, ('menu_378', str(rec.NGAY_CT)))
         rows = self.env.cr.fetchall()
         if rows:
             rec.CHUNG_TU = rows[0][0]
@@ -330,7 +323,7 @@ class AccApH(models.Model):
 
     def write(self, vals):
         """Ghi dữ liệu acc.ap.h, sao lưu dữ liệu acc.ap.d sang bảng tổng hợp trước khi ghi."""
-        res = super(AccApH, self).write(vals)
+        res = super(AccApNkH, self).write(vals)
 
         for record in self:
             for recs in record.ACC_SP_D:
@@ -366,12 +359,12 @@ class AccApH(models.Model):
                     "MA_TK1": record.MA_TK1 or "",
                     "DVCS": record.DVCS.id or 1,
                     "CHI_NHANH": record.CHI_NHANH.id or 0,
-                    "MENU_ID": record.MENU_ID.id or 337,
+                    "MENU_ID": record.MENU_ID.id or 378,
                     "NGUOI_TAO": self.create_uid.id or None,
                     "NGUOI_SUA": self.env.uid or None,
                 }
 
-                table_name = 'nl.acc.ap.h'
+                table_name = 'acc.ap.nk.h'
 
                 json_data = json.dumps(vals_dict)
                 self.env.cr.execute("""SELECT * FROM fn_check_nl(%s::text, %s::jsonb);""", (table_name, json_data))
@@ -383,7 +376,7 @@ class AccApH(models.Model):
                         pass
                     else:
                         raise ValidationError(loi)
-            all_d_records = self.env['nl.acc.ap.d'].search([('ACC_AP_H', '=', record.id)])
+            all_d_records = self.env['acc.ap.nk.d'].search([('ACC_AP_H', '=', record.id)])
 
             # 1️⃣ Sao lưu dữ liệu D sang bảng tổng hợp log
             self._copy_to_tong_hop_abc(all_d_records)
@@ -417,10 +410,10 @@ class AccApH(models.Model):
                 d_vals_list.append(vals_d)
 
             self.env['nl.acc.tong.hop'].sudo().search([('ACC_AP_D', 'in', all_d_records.ids)]).unlink()
-            self.env['nl.acc.ap.d'].sudo().search([('id', 'in', all_d_records.ids)]).unlink()
+            self.env['acc.ap.nk.d'].sudo().search([('id', 'in', all_d_records.ids)]).unlink()
 
             if d_vals_list:
-                self.env['nl.acc.ap.d'].sudo().create(d_vals_list)
+                self.env['acc.ap.nk.d'].sudo().create(d_vals_list)
 
         return res
 

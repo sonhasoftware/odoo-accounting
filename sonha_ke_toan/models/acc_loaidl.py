@@ -11,7 +11,7 @@ class AccLoaiDL(models.Model):
     MA = fields.Char(string="Mã", store=True)
     TEN = fields.Char(string="Tên", store=True)
     MA_TEN = fields.Char(string="Mã - Tên", store=True, readonly=True, compute="get_ma_ten")
-    LOAIDL = fields.Integer(string="Loại DL", store=True)
+    LOAIDL = fields.Integer(string="Loại DL", store=True, readonly=True)
     STT = fields.Integer(string="STT", store=True)
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)
@@ -58,6 +58,7 @@ class AccLoaiDL(models.Model):
         # === END SONPV ===
 
         rec = super(AccLoaiDL, self).create(vals)
+        rec.LOAIDL = rec.id
         dvcs = rec.DVCS.id
         self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_loaidl', dvcs])
 

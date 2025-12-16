@@ -11,7 +11,7 @@ class AccNVBH(models.Model):
     MA = fields.Char(string="Mã", store=True)
     TEN = fields.Char(string="Tên", store=True)
     MA_TEN =  fields.Char(string="Mã - Tên", store=True, readonly=True, compute="get_ma_ten")
-    NVBH = fields.Integer(string="NVBH", store=True)
+    NVBH = fields.Integer(string="NVBH", store=True, readonly=True)
     QL_NVBH = fields.Many2one('acc.nvbh', string="Quản lý", store=True)
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)
@@ -58,6 +58,7 @@ class AccNVBH(models.Model):
         # === END SONPV ===
 
         rec = super(AccNVBH, self).create(vals)
+        rec.NVBH = rec.id
         dvcs = rec.DVCS.id
         self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_nvbh', dvcs])
 

@@ -153,12 +153,18 @@
               action="acc_thue_action"
               sequence="23"/>
 
+    <menuitem id="menu_acc_nguon"
+              name="Danh mục nguồn"
+              parent="menu_danh_muc_accounting"
+              action="acc_nguon_action"
+              sequence="24"/>
+
 
 
 <!--    menu cho nhập liệu-->
 
     <menuitem id="menu_nhap_lieu"
-              name="Nhập liệu"
+              name="Nhập mua"
               parent="menu_sonha_accounting"
               sequence="1"/>
 
@@ -167,4 +173,16 @@
               parent="menu_nhap_lieu"
               action="acc_nl_ap_h_action"
               sequence="1"/>
+
+    <menuitem id="menu_nl_acc_ap_h_nk"
+              name="Phiếu nhập mua hàng - Nhập khẩu"
+              parent="menu_nhap_lieu"
+              action="acc_nl_ap_h_nk_action"
+              sequence="2"/>
+
+    <menuitem id="menu_tim_kiem"
+              name="Tìm kiếm"
+              parent="menu_sonha_accounting"
+              action="tim_kiem_action"
+              sequence="10"/>
 </odoo>

@@ -11,7 +11,7 @@ class AccLoaiHH(models.Model):
     MA = fields.Char(string="Mã", store=True)
     TEN = fields.Char(string="Tên", store=True)
     MA_TEN = fields.Char(string="Mã - Tên", store=True, readonly=True, compute="get_ma_ten")
-    LOAIHH = fields.Integer(string="Loại hàng hóa", store=True)
+    LOAIHH = fields.Integer(string="Loại hàng hóa", store=True, readonly=True)
     DONG_HANG = fields.Many2one('acc.dong.hang', string="Loại HĐ", store=True)
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)

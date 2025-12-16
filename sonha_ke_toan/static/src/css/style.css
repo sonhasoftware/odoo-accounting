@@ -75,6 +75,24 @@
     max-width: 50% !important;
 }
 
+input#DG_THEO_TIEN_0 {
+    margin-top: 15px !important;
+}
+
+label.o_form_label {
+    margin-top: 10px !important;
+}
+
+.o_field_widget.o_readonly_modifier.o_field_char {
+    margin-top: 15px !important;
+}
+
+.form-row {
+    margin-top: -10px !important;
+}
+
+
+
 
 
 

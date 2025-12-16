@@ -12,7 +12,7 @@ class AccBoPhan(models.Model):
     MA = fields.Char(string="Mã", store=True)
     TEN = fields.Char(string="Tên", store=True)
     MA_TEN = fields.Char(string="Mã - Tên", store=True, readonly=True, compute="get_ma_ten")
-    BO_PHAN = fields.Integer(string="Bộ phận", store=True, compute="_get_bo_phan")
+    BO_PHAN = fields.Integer(string="Bộ phận", store=True, readonly=True)
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)
 

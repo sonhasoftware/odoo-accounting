@@ -11,7 +11,7 @@ class AccKhoanMuc(models.Model):
     MA = fields.Char(string="Mã", store=True)
     TEN = fields.Char(string="Tên", store=True)
     MA_TEN = fields.Char(string="Mã - Tên", store=True, readonly=True, compute="get_ma_ten")
-    KHOAN_MUC = fields.Integer(string="Khoản mục", store=True)
+    KHOAN_MUC = fields.Integer(string="Khoản mục", store=True, readonly=True)
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)
 
@@ -63,6 +63,7 @@ class AccKhoanMuc(models.Model):
 
         rec = super(AccKhoanMuc, self).create(vals)
         dvcs = rec.DVCS.id
+        rec.KHOAN_MUC = rec.id
         self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_khoan_muc', dvcs])
 
         return rec

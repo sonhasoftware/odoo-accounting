@@ -13,7 +13,7 @@ class AccTienTe(models.Model):
     MA_TEN = fields.Char(string="Mã - Tên", store=True, readonly=True, compute="get_ma_ten")
     TY_GIA = fields.Float(string="Tỷ giá", store=True)
     NGAY_AP_DUNG = fields.Date(string="Ngày áp dụng", store=True)
-    TIEN_TE = fields.Integer(string="Tiền tệ")
+    TIEN_TE = fields.Integer(string="Tiền tệ", readonly=True, store=True)
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)
 
@@ -60,6 +60,7 @@ class AccTienTe(models.Model):
 
         rec = super(AccTienTe, self).create(vals)
         dvcs = rec.DVCS.id
+        rec.TIEN_TE = rec.id
         self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_tien_te', dvcs])
 
         return rec
