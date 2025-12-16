@@ -138,10 +138,8 @@
             <!-- ONE2MANY -->
             <field name="ACC_SP_D">
                 <tree editable="bottom" toggle_visibility="true" class="o_list_view parent-one2many">
-                    <field name="SAN_PHAM" string="Mã bộ"/>
                     <field name="SAN_PHAM" string="Bộ"/>
                     <field name="SL_TP"/>
-                    <field name="HANG_HOA" string="Mã hàng"/>
                     <field name="HANG_HOA" string="Tên hàng"/>
                     <field name="SO_LUONG" widget="float"/>
                     <field name="DON_GIA" widget="float"/>
