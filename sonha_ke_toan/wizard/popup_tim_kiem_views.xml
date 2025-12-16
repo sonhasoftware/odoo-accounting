@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_popup_tim_kiem_form" model="ir.ui.view">
+        <field name="name">popup.tim.kiem.form</field>
+        <field name="model">popup.tim.kiem</field>
+        <field name="arch" type="xml">
+            <form string="Tìm kiếm">
+                <group>
+                    <field name="start_date"/>
+                    <field name="end_date"/>
+                    <field name="tai_khoan"/>
+                    <field name="chung_tu"/>
+                    <field name="so_hd"/>
+                    <field name="chi_nhanh"/>
+                    <field name="khach_hang"/>
+                    <field name="hang_hoa"/>
+                    <field name="kho"/>
+                    <field name="tscd"/>
+                    <field name="bo_phan"/>
+                    <field name="khoan_muc"/>
+                    <field name="vu_viec"/>
+                    <field name="thanh_pham"/>
+                </group>
+                <footer>
+                    <button string="Tìm kiếm" type="object" name="action_search" class="oe_highlight"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="tim_kiem_action" model="ir.actions.act_window">
+        <field name="name">Tìm kiếm</field>
+        <field name="res_model">popup.tim.kiem</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

@@ -15,34 +15,34 @@ class AccGiaMua(models.Model):
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)
 
-    @api.model
-    def _search(self, args, offset=0, limit=None, order=None, access_rights_uid=None):
-        dvcs = self.env.company.id
-        nguoi_dung = self.env.uid
-
-        # Gọi function PostgreSQL
-        query = "SELECT * FROM public.fn_acc_gia_mua(%s, %s)"
-        self.env.cr.execute(query, (dvcs, nguoi_dung))
-        rows = self.env.cr.dictfetchall()
-
-        # Lấy danh sách id từ function
-        ids = [row["id"] for row in rows if "id" in row]
-
-        # Trả domain ép buộc Odoo chỉ lấy các bản ghi này
-        new_domain = args + [("id", "in", ids)] if ids else [("id", "=", 0)]
-
-        return super(AccGiaMua, self)._search(
-            new_domain,
-            offset=offset,
-            limit=limit,
-            order=order,
-            access_rights_uid=access_rights_uid,
-        )
-
-    @api.model
-    def search_count(self, args):
-        ids = self._search(args)
-        return len(ids)
+    # @api.model
+    # def _search(self, args, offset=0, limit=None, order=None, access_rights_uid=None):
+    #     dvcs = self.env.company.id
+    #     nguoi_dung = self.env.uid
+    #
+    #     # Gọi function PostgreSQL
+    #     query = "SELECT * FROM public.fn_acc_gia_mua(%s, %s)"
+    #     self.env.cr.execute(query, (dvcs, nguoi_dung))
+    #     rows = self.env.cr.dictfetchall()
+    #
+    #     # Lấy danh sách id từ function
+    #     ids = [row["id"] for row in rows if "id" in row]
+    #
+    #     # Trả domain ép buộc Odoo chỉ lấy các bản ghi này
+    #     new_domain = args + [("id", "in", ids)] if ids else [("id", "=", 0)]
+    #
+    #     return super(AccGiaMua, self)._search(
+    #         new_domain,
+    #         offset=offset,
+    #         limit=limit,
+    #         order=order,
+    #         access_rights_uid=access_rights_uid,
+    #     )
+    #
+    # @api.model
+    # def search_count(self, args):
+    #     ids = self._search(args)
+    #     return len(ids)
 
     def check_access_rights(self, operation, raise_exception=True):
         # gọi super để giữ nguyên quyền mặc định nếu cần

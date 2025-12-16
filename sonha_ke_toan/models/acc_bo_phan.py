@@ -1,5 +1,6 @@
 from odoo import api, fields, models, exceptions, _
 from odoo.exceptions import ValidationError
+import json
 
 
 class AccBoPhan(models.Model):
@@ -10,10 +11,15 @@ class AccBoPhan(models.Model):
     CAP = fields.Integer(string="Cấp", store=True)
     MA = fields.Char(string="Mã", store=True)
     TEN = fields.Char(string="Tên", store=True)
-    MA_TEN = fields.Char(string="Mã - Tên", store=True, readonly=True)
-    BO_PHAN = fields.Integer(string="Bộ phận", store=True, compute="_get_bo_phan")
+    MA_TEN = fields.Char(string="Mã - Tên", store=True, readonly=True, compute="get_ma_ten")
+    BO_PHAN = fields.Integer(string="Bộ phận", store=True, readonly=True)
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)
+
+    @api.depends('MA', 'TEN')
+    def get_ma_ten(self):
+        for r in self:
+            r.MA_TEN = f"{r.MA} - {r.TEN}" if (r.MA and r.TEN) else ""
 
     @api.model
     def _search(self, args, offset=0, limit=None, order=None, access_rights_uid=None):
@@ -56,6 +62,26 @@ class AccBoPhan(models.Model):
         rec = super(AccBoPhan, self).create(vals)
         rec.BO_PHAN = rec.id
         dvcs = rec.DVCS.id
+
+        vals_dict = {
+            "CAP": rec.CAP or "",
+            "MA": rec.MA or "",
+            "TEN": rec.TEN or "",
+            "MA_TEN": rec.MA_TEN or "",
+            "BO_PHAN": rec.BO_PHAN or 0,
+            "DVCS": rec.DVCS.id or 1,
+            "NGUOI_TAO": self.env.uid or None,
+            "NGUOI_SUA": self.env.uid or None,
+        }
+
+        json_data = json.dumps(vals_dict)
+        self.env.cr.execute("SELECT * FROM fn_check_nl(%s::jsonb);", [json_data])
+        check = self.env.cr.dictfetchall()
+        if check:
+            result = check[0]
+            loi = list(result.values())[0]
+            raise ValidationError(loi)
+
         self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_bo_phan', dvcs])
 
         return rec
@@ -74,6 +100,32 @@ class AccBoPhan(models.Model):
                                 SET "MA_TEN" = %s
                                 WHERE id = %s
                                 """, (ma_ten, rec.id))
+
+            vals_dict = {
+                "CAP": rec.CAP or "",
+                "MA": rec.MA or "",
+                "TEN": rec.TEN or "",
+                "MA_TEN": rec.MA_TEN or "",
+                "BO_PHAN": rec.BO_PHAN or 0,
+                "DVCS": rec.DVCS.id or 1,
+                "NGUOI_TAO": rec.create_uid.id or None,
+                "NGUOI_SUA": self.env.uid or None,
+            }
+
+            json_data = json.dumps(vals_dict)
+            table_name = 'acc.bo.phan'
+
+            self.env.cr.execute("""
+                SELECT * FROM fn_check_nl(%s::text, %s::jsonb);
+            """, (table_name, json_data))
+            check = self.env.cr.dictfetchall()
+            if check:
+                result = check[0]
+                loi = list(result.values())[0]
+                if loi == None:
+                    pass
+                else:
+                    raise ValidationError(loi)
         # === END SONPV ===
 
         dvcs = self.DVCS.id

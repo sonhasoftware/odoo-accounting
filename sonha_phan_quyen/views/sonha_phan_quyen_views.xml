@@ -4,7 +4,7 @@
         <field name="name">sonha.phan.quyen.tree</field>
         <field name="model">sonha.phan.quyen</field>
         <field name="arch" type="xml">
-            <tree string="Phân quyền" editable="bottom">
+            <tree string="Phân quyền danh mục" editable="bottom">
                 <field name="NGUOI_DUNG_ID"/>
                 <field name="MA_BANG"/>
                 <field name="TEN_BANG"/>
@@ -12,39 +12,39 @@
                 <field name="XEM_DM"/>
                 <field name="THEM_DM"/>
                 <field name="SUA_DM"/>
-                <field name="THEM_DM"/>
-                <field name="BO_PHAN"/>
-                <field name="KHO"/>
-                <field name="KHOAN_MUC"/>
-                <field name="VVIEC"/>
-                <field name="LOAI_NX"/>
-                <field name="LOAI_DL"/>
-                <field name="CHI_NHANH"/>
-                <field name="MA_TK0_ID"/>
-                <field name="MA_TK1_ID"/>
-                <field name="TIEN_TE"/>
-                <field name="KT_SL"/>
-                <field name="GIA_MUA"/>
-                <field name="GIA_BAN"/>
-                <field name="MOT_VE"/>
-                <field name="KHONG_TINH_GV"/>
-                <field name="CT_KHONG_TD"/>
-                <field name="PT_VAT"/>
+<!--                <field name="THEM_DM"/>-->
+<!--                <field name="BO_PHAN"/>-->
+<!--                <field name="KHO"/>-->
+<!--                <field name="KHOAN_MUC"/>-->
+<!--                <field name="VVIEC"/>-->
+<!--                <field name="LOAI_NX"/>-->
+<!--                <field name="LOAI_DL"/>-->
+<!--                <field name="CHI_NHANH"/>-->
+<!--                <field name="MA_TK0_ID"/>-->
+<!--                <field name="MA_TK1_ID"/>-->
+<!--                <field name="TIEN_TE"/>-->
+<!--                <field name="KT_SL"/>-->
+<!--                <field name="GIA_MUA"/>-->
+<!--                <field name="GIA_BAN"/>-->
+<!--                <field name="MOT_VE"/>-->
+<!--                <field name="KHONG_TINH_GV"/>-->
+<!--                <field name="CT_KHONG_TD"/>-->
+<!--                <field name="PT_VAT"/>-->
                 <field name="DVCS"/>
                 <field name="ACTIVE"/>
-                <field name="CHUNG_TU"/>
+<!--                <field name="CHUNG_TU"/>-->
             </tree>
         </field>
     </record>
 
     <record id="sonha_phan_quyen_action" model="ir.actions.act_window">
-        <field name="name">Phân Quyền</field>
+        <field name="name">Phân Quyền danh mục</field>
         <field name="res_model">sonha.phan.quyen</field>
         <field name="view_mode">tree</field>
     </record>
 
     <menuitem id="menu_sonha_phan_quyen"
-              name="Phân quyền"
+              name="Phân quyền danh mục"
               parent="menu_sonha_phan_quyen_user"
               action="sonha_phan_quyen_action"
               sequence="2"/>

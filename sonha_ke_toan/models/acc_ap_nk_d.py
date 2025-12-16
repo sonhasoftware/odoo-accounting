@@ -9,10 +9,10 @@ _logger = logging.getLogger(__name__)
 # from odoo.exceptions import ValidationError
 
 
-class AccApD(models.Model):
-    _name = 'nl.acc.ap.d'
+class AccApNkD(models.Model):
+    _name = 'acc.ap.nk.d'
 
-    ACC_AP_H = fields.Many2one('nl.acc.ap.h', string="ID Header", store=True)
+    ACC_AP_H = fields.Many2one('acc.ap.nk.h', string="ID Header", store=True)
 
     MA_TK0_ID = fields.Many2one('acc.tai.khoan', string="Nợ", store=True, compute='get_ma_tk_id', readonly=False)
     MA_TK0 = fields.Char(related='MA_TK0_ID.MA', string="Nợ", store=True)
@@ -89,7 +89,7 @@ class AccApD(models.Model):
     @api.onchange('DON_GIA')
     def _onchange_don_gia(self):
         permission = self.env['sonha.phan.quyen.nl'].sudo().search([
-            ('MENU', '=', 378),
+            ('MENU', '=', 337),
         ], limit=1)
         for r in self:
             if permission.GIA_MUA:
@@ -135,7 +135,7 @@ class AccApD(models.Model):
     @api.depends('SO_LUONG', 'PS_NO1', 'HANG_HOA')
     def _get_don_gia(self):
         for r in self:
-            check = self.env['sonha.phan.quyen.nl'].sudo().search([('MENU', '=', 378),
+            check = self.env['sonha.phan.quyen.nl'].sudo().search([('MENU', '=', 337),
                                                                    ('GIA_MUA', '=', True)])
             if r.ACC_AP_H.DG_THEO_TIEN:
                 r.DON_GIA = r.PS_NO1 / (r.SO_LUONG * r.TY_GIA)
@@ -222,15 +222,15 @@ class AccApD(models.Model):
     def create(self, vals):
         # --- Merge dữ liệu header nếu có ---
         if vals.get('ACC_AP_H'):
-            related = self.env['nl.acc.ap.h'].sudo().browse(vals['ACC_AP_H'])
+            related = self.env['acc.ap.nk.h'].sudo().browse(vals['ACC_AP_H'])
             if related.exists():
                 vals.update({
-                    'NGAY_CT': related.NGAY_CT,
+                    'NGAY_CT': related.NGAY_CT or None,
                     'CHUNG_TU': related.CHUNG_TU,
                     'CTGS': related.CTGS,
                     'SO_HD': related.SO_HD,
                     'SERI_HD': related.SERI_HD,
-                    'NGAY_HD': related.NGAY_HD,
+                    'NGAY_HD': related.NGAY_HD or None,
                     'MAU_SO': related.MAU_SO,
                     'PT_THUE': related.PT_THUE.id if related.PT_THUE else False,
                     'ONG_BA': related.ONG_BA,
@@ -258,58 +258,7 @@ class AccApD(models.Model):
                 })
 
         # --- Tạo bản ghi acc.ap.d ---
-        rec = super(AccApD, self).create(vals)
-
-        # if '...' not in rec.GHI_CHU:
-
-        # vals_dict = {
-        #     "HANG_HOA": rec.HANG_HOA.id,
-        #     "MA_TK0": rec.MA_TK0 or "",
-        #     "SO_LUONG": rec.SO_LUONG,
-        #     "DON_GIA": rec.DON_GIA,
-        #     "PS_NO1": rec.PS_NO1,
-        #     "TIEN_NTE": rec.TIEN_NTE,
-        #     "VAT": rec.VAT,
-        #     "NGAY_CT": str(rec.NGAY_CT),
-        #     "CHUNG_TU": rec.CHUNG_TU or "",
-        #     "CTGS": rec.CTGS or "",
-        #     "SO_HD": rec.SO_HD or "",
-        #     "SERI_HD": rec.SERI_HD or "",
-        #     "NGAY_HD": str(rec.NGAY_HD) or "",
-        #     "MAU_SO": rec.MAU_SO,
-        #     "PT_THUE": rec.PT_THUE.PT_THUE,
-        #     "ONG_BA": rec.ONG_BA,
-        #     "GHI_CHU": rec.GHI_CHU,
-        #     "KHACH_HANG": rec.KHACH_HANG.id,
-        #     "KH_THUE": rec.KH_THUE,
-        #     "MS_THUE": rec.MS_THUE,
-        #     "DC_THUE": rec.DC_THUE,
-        #     "BO_PHAN": rec.BO_PHAN.id,
-        #     "VVIEC": rec.VVIEC.id,
-        #     "KHO": rec.KHO.id,
-        #     "KHOAN_MUC": rec.KHOAN_MUC.id,
-        #     "TIEN_TE": rec.TIEN_TE.id,
-        #     "TY_GIA": rec.TY_GIA,
-        #     "MA_TK1": rec.MA_TK1,
-        #     "DVCS": rec.DVCS.id or 1,
-        #     "CHI_NHANH": rec.CHI_NHANH.id,
-        #     "MENU_ID": rec.MENU_ID.id or 378,
-        #     "BUT_TOAN_THEM": True
-        # }
-        # json_data = json.dumps(vals_dict)
-        # self.env.cr.execute("SELECT * FROM fn_bt_them(%s::jsonb);", [json_data])
-        # rows = self.env.cr.dictfetchall()
-        #
-        # for data in rows:
-        #     mapped_vals = {}
-        #     for key, value in data.items():
-        #         upper_key = key.upper()
-        #         if upper_key in self._fields:
-        #             mapped_vals[upper_key] = value
-        #     new_d = super(AccApD, self).create(mapped_vals)
-
-
-
+        rec = super(AccApNkD, self).create(vals)
 
         # --- Chuẩn bị dữ liệu để insert vào bảng tổng hợp ---
         raw = rec.read()[0]
@@ -339,7 +288,7 @@ class AccApD(models.Model):
                 data[fld] = val
 
         # --- Thêm khóa ngoại ---
-        data['ACC_AP_D'] = rec.id
+        data['ACC_NK_D'] = rec.id
 
         # --- Loại bỏ toàn bộ system fields (tránh lỗi CREATE_DATE, WRITE_UID, __last_update, …) ---
         system_fields = {'CREATE_UID', 'CREATE_DATE', 'WRITE_UID', 'WRITE_DATE', '__LAST_UPDATE'}
@@ -360,6 +309,7 @@ class AccApD(models.Model):
         sql = f'INSERT INTO "{table_name}" ({", ".join(cols)}) VALUES ({placeholders});'
         self._cr.execute(sql, values)
         self._cr.commit()
+        self.env['nl.acc.tong.hop'].sudo().search([('ACC_NK_D', '=', None)]).unlink()
 
         _logger.info(f"[AUTO] Inserted acc.ap.d id={rec.id} into {table_name}")
 
