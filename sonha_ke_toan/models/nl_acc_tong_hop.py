@@ -7,4 +7,5 @@ class NLAccTongHop(models.Model):
 
     ACC_AP_D = fields.Many2one('nl.acc.ap.d', string="ACC AP D", store=True)
     ACC_NK_D = fields.Many2one('acc.ap.nk.d', string="ACC AP NK D", store=True)
+    ACC_TL_D = fields.Many2one('nl.acc.ap.tl.d', string="ACC AP TL D", store=True)
 
