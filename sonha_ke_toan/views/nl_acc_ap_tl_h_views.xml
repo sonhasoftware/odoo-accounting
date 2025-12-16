@@ -176,10 +176,8 @@
                     <field name="LOAIDL" optional="hide"/>
                     <field name="HEAD_NO" optional="hide"/>
                     <field name="SO_LUONG2" optional="hide"/>
-                    <field name="SL_TP" optional="hide"/>
                     <field name="NHOM_VAT" optional="hide"/>
                     <field name="THUE_NK" optional="hide"/>
-                    <field name="SAN_PHAM" optional="hide"/>
                     <field name="SO_LO" optional="hide"/>
                     <field name="DAT" optional="hide"/>
                     <field name="SO_LENHSX" optional="hide"/>
