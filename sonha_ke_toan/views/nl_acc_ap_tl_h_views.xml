@@ -140,7 +140,7 @@
                 <tree editable="bottom" toggle_visibility="true" class="o_list_view parent-one2many">
                     <field name="SAN_PHAM" string="Bộ"/>
                     <field name="SL_TP"/>
-                    <field name="HANG_HOA" string="Tên hàng"/>
+                    <field name="HANG_HOA"/>
                     <field name="SO_LUONG" widget="float"/>
                     <field name="DON_GIA" widget="float"/>
                     <field name="PS_NO1" widget="float"/>
