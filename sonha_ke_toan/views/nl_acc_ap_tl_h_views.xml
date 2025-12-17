@@ -146,6 +146,7 @@
                     <field name="PS_NO1" widget="float"/>
                     <field name="TIEN_NTE" widget="float"/>
                     <field name="VAT" widget="float"/>
+                    <field name="SALESMAN"/>
 
                     <!-- Các field cần đồng bộ -->
                     <field name="NGAY_CT" optional="hide"/>

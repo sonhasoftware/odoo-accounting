@@ -74,14 +74,14 @@ class NlAccApTlH(models.Model):
     NGUON = fields.Many2one('acc.nguon', string="HTV Chuyển", store=True)
     LOAIDL = fields.Many2one('acc.loaidl', string="Loại DL", store=True)
 
-    @api.onchange('ACC_SP_D', 'ACC_SP_D.PS_NO1', 'ACC_SP_D.VAT', 'ACC_SP_D.SO_LUONG')
+    @api.onchange('ACC_SP_D', 'ACC_SP_D.PS_NO1', 'ACC_SP_D.VAT', 'ACC_SP_D.SO_LUONG', 'ACC_SP_D.SL_TP')
     def _get_total_vat_sl_tien(self):
         for r in self:
             lines = r.ACC_SP_D
             r.TOTAL_VAT = (
                 f"Tổng tiền:{sum(lines.mapped('PS_NO1'))}, "
                 f"VAT:{sum(lines.mapped('VAT'))}, "
-                f"Tổng SL:{sum(lines.mapped('SO_LUONG'))}"
+                f"Tổng SL:{sum(r.SL_TP * r.SO_LUONG for r in lines)}"
             )
 
     # @api.model
@@ -428,7 +428,7 @@ class NlAccApTlH(models.Model):
     @api.onchange('TY_GIA', 'DG_THEO_TIEN')
     def _onchange_thanh_tien(self):
         for line in self.ACC_SP_D:
-            line.PS_NO1 = (line.SO_LUONG or 0) * (line.DON_GIA or 0) * (self.TY_GIA or 1)
+            line.PS_NO1 = (line.SL_TP or 0) * (line.SO_LUONG or 0) * (line.DON_GIA or 0) * (self.TY_GIA or 1)
 
     @api.onchange('PT_THUE')
     def _onchange_vat(self):
