@@ -1,0 +1,38 @@
+<odoo>
+
+    <record id="view_nl_acc_tong_hop_tree" model="ir.ui.view">
+        <field name="name">nl.acc.tong.hop.tree</field>
+        <field name="model">nl.acc.tong.hop</field>
+        <field name="arch" type="xml">
+            <tree string="Tổng hợp" create="false" editable="bottom" edit="true">
+                <field name="NGAY_CT"/>
+                <field name="CHUNG_TU"/>
+                <field name="SO_HD"/>
+                <field name="SERI_HD"/>
+                <field name="NGAY_HD"/>
+                <field name="PS_NO1"/>
+                <field name="TIEN_NTE"/>
+                <field name="TIEN_TE"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="action_nl_acc_tong_hop" model="ir.actions.act_window">
+        <field name="name">Tổng hợp</field>
+        <field name="res_model">nl.acc.tong.hop</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <record id="view_nl_acc_tong_hop_list_js" model="ir.ui.view">
+        <field name="name">nl.acc.tong.hop.list.js</field>
+        <field name="model">nl.acc.tong.hop</field>
+        <field name="inherit_id" ref="sonha_ke_toan.view_nl_acc_tong_hop_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="js_class">button_in_tree</attribute>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

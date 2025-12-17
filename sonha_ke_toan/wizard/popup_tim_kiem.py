@@ -22,4 +22,60 @@ class PopupTimKiem(models.TransientModel):
     thanh_pham = fields.Many2one('acc.san.pham', string="Thành phẩm")
 
     def action_search(self):
-        pass
+        self.ensure_one()
+
+        domain = []
+
+        if self.tai_khoan:
+            domain += [
+                '|',
+                ('MA_TK1_ID', '=', self.tai_khoan.id),
+                ('MA_TK0_ID', '=', self.tai_khoan.id),
+            ]
+
+        if self.start_date:
+            domain.append(('NGAY_CT', '>=', self.start_date))
+        if self.end_date:
+            domain.append(('NGAY_CT', '<=', self.end_date))
+
+        if self.chung_tu:
+            domain.append(('CHUNG_TU', 'ilike', self.chung_tu))
+
+        if self.so_hd:
+            domain.append(('SO_HD', 'ilike', self.SO_HD))
+
+        if self.chi_nhanh:
+            domain.append(('CHI_NHANH', '=', self.chi_nhanh.id))
+
+        if self.khach_hang:
+            domain.append(('KHACH_HANG', '=', self.khach_hang.id))
+
+        if self.hang_hoa:
+            domain.append(('HANG_HOA', '=', self.hang_hoa.id))
+
+        if self.kho:
+            domain.append(('KHO', '=', self.kho.id))
+        #
+        # if self.tscd:
+        #     domain.append(('BO_PHAN', '=', self.bo_phan.id))
+        #
+        if self.bo_phan:
+            domain.append(('BO_PHAN', '=', self.bo_phan.id))
+
+        if self.khoan_muc:
+            domain.append(('KHOAN_MUC', '=', self.khoan_muc.id))
+
+        if self.vu_viec:
+            domain.append(('VVIEC', '=', self.vu_viec.id))
+
+        if self.thanh_pham:
+            domain.append(('SAN_PHAM', '=', self.thanh_pham.id))
+
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Tổng hợp',
+            'res_model': 'nl.acc.tong.hop',
+            'view_mode': 'tree,form',
+            'domain': domain,
+            'target': 'current',
+        }
