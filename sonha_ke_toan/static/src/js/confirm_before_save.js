@@ -82,6 +82,16 @@ patch(ListRenderer.prototype, {
                 // Thêm event listener cho blur
                 this._blurHandler = async (e) => {
                     console.log("field_confirm: Input blur detected");
+
+                    // Kiểm tra xem user có click vào nút Discard không
+                    const clickedElement = e.relatedTarget;
+                    if (clickedElement && clickedElement.classList.contains('o_list_button_discard')) {
+                        console.log("field_confirm: User clicked Discard button, skipping confirmation");
+                        this._pendingConfirmField = null;
+                        this.cleanupBlurListener();
+                        return;
+                    }
+
                     const newValue = activeElement.value;
                     await this.handleFieldChange(record, fieldName, newValue);
                 };
@@ -90,6 +100,7 @@ patch(ListRenderer.prototype, {
                 this._keydownHandler = async (e) => {
                     if (e.key === 'Enter') {
                         console.log("field_confirm: Enter key pressed");
+                        e.preventDefault(); // Ngăn form submit
                         const newValue = activeElement.value;
                         await this.handleFieldChange(record, fieldName, newValue);
                     }
@@ -149,12 +160,12 @@ patch(ListRenderer.prototype, {
             console.log("field_confirm: Confirm result:", confirmed);
 
             if (!confirmed) {
-                console.log("field_confirm: User cancelled, reverting change...");
-                // Revert về giá trị cũ
-                record.update({ [fieldName]: originalValue });
+                console.log("field_confirm: User cancelled, reverting and clicking discard button...");
+                await record.update({ [fieldName]: originalValue });
+                this.clickSaveButton();
             } else {
-                console.log("field_confirm: User confirmed change");
-                // Giữ giá trị mới
+                console.log("field_confirm: User confirmed change, clicking save button...");
+                this.clickSaveButton();
             }
         } else {
             console.log("field_confirm: No actual change detected");
@@ -162,6 +173,17 @@ patch(ListRenderer.prototype, {
 
         // QUAN TRỌNG: Reset pending confirm field để cho phép click lại
         this._pendingConfirmField = null;
+    },
+
+    clickSaveButton() {
+        // Tìm nút Save trong list view
+        const saveButton = document.querySelector('.o_list_button_save');
+        if (saveButton) {
+            console.log("field_confirm: Found Save button, clicking...");
+            saveButton.click();
+        } else {
+            console.log("field_confirm: Save button not found");
+        }
     },
 
     async showConfirmationDialog(fieldName, oldValue, newValue) {

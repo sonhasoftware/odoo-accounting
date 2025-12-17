@@ -37,7 +37,8 @@ access_loai_dm_wizard,loai.dm.wizard,model_loai_dm_wizard,,1,1,1,1
 access_acc_ap_nk_h,acc.ap.nk.h,model_acc_ap_nk_h,,1,1,1,1
 access_acc_ap_nk_d,acc.ap.nk.d,model_acc_ap_nk_d,,1,1,1,1
 
-
+access_nl_acc_ap_tl_h,nl.acc.ap.tl.h,model_nl_acc_ap_tl_h,,1,1,1,1
+access_nl_acc_ap_tl_d,nl.acc.ap.tl.d,model_nl_acc_ap_tl_d,,1,1,1,1
 
 
 access_nl_acc_ap_h,acc.nl.ap.h,model_nl_acc_ap_h,,1,1,1,1
