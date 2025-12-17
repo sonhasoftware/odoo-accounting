@@ -105,7 +105,7 @@ class NlAccApTlH(models.Model):
         res = super(NlAccApTlH, self).default_get(fields_list)
         # Tìm phân quyền của user hiện tại
         permission = self.env['sonha.phan.quyen.nl'].sudo().search([
-            ('MENU', '=', 343),
+            ('MENU', '=', 380),
         ], limit=1)
         dl = self.env['acc.loaidl'].sudo().search([('id', '=', 5)])
 
@@ -295,7 +295,7 @@ class NlAccApTlH(models.Model):
                 "MA_TK1": temp_rec.MA_TK1 or "",
                 "DVCS": temp_rec.DVCS.id or 1,
                 "CHI_NHANH": temp_rec.CHI_NHANH.id or 0,
-                "MENU_ID": temp_rec.MENU_ID.id or 343,
+                "MENU_ID": temp_rec.MENU_ID.id or 380,
                 "NGUOI_TAO": self.env.uid or None,
                 "NGUOI_SUA": self.env.uid or None,
             }
@@ -317,7 +317,7 @@ class NlAccApTlH(models.Model):
         # Gọi function sinh chứng từ tự động
         rec = super(NlAccApTlH, self).create(vals)
         query = "SELECT * FROM fn_chung_tu_tu_dong(%s, %s)"
-        self.env.cr.execute(query, ('menu_343', str(rec.NGAY_CT)))
+        self.env.cr.execute(query, ('menu_380', str(rec.NGAY_CT)))
         rows = self.env.cr.fetchall()
         if rows:
             rec.CHUNG_TU = rows[0][0]
@@ -362,7 +362,7 @@ class NlAccApTlH(models.Model):
                     "MA_TK1": record.MA_TK1 or "",
                     "DVCS": record.DVCS.id or 1,
                     "CHI_NHANH": record.CHI_NHANH.id or 0,
-                    "MENU_ID": record.MENU_ID.id or 343,
+                    "MENU_ID": record.MENU_ID.id or 380,
                     "NGUOI_TAO": self.create_uid.id or None,
                     "NGUOI_SUA": self.env.uid or None,
                 }
