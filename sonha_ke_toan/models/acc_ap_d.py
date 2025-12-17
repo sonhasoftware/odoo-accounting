@@ -84,7 +84,9 @@ class AccApD(models.Model):
 
     BTFIRST = fields.Integer("BTFIRST", store=True)
     PS_CO1 = fields.Integer("PS_CO1", store=True)
-    SALESMAN = fields.Many2one('acc.nvbh', string="NVKD", store=True)
+    NVBH = fields.Many2one('acc.nvbh', string="NVKD", store=True)
+
+    TSCD = fields.Many2one('acc.tscd', string="TSCĐ")
 
     @api.onchange('DON_GIA')
     def _onchange_don_gia(self):
@@ -255,6 +257,7 @@ class AccApD(models.Model):
                     'TINH': related.TINH.id if related.TINH else False,
                     'NGUON': related.NGUON.id if related.NGUON else False,
                     'LOAIDL': related.LOAIDL.id if related.LOAIDL else False,
+                    'TSCD': related.TSCD.id if related.TSCD else False,
                 })
 
         # --- Tạo bản ghi acc.ap.d ---

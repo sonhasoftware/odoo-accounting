@@ -71,6 +71,8 @@ class AccApH(models.Model):
     NGUON = fields.Many2one('acc.nguon', string="HTV Chuyển", store=True)
     LOAIDL = fields.Many2one('acc.loaidl', string="Loại DL", store=True)
 
+    TSCD = fields.Many2one('acc.tscd', string="TSCĐ")
+
     @api.onchange('ACC_SP_D', 'ACC_SP_D.PS_NO1', 'ACC_SP_D.VAT', 'ACC_SP_D.SO_LUONG')
     def _get_total_vat_sl_tien(self):
         for r in self:
