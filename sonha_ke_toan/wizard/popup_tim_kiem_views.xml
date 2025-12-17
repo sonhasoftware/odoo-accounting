@@ -6,8 +6,15 @@
         <field name="arch" type="xml">
             <form string="Tìm kiếm">
                 <group>
-                    <field name="start_date"/>
-                    <field name="end_date"/>
+                    <group>
+                        <field name="start_date"/>
+                    </group>
+                    <group>
+                        <field name="end_date"/>
+                    </group>
+                </group>
+                <div style="border-top: 2px solid black;"></div>
+                <group>
                     <field name="tai_khoan"/>
                     <field name="chung_tu"/>
                     <field name="so_hd"/>
