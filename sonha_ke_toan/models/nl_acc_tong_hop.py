@@ -95,17 +95,16 @@ class NLAccTongHop(models.Model):
             if rec.ACC_AP_D:
                 model = 'nl.acc.ap.h'
                 action_id = self.env.ref('sonha_ke_toan.acc_nl_ap_h_action').id
+                id = self.env['nl.acc.ap.d'].browse(rec.ACC_AP_D.id).ACC_AP_H.id
             elif rec.ACC_NK_D:
                 model = 'acc.ap.nk.h'
                 action_id = self.env.ref('sonha_ke_toan.acc_nl_ap_h_nk_action').id
+                id = self.env['acc.ap.nk.d'].browse(rec.ACC_NK_D.id).ACC_AP_H.id
 
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-            url = f"{base_url}/web#id={rec.ACC_AP_H.id}&menu_id={rec.MENU_ID.id}&action={action_id}&model={model}&view_type=form"
+            url = f"{base_url}/web#id={id}&menu_id={rec.MENU_ID.id}&action={action_id}&model={model}&view_type=form"
             return {
                 'type': 'ir.actions.act_url',
                 'url': url,
                 'target': 'self',
             }
-
-
-
