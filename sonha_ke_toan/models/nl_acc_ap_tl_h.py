@@ -81,7 +81,7 @@ class NlAccApTlH(models.Model):
             r.TOTAL_VAT = (
                 f"Tổng tiền:{sum(lines.mapped('PS_NO1'))}, "
                 f"VAT:{sum(lines.mapped('VAT'))}, "
-                f"Tổng SL:{sum(r.SL_TP * r.SO_LUONG for r in lines)}"
+                f"Tổng SL:{sum(lines.mapped('SO_LUONG'))}"
             )
 
     # @api.model
@@ -412,7 +412,7 @@ class NlAccApTlH(models.Model):
                         vals_d[field_name] = value
                 d_vals_list.append(vals_d)
 
-            self.env['nl.acc.tong.hop'].sudo().search([('ACC_AP_D', 'in', all_d_records.ids)]).unlink()
+            self.env['nl.acc.tong.hop'].sudo().search([('ACC_TL_D', 'in', all_d_records.ids)]).unlink()
             self.env['nl.acc.ap.tl.d'].sudo().search([('id', 'in', all_d_records.ids)]).unlink()
 
             if d_vals_list:
@@ -428,7 +428,7 @@ class NlAccApTlH(models.Model):
     @api.onchange('TY_GIA', 'DG_THEO_TIEN')
     def _onchange_thanh_tien(self):
         for line in self.ACC_SP_D:
-            line.PS_NO1 = (line.SL_TP or 0) * (line.SO_LUONG or 0) * (line.DON_GIA or 0) * (self.TY_GIA or 1)
+            line.PS_NO1 = (line.SO_LUONG or 0) * (line.DON_GIA or 0) * (self.TY_GIA or 1)
 
     @api.onchange('PT_THUE')
     def _onchange_vat(self):

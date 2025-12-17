@@ -111,23 +111,23 @@ class NlAccApTlD(models.Model):
             else:
                 pass
 
-    @api.depends('SL_TP', 'SO_LUONG', 'DON_GIA')
+    @api.depends('SO_LUONG', 'DON_GIA')
     def _get_tien_nte(self):
         for r in self:
             if r.ACC_AP_H.TIEN_TE.MA != "VNĐ":
-                r.TIEN_NTE = r.SL_TP * r.SO_LUONG * r.DON_GIA
+                r.TIEN_NTE = r.SO_LUONG * r.DON_GIA
             else:
                 r.TIEN_NTE = 0
 
-    @api.onchange('SL_TP', 'SO_LUONG', 'DON_GIA')
+    @api.onchange('SO_LUONG', 'DON_GIA')
     def _onchange_tien_nte(self):
         self._get_tien_nte()
 
-    @api.depends('SO_LUONG', 'DON_GIA', 'ACC_AP_H.TY_GIA', 'SL_TP')
+    @api.depends('SO_LUONG', 'DON_GIA', 'ACC_AP_H.TY_GIA')
     def _get_ps_no1(self):
         for r in self:
             if not r.ACC_AP_H.DG_THEO_TIEN:
-                r.PS_NO1 = r.SL_TP * r.SO_LUONG * r.DON_GIA * r.ACC_AP_H.TY_GIA
+                r.PS_NO1 =r.SO_LUONG * r.DON_GIA * r.ACC_AP_H.TY_GIA
             else:
                 pass
 
@@ -328,7 +328,7 @@ class NlAccApTlD(models.Model):
             else:
                 pass
 
-    @api.onchange('SAN_PHAM')
+    @api.onchange('SAN_PHAM', 'SL_TP')
     def _get_hang_hoa(self):
         for r in self:
             if r.SAN_PHAM:
@@ -336,12 +336,14 @@ class NlAccApTlD(models.Model):
                                                               ('LOAI_DM', '=', 'bo')])
                 if hang_hoa:
                     r.HANG_HOA = hang_hoa.HANG_HOA.id if hang_hoa.HANG_HOA else None
-                    r.SO_LUONG = hang_hoa.SO_LUONG
+                    r.SO_LUONG = r.SL_TP * hang_hoa.SO_LUONG
                 else:
                     r.HANG_HOA = None
                     r.SO_LUONG = 0
             else:
                 r.HANG_HOA = None
                 r.SO_LUONG = 0
+
+
 
 
