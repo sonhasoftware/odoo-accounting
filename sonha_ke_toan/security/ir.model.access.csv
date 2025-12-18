@@ -49,3 +49,7 @@ access_nl_acc_tong_hop_log,nl.acc.tong.hop.log,model_nl_acc_tong_hop_log,,1,1,1,
 
 
 access_popup_tim_kiem,popup.tim.kiem,model_popup_tim_kiem,,1,1,1,1
+,,,,,,,
+access_acc_ap_ck_h,acc.ap.ck.h,model_acc_ap_ck_h,,1,1,1,1
+access_acc_ap_ck_d,acc.ap.ck.d,model_acc_ap_ck_d,,1,1,1,1
+,,,,,,,
