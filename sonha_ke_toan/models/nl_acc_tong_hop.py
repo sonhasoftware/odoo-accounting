@@ -9,6 +9,10 @@ class NLAccTongHop(models.Model):
     ACC_NK_D = fields.Many2one('acc.ap.nk.d', string="ACC AP NK D", store=True)
     ACC_TL_D = fields.Many2one('nl.acc.ap.tl.d', string="ACC AP TL D", store=True)
     ACC_NK_SX_D = fields.Many2one('nl.acc.nk.sx.d', string="ACC NK SX D", store=True)
+    ACC_GT_NC = fields.Many2one('nl.acc.tscd.gt.nc.d', string="ACC AP TL D", store=True)
+    ACC_GT_LT = fields.Many2one('nl.acc.tscd.gt.lt.d', string="ACC AP TL D", store=True)
+    ACC_GG_NC = fields.Many2one('nl.acc.tscd.gg.nc.d', string="ACC AP TL D", store=True)
+    ACC_GG_LT = fields.Many2one('nl.acc.tscd.gg.lt.d', string="ACC AP TL D", store=True)
 
     MA_TK0_ID = fields.Many2one('acc.tai.khoan', string="Nợ", store=True, compute='get_ma_tk_id', readonly=False)
     MA_TK0 = fields.Char(related='MA_TK0_ID.MA', string="Nợ", store=True)
@@ -96,17 +100,43 @@ class NLAccTongHop(models.Model):
             if rec.ACC_AP_D:
                 model = 'nl.acc.ap.h'
                 action_id = self.env.ref('sonha_ke_toan.acc_nl_ap_h_action').id
+                id = self.env['nl.acc.ap.d'].browse(rec.ACC_AP_D.id).ACC_AP_H.id
             elif rec.ACC_NK_D:
                 model = 'acc.ap.nk.h'
                 action_id = self.env.ref('sonha_ke_toan.acc_nl_ap_h_nk_action').id
+                id = self.env['acc.ap.nk.d'].browse(rec.ACC_NK_D.id).ACC_AP_H.id
+            elif rec.ACC_TL_D:
+                model = 'nl.acc.ap.tl.h'
+                action_id = self.env.ref('sonha_ke_toan.acc_nl_acc_ap_tl_h_action').id
+                id = self.env['nl.acc.ap.tl.d'].browse(rec.ACC_TL_D.id).ACC_AP_H.id
+
+            elif rec.ACC_GT_NC:
+                model = 'nl.acc.tscd.gt.nc.h'
+                action_id = self.env.ref('sonha_ke_toan.nl_acc_tscd_gt_nc_h_action').id
+                id = self.env['nl.acc.tscd.gt.nc.d'].browse(rec.ACC_GT_NC.id).ACC_AP_H.id
+
+            elif rec.ACC_GT_LT:
+                model = 'nl.acc.tscd.gt.lt.h'
+                action_id = self.env.ref('sonha_ke_toan.nl_acc_tscd_gt_lt_h_action').id
+                id = self.env['nl.acc.tscd.gt.lt.d'].browse(rec.ACC_GT_LT.id).ACC_AP_H.id
+
+            elif rec.ACC_GG_NC:
+                model = 'nl.acc.tscd.gg.nc.h'
+                action_id = self.env.ref('sonha_ke_toan.nl_acc_tscd_gg_nc_h_action').id
+                id = self.env['nl.acc.tscd.gg.nc.d'].browse(rec.ACC_GG_NC.id).ACC_AP_H.id
+
+            elif rec.ACC_GG_LT:
+                model = 'nl.acc.tscd.gg.lt.h'
+                action_id = self.env.ref('sonha_ke_toan.nl_acc_tscd_gg_lt_h_action').id
+                id = self.env['nl.acc.tscd.gg.lt.d'].browse(rec.ACC_GG_LT.id).ACC_AP_H.id
+
+            else:
+                raise ValidationError("Khồng tìm thấy bản ghi")
 
             base_url = self.env['ir.config_parameter'].sudo().get_param('web.base.url')
-            url = f"{base_url}/web#id={rec.ACC_AP_H.id}&menu_id={rec.MENU_ID.id}&action={action_id}&model={model}&view_type=form"
+            url = f"{base_url}/web#id={id}&menu_id={rec.MENU_ID.id}&action={action_id}&model={model}&view_type=form"
             return {
                 'type': 'ir.actions.act_url',
                 'url': url,
                 'target': 'self',
             }
-
-
-

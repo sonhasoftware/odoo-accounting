@@ -48,8 +48,18 @@ access_nl_acc_tong_hop,nl.acc.tong.hop,model_nl_acc_tong_hop,,1,1,1,1
 access_nl_acc_tong_hop_log,nl.acc.tong.hop.log,model_nl_acc_tong_hop_log,,1,1,1,1
 
 
-
 access_popup_tim_kiem,popup.tim.kiem,model_popup_tim_kiem,,1,1,1,1
 
 access_nl_acc_nk_sx_h,nl.acc.nk.sx.h,model_nl_acc_nk_sx_h,,1,1,1,1
 access_nl_acc_nk_sx_d,nl.acc.nk.sx.d,model_nl_acc_nk_sx_d,,1,1,1,1
+access_nl_acc_tscd_gt_nc_h,nl.acc.tscd.gt.nc.h,model_nl_acc_tscd_gt_nc_h,,1,1,1,1
+access_nl_acc_tscd_gt_nc_d,nl.acc.tscd.gt.nc.d,model_nl_acc_tscd_gt_nc_d,,1,1,1,1
+
+access_nl_acc_tscd_gt_lt_h,nl.acc.tscd.gt.lt.h,model_nl_acc_tscd_gt_lt_h,,1,1,1,1
+access_nl_acc_tscd_gt_lt_d,nl.acc.tscd.gt.lt.d,model_nl_acc_tscd_gt_lt_d,,1,1,1,1
+
+access_nl_acc_tscd_gg_nc_h,nl.acc.tscd.gg.nc.h,model_nl_acc_tscd_gg_nc_h,,1,1,1,1
+access_nl_acc_tscd_gg_nc_d,nl.acc.tscd.gg.nc.d,model_nl_acc_tscd_gg_nc_d,,1,1,1,1
+
+access_nl_acc_tscd_gg_lt_h,nl.acc.tscd.gg.lt.h,model_nl_acc_tscd_gg_lt_h,,1,1,1,1
+access_nl_acc_tscd_gg_lt_d,nl.acc.tscd.gg.lt.d,model_nl_acc_tscd_gg_lt_d,,1,1,1,1
