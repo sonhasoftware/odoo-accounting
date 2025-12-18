@@ -27,6 +27,8 @@ class AccTSCD(models.Model):
     LOAI_PX = fields.Many2one('acc.loai.nx', string="Phân xưởng", store=True)
     VVIEC = fields.Many2one('acc.vviec', string="Vụ việc", store=True)
     CONLAI_VND = fields.Integer(string="Giá trị còn lại", store=True)
+    NGUYEN_GIA = fields.Integer(string="Nguyên giá", store=True)
+    GT_KH = fields.Integer(string="KH Tháng", store=True)
     TSCD = fields.Integer(string="TSCĐ", store=True)
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
     ACTIVE = fields.Boolean(string="ACTIVE", store=True)

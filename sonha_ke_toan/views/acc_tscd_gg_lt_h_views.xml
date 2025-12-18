@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="view_nl_acc_tscd_gt_lt_h_tree" model="ir.ui.view">
-        <field name="name">nl.acc.tscd.gt.lt.h.tree</field>
-        <field name="model">nl.acc.tscd.gt.lt.h</field>
+    <record id="view_nl_acc_tscd_gg_lt_h_tree" model="ir.ui.view">
+        <field name="name">nl.acc.tscd.gg.lt.h.tree</field>
+        <field name="model">nl.acc.tscd.gg.lt.h</field>
         <field name="arch" type="xml">
-            <tree string="Ghi tăng TCSĐ (Lắp thêm)">
+            <tree string="Ghi giảm TCSĐ (Lắp thêm)">
                 <field name="NGAY_CT" optional="show"/>
                 <field name="CHUNG_TU" optional="show"/>
                 <field name="SO_HD" optional="show"/>
@@ -20,11 +20,11 @@
     </record>
 
 
-    <record id="view_nl_acc_tscd_gt_lt_h_form" model="ir.ui.view">
-    <field name="name">nl.acc.tscd.gt.lt.h.form</field>
-    <field name="model">nl.acc.tscd.gt.lt.h</field>
+    <record id="view_nl_acc_tscd_gg_lt_h_form" model="ir.ui.view">
+    <field name="name">nl.acc.tscd.gg.lt.h.form</field>
+    <field name="model">nl.acc.tscd.gg.lt.h</field>
     <field name="arch" type="xml">
-        <form string="Ghi tăng TCSĐ (Lắp thêm)">
+        <form string="Ghi giảm TCSĐ (Lắp thêm)">
             <div class="two-column-form">
 
                 <!-- Cột trái -->
@@ -170,13 +170,13 @@
     </field>
 </record>
 
-    <record id="nl_acc_tscd_gt_lt_h_action" model="ir.actions.act_window">
-        <field name="name">Ghi tăng TCSĐ (Lắp thêm)</field>
+    <record id="nl_acc_tscd_gg_lt_h_action" model="ir.actions.act_window">
+        <field name="name">Ghi giảm TCSĐ (Lắp thêm)</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">nl.acc.tscd.gt.lt.h</field>
+        <field name="res_model">nl.acc.tscd.gg.lt.h</field>
         <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_nl_acc_tscd_gt_lt_h_tree')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('view_nl_acc_tscd_gt_lt_h_form')})]"/>
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_nl_acc_tscd_gg_lt_h_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('view_nl_acc_tscd_gg_lt_h_form')})]"/>
     </record>
 
 </odoo>

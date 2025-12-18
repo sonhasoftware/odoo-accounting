@@ -208,4 +208,16 @@
               parent="menu_phieu_tscd"
               action="nl_acc_tscd_gt_lt_h_action"
               sequence="2"/>
+
+    <menuitem id="menu_gg_tscd_nc"
+              name="Ghi giảm TCSĐ (Nguyên chiếc)"
+              parent="menu_phieu_tscd"
+              action="nl_acc_tscd_gg_nc_h_action"
+              sequence="3"/>
+
+    <menuitem id="menu_gg_tscd_lt"
+              name="Ghi giảm TCSĐ (Lắp thêm)"
+              parent="menu_phieu_tscd"
+              action="nl_acc_tscd_gg_lt_h_action"
+              sequence="4"/>
 </odoo>

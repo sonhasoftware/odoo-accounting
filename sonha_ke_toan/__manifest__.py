@@ -41,6 +41,8 @@
         'views/nl_acc_tong_hop_views.xml',
         'views/acc_tscd_gt_nc_h_views.xml',
         'views/acc_tscd_gt_lt_h_views.xml',
+        'views/acc_tscd_gg_nc_h_views.xml',
+        'views/acc_tscd_gg_lt_h_views.xml',
         'wizard/thong_bao_wizard_views.xml',
         'wizard/popup_tim_kiem_views.xml',
         'views/menu_views.xml',

@@ -116,9 +116,8 @@ class NlAccApTlH(models.Model):
                 'KHOAN_MUC': permission.KHOAN_MUC.id or None,
                 'VVIEC': permission.VVIEC.id or None,
                 'CHI_NHANH': permission.CHI_NHANH.id or None,
-                'DVCS': permission.DVCS.id or None,
                 'TIEN_TE': permission.TIEN_TE.id or None,
-                'MENU_ID': permission.MENU.id or None,
+                'MENU_ID': permission.MENU.id or 380,
                 'MA_TK1_ID': permission.MA_TK1_ID.id or None,
                 'LOAIDL': permission.LOAI_DL.id or dl.id,
             })

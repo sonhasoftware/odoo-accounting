@@ -24,7 +24,7 @@ class NLAccTSCDGtNcH(models.Model):
     MAU_SO = fields.Char(string="Mẫu số", store=True, size=10)
     PT_THUE = fields.Many2one('acc.thue', string="% Thuế", store=True)
     ONG_BA = fields.Char(string="Ông bà", store=True , size=60)
-    GHI_CHU = fields.Char(string="Ghi chú", store=True, default="Phiếu nhập mua hàng", size=200)
+    GHI_CHU = fields.Char(string="Ghi chú", store=True, default="Ghi tăng TCSĐ (nguyên chiếc)", size=200)
 
     KHACH_HANG = fields.Many2one('acc.khach.hang', string="Khách hàng", store=True)
     KH_THUE = fields.Char(string="KH Thuế", store=True, size=150)
@@ -108,19 +108,17 @@ class NLAccTSCDGtNcH(models.Model):
         ], limit=1)
         dl = self.env['acc.loaidl'].sudo().search([('id', '=', 5)])
 
-        if permission:
-            res.update({
-                'BO_PHAN': permission.BO_PHAN.id or None,
-                'KHO': permission.KHO.id or None,
-                'KHOAN_MUC': permission.KHOAN_MUC.id or None,
-                'VVIEC': permission.VVIEC.id or None,
-                'CHI_NHANH': permission.CHI_NHANH.id or None,
-                'DVCS': permission.DVCS.id or None,
-                'TIEN_TE': permission.TIEN_TE.id or None,
-                'MENU_ID': permission.MENU.id or None,
-                'MA_TK1_ID': permission.MA_TK1_ID.id or None,
-                'LOAIDL': permission.LOAI_DL.id or dl.id,
-            })
+        res.update({
+            'BO_PHAN': permission.BO_PHAN.id or None,
+            'KHO': permission.KHO.id or None,
+            'KHOAN_MUC': permission.KHOAN_MUC.id or None,
+            'VVIEC': permission.VVIEC.id or None,
+            'CHI_NHANH': permission.CHI_NHANH.id or None,
+            'TIEN_TE': permission.TIEN_TE.id or None,
+            'MENU_ID': permission.MENU.id or 382,
+            'MA_TK1_ID': permission.MA_TK1_ID.id or None,
+            'LOAIDL': permission.LOAI_DL.id or dl.id,
+        })
 
         return res
 
@@ -291,9 +289,10 @@ class NLAccTSCDGtNcH(models.Model):
                 "KHOAN_MUC": temp_rec.KHOAN_MUC.id or 0,
                 "TIEN_TE": temp_rec.TIEN_TE.id or "",
                 "TY_GIA": temp_rec.TY_GIA or "",
-                "MA_TK1": temp_rec.MA_TK1 or "",
+                "MA_TK1": recs.MA_TK1_ID.MA or "",
                 "DVCS": temp_rec.DVCS.id or 1,
                 "CHI_NHANH": temp_rec.CHI_NHANH.id or 0,
+                "TSCD": recs.TSCD.id or 0,
                 "MENU_ID": temp_rec.MENU_ID.id or 382,
                 "NGUOI_TAO": self.env.uid or None,
                 "NGUOI_SUA": self.env.uid or None,
@@ -358,9 +357,10 @@ class NLAccTSCDGtNcH(models.Model):
                     "KHOAN_MUC": record.KHOAN_MUC.id or 0,
                     "TIEN_TE": record.TIEN_TE.id or "",
                     "TY_GIA": record.TY_GIA or "",
-                    "MA_TK1": record.MA_TK1 or "",
+                    "MA_TK1": recs.MA_TK1_ID.MA or "",
                     "DVCS": record.DVCS.id or 1,
                     "CHI_NHANH": record.CHI_NHANH.id or 0,
+                    "TSCD": recs.TSCD.id or 0,
                     "MENU_ID": record.MENU_ID.id or 378,
                     "NGUOI_TAO": self.create_uid.id or None,
                     "NGUOI_SUA": self.env.uid or None,
