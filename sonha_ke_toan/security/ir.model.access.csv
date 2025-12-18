@@ -50,6 +50,9 @@ access_nl_acc_tong_hop_log,nl.acc.tong.hop.log,model_nl_acc_tong_hop_log,,1,1,1,
 
 access_popup_tim_kiem,popup.tim.kiem,model_popup_tim_kiem,,1,1,1,1
 
+access_nl_acc_nk_sx_h,nl.acc.nk.sx.h,model_nl_acc_nk_sx_h,,1,1,1,1
+access_nl_acc_nk_sx_d,nl.acc.nk.sx.d,model_nl_acc_nk_sx_d,,1,1,1,1
+
 access_nl_acc_ap_ck_h,nl.acc.ap.ck.h,model_nl_acc_ap_ck_h,,1,1,1,1
 access_nl_acc_ap_ck_d,nl.acc.ap.ck.d,model_nl_acc_ap_ck_d,,1,1,1,1
 
