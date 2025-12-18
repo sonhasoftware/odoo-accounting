@@ -37,7 +37,8 @@ access_loai_dm_wizard,loai.dm.wizard,model_loai_dm_wizard,,1,1,1,1
 access_acc_ap_nk_h,acc.ap.nk.h,model_acc_ap_nk_h,,1,1,1,1
 access_acc_ap_nk_d,acc.ap.nk.d,model_acc_ap_nk_d,,1,1,1,1
 
-
+access_nl_acc_ap_tl_h,nl.acc.ap.tl.h,model_nl_acc_ap_tl_h,,1,1,1,1
+access_nl_acc_ap_tl_d,nl.acc.ap.tl.d,model_nl_acc_ap_tl_d,,1,1,1,1
 
 
 access_nl_acc_ap_h,acc.nl.ap.h,model_nl_acc_ap_h,,1,1,1,1
@@ -47,9 +48,20 @@ access_nl_acc_tong_hop,nl.acc.tong.hop,model_nl_acc_tong_hop,,1,1,1,1
 access_nl_acc_tong_hop_log,nl.acc.tong.hop.log,model_nl_acc_tong_hop_log,,1,1,1,1
 
 
-
 access_popup_tim_kiem,popup.tim.kiem,model_popup_tim_kiem,,1,1,1,1
 ,,,,,,,
 access_acc_ap_ck_h,acc.ap.ck.h,model_acc_ap_ck_h,,1,1,1,1
 access_acc_ap_ck_d,acc.ap.ck.d,model_acc_ap_ck_d,,1,1,1,1
 ,,,,,,,
+
+access_nl_acc_tscd_gt_nc_h,nl.acc.tscd.gt.nc.h,model_nl_acc_tscd_gt_nc_h,,1,1,1,1
+access_nl_acc_tscd_gt_nc_d,nl.acc.tscd.gt.nc.d,model_nl_acc_tscd_gt_nc_d,,1,1,1,1
+
+access_nl_acc_tscd_gt_lt_h,nl.acc.tscd.gt.lt.h,model_nl_acc_tscd_gt_lt_h,,1,1,1,1
+access_nl_acc_tscd_gt_lt_d,nl.acc.tscd.gt.lt.d,model_nl_acc_tscd_gt_lt_d,,1,1,1,1
+
+access_nl_acc_tscd_gg_nc_h,nl.acc.tscd.gg.nc.h,model_nl_acc_tscd_gg_nc_h,,1,1,1,1
+access_nl_acc_tscd_gg_nc_d,nl.acc.tscd.gg.nc.d,model_nl_acc_tscd_gg_nc_d,,1,1,1,1
+
+access_nl_acc_tscd_gg_lt_h,nl.acc.tscd.gg.lt.h,model_nl_acc_tscd_gg_lt_h,,1,1,1,1
+access_nl_acc_tscd_gg_lt_d,nl.acc.tscd.gg.lt.d,model_nl_acc_tscd_gg_lt_d,,1,1,1,1

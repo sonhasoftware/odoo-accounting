@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="view_nl_acc_ap_h_tree" model="ir.ui.view">
-        <field name="name">nl.acc.ap.h.tree</field>
-        <field name="model">nl.acc.ap.h</field>
+    <record id="view_nl_acc_ap_tl_h_tree" model="ir.ui.view">
+        <field name="name">nl.acc.ap.tl.h.tree</field>
+        <field name="model">nl.acc.ap.tl.h</field>
         <field name="arch" type="xml">
-            <tree string="Phiếu nhập mua hàng">
+            <tree string="Phiếu nhập hàng bán bị trả lại">
                 <field name="NGAY_CT" optional="show"/>
                 <field name="CHUNG_TU" optional="show"/>
                 <field name="SO_HD" optional="show"/>
@@ -20,11 +20,11 @@
     </record>
 
 
-    <record id="view_nl_acc_ap_h_form" model="ir.ui.view">
-    <field name="name">nl.acc.ap.h.form</field>
-    <field name="model">nl.acc.ap.h</field>
+    <record id="view_nl_acc_ap_tl_h_form" model="ir.ui.view">
+    <field name="name">nl.acc.ap.tl.h.form</field>
+    <field name="model">nl.acc.ap.tl.h</field>
     <field name="arch" type="xml">
-        <form string="Phiếu nhập mua hàng">
+        <form string="Phiếu nhập hàng bán bị trả lại">
             <div class="two-column-form">
 
                 <!-- Cột trái -->
@@ -65,15 +65,19 @@
                     </div>
                     <div class="form-row">
                         <label for="GHI_CHU">Diễn giải</label>
-                        <field name="GHI_CHU"/>
+                        <field name="GHI_CHU" string="Diễn giải"/>
                     </div>
                     <div class="form-row">
                         <label for="KHACH_HANG">Khách hàng</label>
                         <field name="KHACH_HANG"/>
                     </div>
                     <div class="form-row">
-                        <label for="KHOAN_MUC">Khoản mục</label>
-                        <field name="KHOAN_MUC"/>
+                        <label for="TINH">Vùng VC</label>
+                        <field name="TINH" string="Vùng VC"/>
+                    </div>
+                    <div class="form-row">
+                        <label for="NGUON">HTV chuyển</label>
+                        <field name="NGUON"/>
                     </div>
                 </div>
 
@@ -99,9 +103,12 @@
                         <label for="TY_GIA">Tỷ giá</label>
                         <field name="TY_GIA"/>
                     </div>
-
                     <div class="form-row">
-                        <label for="MA_TK1_ID">Kho</label>
+                        <label for="MA_TK0_ID">Nợ</label>
+                        <field name="MA_TK0_ID"/>
+                    </div>
+                    <div class="form-row">
+                        <label for="MA_TK1_ID">Có</label>
                         <field name="MA_TK1_ID"/>
                     </div>
                     <div class="form-row">
@@ -131,13 +138,15 @@
             <!-- ONE2MANY -->
             <field name="ACC_SP_D">
                 <tree editable="bottom" toggle_visibility="true" class="o_list_view parent-one2many">
+                    <field name="SAN_PHAM" string="Bộ"/>
+                    <field name="SL_TP"/>
                     <field name="HANG_HOA"/>
-                    <field name="MA_TK0_ID"/>
                     <field name="SO_LUONG" widget="float"/>
                     <field name="DON_GIA" widget="float"/>
-                    <field name="PS_NO1"/>
+                    <field name="PS_NO1" widget="float"/>
                     <field name="TIEN_NTE" widget="float"/>
-                    <field name="VAT"/>
+                    <field name="VAT" widget="float"/>
+                    <field name="SALESMAN"/>
 
                     <!-- Các field cần đồng bộ -->
                     <field name="NGAY_CT" optional="hide"/>
@@ -159,6 +168,7 @@
                     <field name="KHOAN_MUC" optional="hide"/>
                     <field name="TIEN_TE" optional="hide"/>
                     <field name="TY_GIA" optional="hide"/>
+                    <field name="MA_TK0_ID" optional="hide"/>
 
                     <field name="KHACH_HANGC" optional="hide"/>
                     <field name="KHOC" optional="hide"/>
@@ -167,10 +177,8 @@
                     <field name="LOAIDL" optional="hide"/>
                     <field name="HEAD_NO" optional="hide"/>
                     <field name="SO_LUONG2" optional="hide"/>
-                    <field name="SL_TP" optional="hide"/>
                     <field name="NHOM_VAT" optional="hide"/>
                     <field name="THUE_NK" optional="hide"/>
-                    <field name="SAN_PHAM" optional="hide"/>
                     <field name="SO_LO" optional="hide"/>
                     <field name="DAT" optional="hide"/>
                     <field name="SO_LENHSX" optional="hide"/>
@@ -181,10 +189,13 @@
     </field>
 </record>
 
-    <record id="acc_nl_ap_h_action" model="ir.actions.act_window">
-        <field name="name">Phiếu nhập mua hàng</field>
-        <field name="res_model">nl.acc.ap.h</field>
-        <field name="view_mode">tree,form</field>
+    <record id="acc_nl_acc_ap_tl_h_action" model="ir.actions.act_window">
+        <field name="name">Phiếu nhập hàng bán bị trả lại</field>
+        <field name="type">ir.actions.act_window</field>
+        <field name="res_model">nl.acc.ap.tl.h</field>
+        <field name="view_ids" eval="[(5, 0, 0),
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_nl_acc_ap_tl_h_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('view_nl_acc_ap_tl_h_form')})]"/>
     </record>
 
 </odoo>

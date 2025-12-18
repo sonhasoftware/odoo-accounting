@@ -22,6 +22,8 @@
                 <field name="LOAI_PX" optional="show"/>
                 <field name="VVIEC" optional="show"/>
                 <field name="CONLAI_VND" optional="show"/>
+                <field name="NGUYEN_GIA" optional="show"/>
+                <field name="GT_KH" optional="show"/>
                 <field name="TSCD" optional="show"/>
                 <field name="DVCS" optional="show"/>
                 <field name="ACTIVE" optional="show"/>
