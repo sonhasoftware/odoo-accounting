@@ -180,6 +180,12 @@
               action="acc_nl_ap_h_nk_action"
               sequence="2"/>
 
+    <menuitem id="menu_nl_acc_ap_h_ck"
+              name="Phiếu chuyển kho"
+              parent="menu_nhap_lieu"
+              action="acc_nl_ap_h_ck_action"
+              sequence="3"
+              />
     <menuitem id="menu_nl_acc_ap_tl_h"
               name="Phiếu nhập hàng bán bị trả lại"
               parent="menu_nhap_lieu"
@@ -197,4 +203,33 @@
               parent="menu_sonha_accounting"
               action="tim_kiem_action"
               sequence="10"/>
+
+    <menuitem id="menu_phieu_tscd"
+              name="Phiếu TSCĐ"
+              parent="menu_sonha_accounting"
+              sequence="2"/>
+
+    <menuitem id="menu_gt_tscd_nc"
+              name="Ghi tăng TCSĐ (nguyên chiếc)"
+              parent="menu_phieu_tscd"
+              action="nl_acc_tscd_gt_nc_h_action"
+              sequence="1"/>
+
+    <menuitem id="menu_gt_tscd_lt"
+              name="Ghi tăng TCSĐ (Lắp thêm)"
+              parent="menu_phieu_tscd"
+              action="nl_acc_tscd_gt_lt_h_action"
+              sequence="2"/>
+
+    <menuitem id="menu_gg_tscd_nc"
+              name="Ghi giảm TCSĐ (Nguyên chiếc)"
+              parent="menu_phieu_tscd"
+              action="nl_acc_tscd_gg_nc_h_action"
+              sequence="3"/>
+
+    <menuitem id="menu_gg_tscd_lt"
+              name="Ghi giảm TCSĐ (Lắp thêm)"
+              parent="menu_phieu_tscd"
+              action="nl_acc_tscd_gg_lt_h_action"
+              sequence="4"/>
 </odoo>

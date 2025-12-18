@@ -115,9 +115,8 @@ class AccApNkH(models.Model):
                 'KHOAN_MUC': permission.KHOAN_MUC.id or None,
                 'VVIEC': permission.VVIEC.id or None,
                 'CHI_NHANH': permission.CHI_NHANH.id or None,
-                'DVCS': permission.DVCS.id or None,
                 'TIEN_TE': permission.TIEN_TE.id or None,
-                'MENU_ID': permission.MENU.id or None,
+                'MENU_ID': permission.MENU.id or 378,
                 'MA_TK1_ID': permission.MA_TK1_ID.id or None,
                 'LOAIDL': permission.LOAI_DL.id or dl.id,
             })
@@ -411,7 +410,7 @@ class AccApNkH(models.Model):
                         vals_d[field_name] = value
                 d_vals_list.append(vals_d)
 
-            self.env['nl.acc.tong.hop'].sudo().search([('ACC_AP_D', 'in', all_d_records.ids)]).unlink()
+            self.env['nl.acc.tong.hop'].sudo().search([('ACC_NK_D', 'in', all_d_records.ids)]).unlink()
             self.env['acc.ap.nk.d'].sudo().search([('id', 'in', all_d_records.ids)]).unlink()
 
             if d_vals_list:

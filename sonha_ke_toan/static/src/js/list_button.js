@@ -13,7 +13,6 @@ export class KetoanListController extends ListController {
         this.orm = useService("orm");
         this.notification = useService("notification");
 
-        // 🔥 bind phím tắt
         this._onKeyDown = this._onKeyDown.bind(this);
 
         onMounted(() => {
@@ -25,9 +24,6 @@ export class KetoanListController extends ListController {
         });
     }
 
-    // =========================
-    // 🔥 LOGIC DÙNG CHUNG
-    // =========================
     async _handleAction() {
         const selectedRecords = this.model.root.selection || [];
         const ids = selectedRecords.map(rec => rec.resId);
@@ -51,19 +47,13 @@ export class KetoanListController extends ListController {
         }
     }
 
-    // =========================
-    // 🖱 CLICK CHUỘT
-    // =========================
     onTestClick() {
         this._handleAction();
     }
 
-    // =========================
-    // ⌨ PHÍM TẮT F2
-    // =========================
     _onKeyDown(ev) {
         if (ev.key === "F2") {
-            ev.preventDefault();   // ❗ chặn hành vi mặc định
+            ev.preventDefault();
             this._handleAction();
         }
     }

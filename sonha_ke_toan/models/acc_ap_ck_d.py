@@ -9,10 +9,10 @@ _logger = logging.getLogger(__name__)
 # from odoo.exceptions import ValidationError
 
 
-class AccApNkD(models.Model):
-    _name = 'acc.ap.nk.d'
+class AccApCkD(models.Model):
+    _name = 'nl.acc.ap.ck.d'
 
-    ACC_AP_H = fields.Many2one('acc.ap.nk.h', string="ID Header", store=True)
+    ACC_AP_H = fields.Many2one('nl.acc.ap.ck.h', string="ID Header", store=True)
 
     MA_TK0_ID = fields.Many2one('acc.tai.khoan', string="Nợ", store=True, compute='get_ma_tk_id', readonly=False)
     MA_TK0 = fields.Char(related='MA_TK0_ID.MA', string="Nợ", store=True)
@@ -84,14 +84,12 @@ class AccApNkD(models.Model):
 
     BTFIRST = fields.Integer("BTFIRST", store=True)
     PS_CO1 = fields.Integer("PS_CO1", store=True)
-    NVBH = fields.Many2one('acc.nvbh', string="NVKD", store=True)
-
-    TSCD = fields.Many2one('acc.tscd', string="TSCĐ")
+    SALESMAN = fields.Many2one('acc.nvbh', string="NVKD", store=True)
 
     @api.onchange('DON_GIA')
     def _onchange_don_gia(self):
         permission = self.env['sonha.phan.quyen.nl'].sudo().search([
-            ('MENU', '=', 378),
+            ('MENU', '=', 380),
         ], limit=1)
         for r in self:
             if permission.GIA_MUA:
@@ -137,7 +135,7 @@ class AccApNkD(models.Model):
     @api.depends('SO_LUONG', 'PS_NO1', 'HANG_HOA')
     def _get_don_gia(self):
         for r in self:
-            check = self.env['sonha.phan.quyen.nl'].sudo().search([('MENU', '=', 378),
+            check = self.env['sonha.phan.quyen.nl'].sudo().search([('MENU', '=', 380),
                                                                    ('GIA_MUA', '=', True)])
             if r.ACC_AP_H.DG_THEO_TIEN:
                 r.DON_GIA = r.PS_NO1 / (r.SO_LUONG * r.TY_GIA)
@@ -224,7 +222,7 @@ class AccApNkD(models.Model):
     def create(self, vals):
         # --- Merge dữ liệu header nếu có ---
         if vals.get('ACC_AP_H'):
-            related = self.env['acc.ap.nk.h'].sudo().browse(vals['ACC_AP_H'])
+            related = self.env['nl.acc.ap.ck.h'].sudo().browse(vals['ACC_AP_H'])
             if related.exists():
                 vals.update({
                     'NGAY_CT': related.NGAY_CT or None,
@@ -250,19 +248,17 @@ class AccApNkD(models.Model):
                     'MA_TK1_ID': related.MA_TK1_ID.id if related.MA_TK1_ID else False,
                     'DVCS': related.DVCS.id if related.DVCS else False,
                     'CHI_NHANH': related.CHI_NHANH.id if related.CHI_NHANH else False,
-                    'MENU_ID': related.MENU_ID.id if related.MENU_ID else 378,
+                    'MENU_ID': related.MENU_ID.id if related.MENU_ID else False,
 
                     'KHACH_HANGC': related.KHACH_HANGC.id if related.KHACH_HANGC else False,
                     'KHOC': related.KHOC.id if related.KHOC else False,
                     'TINH': related.TINH.id if related.TINH else False,
                     'NGUON': related.NGUON.id if related.NGUON else False,
                     'LOAIDL': related.LOAIDL.id if related.LOAIDL else False,
-
-                    'TSCD': related.TSCD.id if related.TSCD else False,
                 })
 
         # --- Tạo bản ghi acc.ap.d ---
-        rec = super(AccApNkD, self).create(vals)
+        rec = super(AccApCkD, self).create(vals)
 
         # --- Chuẩn bị dữ liệu để insert vào bảng tổng hợp ---
         raw = rec.read()[0]
@@ -292,7 +288,7 @@ class AccApNkD(models.Model):
                 data[fld] = val
 
         # --- Thêm khóa ngoại ---
-        data['ACC_NK_D'] = rec.id
+        data['ACC_CK_D'] = rec.id
 
         # --- Loại bỏ toàn bộ system fields (tránh lỗi CREATE_DATE, WRITE_UID, __last_update, …) ---
         system_fields = {'CREATE_UID', 'CREATE_DATE', 'WRITE_UID', 'WRITE_DATE', '__LAST_UPDATE'}
@@ -313,7 +309,7 @@ class AccApNkD(models.Model):
         sql = f'INSERT INTO "{table_name}" ({", ".join(cols)}) VALUES ({placeholders});'
         self._cr.execute(sql, values)
         self._cr.commit()
-        # self.env['nl.acc.tong.hop'].sudo().search([('ACC_NK_D', '=', None)]).unlink()
+        #self.env['nl.acc.tong.hop'].sudo().search([('ACC_NK_D', '=', None)]).unlink()
 
         _logger.info(f"[AUTO] Inserted acc.ap.d id={rec.id} into {table_name}")
 
