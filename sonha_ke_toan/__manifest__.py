@@ -37,6 +37,7 @@
         'wizard/loai_dm_wizard_views.xml',
         'views/acc_ap_h_views.xml',
         'views/acc_ap_h_nk_views.xml',
+        'views/acc_ap_h_ck_views.xml',
         'views/nl_acc_ap_tl_h_views.xml',
         'views/nl_acc_tong_hop_views.xml',
         'views/acc_tscd_gt_nc_h_views.xml',

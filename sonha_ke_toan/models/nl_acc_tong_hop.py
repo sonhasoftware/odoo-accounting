@@ -12,6 +12,7 @@ class NLAccTongHop(models.Model):
     ACC_GT_LT = fields.Many2one('nl.acc.tscd.gt.lt.d', string="ACC AP TL D", store=True)
     ACC_GG_NC = fields.Many2one('nl.acc.tscd.gg.nc.d', string="ACC AP TL D", store=True)
     ACC_GG_LT = fields.Many2one('nl.acc.tscd.gg.lt.d', string="ACC AP TL D", store=True)
+    ACC_CK_D = fields.Many2one('nl.acc.ap.ck.d', string="ACC AP TL D", store=True)
 
     MA_TK0_ID = fields.Many2one('acc.tai.khoan', string="Nợ", store=True, compute='get_ma_tk_id', readonly=False)
     MA_TK0 = fields.Char(related='MA_TK0_ID.MA', string="Nợ", store=True)

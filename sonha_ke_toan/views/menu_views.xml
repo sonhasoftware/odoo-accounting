@@ -180,6 +180,12 @@
               action="acc_nl_ap_h_nk_action"
               sequence="2"/>
 
+    <menuitem id="menu_nl_acc_ap_h_ck"
+              name="Phiếu chuyển kho"
+              parent="menu_nhap_lieu"
+              action="acc_nl_ap_h_ck_action"
+              sequence="3"
+              />
     <menuitem id="menu_nl_acc_ap_tl_h"
               name="Phiếu nhập hàng bán bị trả lại"
               parent="menu_nhap_lieu"
