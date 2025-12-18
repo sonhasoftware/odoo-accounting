@@ -10,8 +10,8 @@ _logger = logging.getLogger(__name__)
 from odoo.exceptions import ValidationError
 
 
-class NlAccApTlH(models.Model):
-    _name = 'nl.acc.ap.tl.h'
+class NlAccNkSxH(models.Model):
+    _name = 'nl.acc.nk.sx.h'
     _order = 'NGAY_CT DESC'
     _rec_name = 'CHUNG_TU'
 
@@ -49,7 +49,7 @@ class NlAccApTlH(models.Model):
     MA_TK1_ID = fields.Many2one('acc.tai.khoan', string="Có", store=True)
     MA_TK1 = fields.Char(related='MA_TK1_ID.MA', string="Có", store=True)
 
-    MA_TK0_ID = fields.Many2one('acc.tai.khoan', string="Nợ", store=True)
+    MA_TK0_ID = fields.Many2one('acc.tai.khoan', string="Nợ", store=True, compute='get_ma_tk_id', readonly=False)
     MA_TK0 = fields.Char(related='MA_TK0_ID.MA', string="Nợ", store=True)
 
     # Liên kết đến bảng đơn vị cơ sở (DVCS)
@@ -59,7 +59,7 @@ class NlAccApTlH(models.Model):
     CHI_NHANH = fields.Many2one('acc.chi.nhanh', string="Chi nhánh", store=True)
 
     ACC_SP_D = fields.One2many(
-        comodel_name="nl.acc.ap.tl.d",
+        comodel_name="nl.acc.nk.sx.d",
         inverse_name="ACC_AP_H",
         string="Bảng chi tiết",
         store=True
@@ -74,7 +74,9 @@ class NlAccApTlH(models.Model):
     NGUON = fields.Many2one('acc.nguon', string="HTV Chuyển", store=True)
     LOAIDL = fields.Many2one('acc.loaidl', string="Loại DL", store=True)
 
-    @api.onchange('ACC_SP_D', 'ACC_SP_D.PS_NO1', 'ACC_SP_D.VAT', 'ACC_SP_D.SO_LUONG', 'ACC_SP_D.SL_TP')
+    TSCD = fields.Many2one('acc.tscd', string="TSCĐ")
+
+    @api.onchange('ACC_SP_D', 'ACC_SP_D.PS_NO1', 'ACC_SP_D.VAT', 'ACC_SP_D.SO_LUONG')
     def _get_total_vat_sl_tien(self):
         for r in self:
             lines = r.ACC_SP_D
@@ -102,10 +104,10 @@ class NlAccApTlH(models.Model):
     #     return [('id', 'in', ids)]
 
     def default_get(self, fields_list):
-        res = super(NlAccApTlH, self).default_get(fields_list)
+        res = super(NlAccNkSxH, self).default_get(fields_list)
         # Tìm phân quyền của user hiện tại
         permission = self.env['sonha.phan.quyen.nl'].sudo().search([
-            ('MENU', '=', 380),
+            ('MENU', '=', 381),
         ], limit=1)
         dl = self.env['acc.loaidl'].sudo().search([('id', '=', 5)])
 
@@ -295,12 +297,12 @@ class NlAccApTlH(models.Model):
                 "MA_TK1": temp_rec.MA_TK1 or "",
                 "DVCS": temp_rec.DVCS.id or 1,
                 "CHI_NHANH": temp_rec.CHI_NHANH.id or 0,
-                "MENU_ID": temp_rec.MENU_ID.id or 380,
+                "MENU_ID": temp_rec.MENU_ID.id or 381,
                 "NGUOI_TAO": self.env.uid or None,
                 "NGUOI_SUA": self.env.uid or None,
             }
 
-            table_name = 'nl.acc.ap.tl.h'
+            table_name = 'nl.acc.nk.sx.h'
 
             json_data = json.dumps(vals_dict)
 
@@ -315,9 +317,9 @@ class NlAccApTlH(models.Model):
                     raise ValidationError(loi)
 
         # Gọi function sinh chứng từ tự động
-        rec = super(NlAccApTlH, self).create(vals)
+        rec = super(NlAccNkSxH, self).create(vals)
         query = "SELECT * FROM fn_chung_tu_tu_dong(%s, %s)"
-        self.env.cr.execute(query, ('menu_380', str(rec.NGAY_CT)))
+        self.env.cr.execute(query, ('menu_381', str(rec.NGAY_CT)))
         rows = self.env.cr.fetchall()
         if rows:
             rec.CHUNG_TU = rows[0][0]
@@ -326,7 +328,7 @@ class NlAccApTlH(models.Model):
 
     def write(self, vals):
         """Ghi dữ liệu acc.ap.h, sao lưu dữ liệu acc.ap.d sang bảng tổng hợp trước khi ghi."""
-        res = super(NlAccApTlH, self).write(vals)
+        res = super(NlAccNkSxH, self).write(vals)
 
         for record in self:
             for recs in record.ACC_SP_D:
@@ -362,12 +364,12 @@ class NlAccApTlH(models.Model):
                     "MA_TK1": record.MA_TK1 or "",
                     "DVCS": record.DVCS.id or 1,
                     "CHI_NHANH": record.CHI_NHANH.id or 0,
-                    "MENU_ID": record.MENU_ID.id or 380,
+                    "MENU_ID": record.MENU_ID.id or 381,
                     "NGUOI_TAO": self.create_uid.id or None,
                     "NGUOI_SUA": self.env.uid or None,
                 }
 
-                table_name = 'nl.acc.ap.tl.h'
+                table_name = 'nl.acc.nk.sx.h'
 
                 json_data = json.dumps(vals_dict)
                 self.env.cr.execute("""SELECT * FROM fn_check_nl(%s::text, %s::jsonb);""", (table_name, json_data))
@@ -379,7 +381,7 @@ class NlAccApTlH(models.Model):
                         pass
                     else:
                         raise ValidationError(loi)
-            all_d_records = self.env['nl.acc.ap.tl.d'].search([('ACC_AP_H', '=', record.id)])
+            all_d_records = self.env['nl.acc.nk.sx.d'].search([('ACC_AP_H', '=', record.id)])
 
             # 1️⃣ Sao lưu dữ liệu D sang bảng tổng hợp log
             self._copy_to_tong_hop_abc(all_d_records)
@@ -412,11 +414,11 @@ class NlAccApTlH(models.Model):
                         vals_d[field_name] = value
                 d_vals_list.append(vals_d)
 
-            self.env['nl.acc.tong.hop'].sudo().search([('ACC_TL_D', 'in', all_d_records.ids)]).unlink()
-            self.env['nl.acc.ap.tl.d'].sudo().search([('id', 'in', all_d_records.ids)]).unlink()
+            self.env['nl.acc.tong.hop'].sudo().search([('ACC_AP_D', 'in', all_d_records.ids)]).unlink()
+            self.env['nl.acc.nk.sx.d'].sudo().search([('id', 'in', all_d_records.ids)]).unlink()
 
             if d_vals_list:
-                self.env['nl.acc.ap.tl.d'].sudo().create(d_vals_list)
+                self.env['nl.acc.nk.sx.d'].sudo().create(d_vals_list)
 
         return res
 

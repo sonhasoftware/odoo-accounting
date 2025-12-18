@@ -186,6 +186,12 @@
               action="acc_nl_acc_ap_tl_h_action"
               sequence="3"/>
 
+    <menuitem id="menu_nl_acc_nk_sx_h"
+              name="Phiếu nhập kho thành phẩm"
+              parent="menu_nhap_lieu"
+              action="nl_acc_nk_sx_h_action"
+              sequence="4"/>
+
     <menuitem id="menu_tim_kiem"
               name="Tìm kiếm"
               parent="menu_sonha_accounting"

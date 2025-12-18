@@ -38,6 +38,7 @@
         'views/acc_ap_h_views.xml',
         'views/acc_ap_h_nk_views.xml',
         'views/nl_acc_ap_tl_h_views.xml',
+        'views/nl_acc_nk_sx_h_views.xml',
         'views/nl_acc_tong_hop_views.xml',
         'wizard/thong_bao_wizard_views.xml',
         'wizard/popup_tim_kiem_views.xml',
