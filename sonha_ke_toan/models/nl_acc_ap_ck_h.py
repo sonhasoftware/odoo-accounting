@@ -10,7 +10,7 @@ _logger = logging.getLogger(__name__)
 from odoo.exceptions import ValidationError
 
 
-class AccApCkH(models.Model):
+class NLAccApCkH(models.Model):
     _name = 'nl.acc.ap.ck.h'
     _order = 'NGAY_CT DESC'
     _rec_name = 'CHUNG_TU'
@@ -102,10 +102,10 @@ class AccApCkH(models.Model):
     #     return [('id', 'in', ids)]
 
     def default_get(self, fields_list):
-        res = super(AccApCkH, self).default_get(fields_list)
+        res = super(NLAccApCkH, self).default_get(fields_list)
         # Tìm phân quyền của user hiện tại
         permission = self.env['sonha.phan.quyen.nl'].sudo().search([
-            ('MENU', '=', 380),
+            ('MENU', '=', 386),
         ], limit=1)
         dl = self.env['acc.loaidl'].sudo().search([('id', '=', 5)])
 
@@ -295,7 +295,7 @@ class AccApCkH(models.Model):
                 "MA_TK1": temp_rec.MA_TK1 or "",
                 "DVCS": temp_rec.DVCS.id or 1,
                 "CHI_NHANH": temp_rec.CHI_NHANH.id or 0,
-                "MENU_ID": temp_rec.MENU_ID.id or 380,
+                "MENU_ID": temp_rec.MENU_ID.id or 386,
                 "NGUOI_TAO": self.env.uid or None,
                 "NGUOI_SUA": self.env.uid or None,
             }
@@ -315,9 +315,9 @@ class AccApCkH(models.Model):
                     raise ValidationError(loi)
 
         # Gọi function sinh chứng từ tự động
-        rec = super(AccApCkH, self).create(vals)
+        rec = super(NLAccApCkH, self).create(vals)
         query = "SELECT * FROM fn_chung_tu_tu_dong(%s, %s)"
-        self.env.cr.execute(query, ('menu_380', str(rec.NGAY_CT)))
+        self.env.cr.execute(query, ('menu_386', str(rec.NGAY_CT)))
         rows = self.env.cr.fetchall()
         if rows:
             rec.CHUNG_TU = rows[0][0]
@@ -326,7 +326,7 @@ class AccApCkH(models.Model):
 
     def write(self, vals):
         """Ghi dữ liệu acc.ap.h, sao lưu dữ liệu acc.ap.d sang bảng tổng hợp trước khi ghi."""
-        res = super(AccApCkH, self).write(vals)
+        res = super(NLAccApCkH, self).write(vals)
 
         for record in self:
             for recs in record.ACC_SP_D:
@@ -362,7 +362,7 @@ class AccApCkH(models.Model):
                     "MA_TK1": record.MA_TK1 or "",
                     "DVCS": record.DVCS.id or 1,
                     "CHI_NHANH": record.CHI_NHANH.id or 0,
-                    "MENU_ID": record.MENU_ID.id or 380,
+                    "MENU_ID": record.MENU_ID.id or 386,
                     "NGUOI_TAO": self.create_uid.id or None,
                     "NGUOI_SUA": self.env.uid or None,
                 }

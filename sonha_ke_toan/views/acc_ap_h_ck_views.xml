@@ -2,7 +2,7 @@
 <odoo>
     <record id="view_acc_ap_h_ck_tree" model="ir.ui.view">
         <field name="name">acc.ap.ck.h.ck.tree</field>
-        <field name="model">acc.ap.ck.h</field>
+        <field name="model">nl.acc.ap.ck.h</field>
         <field name="arch" type="xml">
             <tree string="Phiếu chuyển kho">
                 <field name="NGAY_CT" optional="show"/>
@@ -22,7 +22,7 @@
 
     <record id="view_nl_acc_ap_h_ck_form" model="ir.ui.view">
     <field name="name">nl.acc.ap.h.ck.form</field>
-    <field name="model">acc.ap.ck.h</field>
+    <field name="model">nl.acc.ap.ck.h</field>
     <field name="arch" type="xml">
         <form string="Phiếu chuyển kho">
             <div class="two-column-form">
@@ -194,7 +194,7 @@
     <record id="acc_nl_ap_h_ck_action" model="ir.actions.act_window">
         <field name="name">Phiếu chuyển kho</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">acc.ap.ck.h</field>
+        <field name="res_model">nl.acc.ap.ck.h</field>
         <field name="view_ids" eval="[(5, 0, 0),
                 (0, 0, {'view_mode': 'tree', 'view_id': ref('view_acc_ap_h_ck_tree')}),
                 (0, 0, {'view_mode': 'form', 'view_id': ref('view_nl_acc_ap_h_ck_form')})]"/>
