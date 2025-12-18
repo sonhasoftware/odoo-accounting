@@ -11,7 +11,7 @@ from odoo.exceptions import ValidationError
 
 
 class AccApCkH(models.Model):
-    _name = 'acc.ap.ck.h'
+    _name = 'nl.acc.ap.ck.h'
     _order = 'NGAY_CT DESC'
     _rec_name = 'CHUNG_TU'
 
@@ -59,7 +59,7 @@ class AccApCkH(models.Model):
     CHI_NHANH = fields.Many2one('acc.chi.nhanh', string="Chi nhánh", store=True)
 
     ACC_SP_D = fields.One2many(
-        comodel_name="acc.ap.ck.d",
+        comodel_name="nl.acc.ap.ck.d",
         inverse_name="ACC_AP_H",
         string="Bảng chi tiết",
         store=True
@@ -300,7 +300,7 @@ class AccApCkH(models.Model):
                 "NGUOI_SUA": self.env.uid or None,
             }
 
-            table_name = 'acc.ap.ck.h'
+            table_name = 'nl.acc.ap.ck.h'
 
             json_data = json.dumps(vals_dict)
 
@@ -367,7 +367,7 @@ class AccApCkH(models.Model):
                     "NGUOI_SUA": self.env.uid or None,
                 }
 
-                table_name = 'acc.ap.ck.h'
+                table_name = 'nl.cc.ap.ck.h'
 
                 json_data = json.dumps(vals_dict)
                 self.env.cr.execute("""SELECT * FROM fn_check_nl(%s::text, %s::jsonb);""", (table_name, json_data))
@@ -379,7 +379,7 @@ class AccApCkH(models.Model):
                         pass
                     else:
                         raise ValidationError(loi)
-            all_d_records = self.env['acc.ap.ck.d'].search([('ACC_AP_H', '=', record.id)])
+            all_d_records = self.env['nl.acc.ap.ck.d'].search([('ACC_AP_H', '=', record.id)])
 
             # 1️⃣ Sao lưu dữ liệu D sang bảng tổng hợp log
             self._copy_to_tong_hop_abc(all_d_records)
@@ -412,11 +412,11 @@ class AccApCkH(models.Model):
                         vals_d[field_name] = value
                 d_vals_list.append(vals_d)
 
-            self.env['nl.acc.tong.hop'].sudo().search([('ACC_AP_D', 'in', all_d_records.ids)]).unlink()
-            self.env['acc.ap.ck.d'].sudo().search([('id', 'in', all_d_records.ids)]).unlink()
+            self.env['nl.acc.tong.hop'].sudo().search([('ACC_CK_D', 'in', all_d_records.ids)]).unlink()
+            self.env['nl.acc.ap.ck.d'].sudo().search([('id', 'in', all_d_records.ids)]).unlink()
 
             if d_vals_list:
-                self.env['acc.ap.ck.d'].sudo().create(d_vals_list)
+                self.env['nl.acc.ap.ck.d'].sudo().create(d_vals_list)
 
         return res
 
