@@ -10,8 +10,8 @@ _logger = logging.getLogger(__name__)
 from odoo.exceptions import ValidationError
 
 
-class AccApNkH(models.Model):
-    _name = 'acc.ap.nk.h'
+class NLAccTSCDGtNcH(models.Model):
+    _name = 'nl.acc.tscd.gt.nc.h'
     _order = 'NGAY_CT DESC'
     _rec_name = 'CHUNG_TU'
 
@@ -56,7 +56,7 @@ class AccApNkH(models.Model):
     CHI_NHANH = fields.Many2one('acc.chi.nhanh', string="Chi nhánh", store=True)
 
     ACC_SP_D = fields.One2many(
-        comodel_name="acc.ap.nk.d",
+        comodel_name="nl.acc.tscd.gt.nc.d",
         inverse_name="ACC_AP_H",
         string="Bảng chi tiết",
         store=True
@@ -101,10 +101,10 @@ class AccApNkH(models.Model):
     #     return [('id', 'in', ids)]
 
     def default_get(self, fields_list):
-        res = super(AccApNkH, self).default_get(fields_list)
+        res = super(NLAccTSCDGtNcH, self).default_get(fields_list)
         # Tìm phân quyền của user hiện tại
         permission = self.env['sonha.phan.quyen.nl'].sudo().search([
-            ('MENU', '=', 378),
+            ('MENU', '=', 382),
         ], limit=1)
         dl = self.env['acc.loaidl'].sudo().search([('id', '=', 5)])
 
@@ -294,12 +294,12 @@ class AccApNkH(models.Model):
                 "MA_TK1": temp_rec.MA_TK1 or "",
                 "DVCS": temp_rec.DVCS.id or 1,
                 "CHI_NHANH": temp_rec.CHI_NHANH.id or 0,
-                "MENU_ID": temp_rec.MENU_ID.id or 378,
+                "MENU_ID": temp_rec.MENU_ID.id or 382,
                 "NGUOI_TAO": self.env.uid or None,
                 "NGUOI_SUA": self.env.uid or None,
             }
 
-            table_name = 'acc.ap.nk.h'
+            table_name = 'nl.acc.tscd.gt.nc.h'
 
             json_data = json.dumps(vals_dict)
 
@@ -314,9 +314,9 @@ class AccApNkH(models.Model):
                     raise ValidationError(loi)
 
         # Gọi function sinh chứng từ tự động
-        rec = super(AccApNkH, self).create(vals)
+        rec = super(NLAccTSCDGtNcH, self).create(vals)
         query = "SELECT * FROM fn_chung_tu_tu_dong(%s, %s)"
-        self.env.cr.execute(query, ('menu_378', str(rec.NGAY_CT)))
+        self.env.cr.execute(query, ('menu_382', str(rec.NGAY_CT)))
         rows = self.env.cr.fetchall()
         if rows:
             rec.CHUNG_TU = rows[0][0]
@@ -325,7 +325,7 @@ class AccApNkH(models.Model):
 
     def write(self, vals):
         """Ghi dữ liệu acc.ap.h, sao lưu dữ liệu acc.ap.d sang bảng tổng hợp trước khi ghi."""
-        res = super(AccApNkH, self).write(vals)
+        res = super(NLAccTSCDGtNcH, self).write(vals)
 
         for record in self:
             for recs in record.ACC_SP_D:
@@ -366,7 +366,7 @@ class AccApNkH(models.Model):
                     "NGUOI_SUA": self.env.uid or None,
                 }
 
-                table_name = 'acc.ap.nk.h'
+                table_name = 'nl.acc.tscd.gt.nc.h'
 
                 json_data = json.dumps(vals_dict)
                 self.env.cr.execute("""SELECT * FROM fn_check_nl(%s::text, %s::jsonb);""", (table_name, json_data))
@@ -378,7 +378,7 @@ class AccApNkH(models.Model):
                         pass
                     else:
                         raise ValidationError(loi)
-            all_d_records = self.env['acc.ap.nk.d'].search([('ACC_AP_H', '=', record.id)])
+            all_d_records = self.env['nl.acc.tscd.gt.nc.d'].search([('ACC_AP_H', '=', record.id)])
 
             # 1️⃣ Sao lưu dữ liệu D sang bảng tổng hợp log
             self._copy_to_tong_hop_abc(all_d_records)
@@ -411,11 +411,11 @@ class AccApNkH(models.Model):
                         vals_d[field_name] = value
                 d_vals_list.append(vals_d)
 
-            self.env['nl.acc.tong.hop'].sudo().search([('ACC_NK_D', 'in', all_d_records.ids)]).unlink()
-            self.env['acc.ap.nk.d'].sudo().search([('id', 'in', all_d_records.ids)]).unlink()
+            self.env['nl.acc.tong.hop'].sudo().search([('ACC_GT_NC', 'in', all_d_records.ids)]).unlink()
+            self.env['nl.acc.tscd.gt.nc.d'].sudo().search([('id', 'in', all_d_records.ids)]).unlink()
 
             if d_vals_list:
-                self.env['acc.ap.nk.d'].sudo().create(d_vals_list)
+                self.env['nl.acc.tscd.gt.nc.d'].sudo().create(d_vals_list)
 
         return res
 

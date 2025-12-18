@@ -48,5 +48,10 @@ access_nl_acc_tong_hop,nl.acc.tong.hop,model_nl_acc_tong_hop,,1,1,1,1
 access_nl_acc_tong_hop_log,nl.acc.tong.hop.log,model_nl_acc_tong_hop_log,,1,1,1,1
 
 
-
 access_popup_tim_kiem,popup.tim.kiem,model_popup_tim_kiem,,1,1,1,1
+
+access_nl_acc_tscd_gt_nc_h,nl.acc.tscd.gt.nc.h,model_nl_acc_tscd_gt_nc_h,,1,1,1,1
+access_nl_acc_tscd_gt_nc_d,nl.acc.tscd.gt.nc.d,model_nl_acc_tscd_gt_nc_d,,1,1,1,1
+
+access_nl_acc_tscd_gt_lt_h,nl.acc.tscd.gt.lt.h,model_nl_acc_tscd_gt_lt_h,,1,1,1,1
+access_nl_acc_tscd_gt_lt_d,nl.acc.tscd.gt.lt.d,model_nl_acc_tscd_gt_lt_d,,1,1,1,1
