@@ -245,7 +245,7 @@ class NLAccApCkD(models.Model):
                     'KHOAN_MUC': related.KHOAN_MUC.id if related.KHOAN_MUC else False,
                     'TIEN_TE': related.TIEN_TE.id if related.TIEN_TE else False,
                     'TY_GIA': related.TY_GIA,
-                    'MA_TK1_ID': related.MA_TK1_ID.id if related.MA_TK1_ID else False,
+                    # 'MA_TK1_ID': related.MA_TK1_ID.id if related.MA_TK1_ID else False,
                     'DVCS': related.DVCS.id if related.DVCS else False,
                     'CHI_NHANH': related.CHI_NHANH.id if related.CHI_NHANH else False,
                     'MENU_ID': related.MENU_ID.id if related.MENU_ID else False,
