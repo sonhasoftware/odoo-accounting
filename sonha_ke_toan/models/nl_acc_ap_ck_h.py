@@ -38,7 +38,6 @@ class NLAccApCkH(models.Model):
 
     # Liên kết đến bảng kho
     KHO = fields.Many2one('acc.kho', string="Kho", store=True)
-    KHO_NHAN = fields.Many2one('acc.kho', string="Kho nhận", store=True)
 
     # Khoản mục (nếu là bảng riêng thì có thể Many2one)
     KHOAN_MUC = fields.Many2one('acc.khoan.muc', string="Khoản mục", store=True)
@@ -47,8 +46,6 @@ class NLAccApCkH(models.Model):
     TY_GIA = fields.Float(string="Tỷ giá", store=True, default=1)
 
     # Liên kết đến bảng tài khoản
-    MA_TK0_ID = fields.Many2one('acc.tai.khoan', string="Nợ", store=True)
-    MA_TK0 = fields.Char(related='MA_TK0_ID.MA', string="Nợ", store=True)
     MA_TK1_ID = fields.Many2one('acc.tai.khoan', string="Có", store=True)
     MA_TK1 = fields.Char(related='MA_TK1_ID.MA', string="Có", store=True)
 
@@ -292,15 +289,16 @@ class NLAccApCkH(models.Model):
                 "KHOAN_MUC": temp_rec.KHOAN_MUC.id or 0,
                 "TIEN_TE": temp_rec.TIEN_TE.id or "",
                 "TY_GIA": temp_rec.TY_GIA or "",
-                "MA_TK1": temp_rec.MA_TK1 or "",
+                "MA_TK1": recs.MA_TK1_ID.MA or "",
                 "DVCS": temp_rec.DVCS.id or 1,
                 "CHI_NHANH": temp_rec.CHI_NHANH.id or 0,
                 "MENU_ID": temp_rec.MENU_ID.id or 386,
                 "NGUOI_TAO": self.env.uid or None,
                 "NGUOI_SUA": self.env.uid or None,
             }
+            print('ttttttttttt', vals_dict)
 
-            table_name = 'nl.acc.ap.ck.h'
+            table_name = 'nl.acc.ap.ck.d'
 
             json_data = json.dumps(vals_dict)
 
@@ -359,7 +357,7 @@ class NLAccApCkH(models.Model):
                     "KHOAN_MUC": record.KHOAN_MUC.id or 0,
                     "TIEN_TE": record.TIEN_TE.id or "",
                     "TY_GIA": record.TY_GIA or "",
-                    "MA_TK1": record.MA_TK1 or "",
+                    "MA_TK1": recs.MA_TK1_ID.MA or "",
                     "DVCS": record.DVCS.id or 1,
                     "CHI_NHANH": record.CHI_NHANH.id or 0,
                     "MENU_ID": record.MENU_ID.id or 386,
@@ -367,7 +365,8 @@ class NLAccApCkH(models.Model):
                     "NGUOI_SUA": self.env.uid or None,
                 }
 
-                table_name = 'nl.cc.ap.ck.h'
+                table_name = 'nl.acc.ap.ck.d'
+                print('ttttttttttt', vals_dict)
 
                 json_data = json.dumps(vals_dict)
                 self.env.cr.execute("""SELECT * FROM fn_check_nl(%s::text, %s::jsonb);""", (table_name, json_data))
