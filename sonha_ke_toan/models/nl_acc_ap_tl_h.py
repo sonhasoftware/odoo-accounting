@@ -418,7 +418,7 @@ class NlAccApTlH(models.Model):
                     "MA_TK1": self._get_parent_value(record, vals, 'MA_TK1_ID').MA or "",
                     "DVCS": self._get_parent_value(record, vals, 'DVCS').id or 1,
                     "CHI_NHANH": self._get_parent_value(record, vals, 'CHI_NHANH').id or 0,
-                    "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 337,
+                    "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 380,
                     "NGUOI_TAO": self.create_uid.id or None,
                     "NGUOI_SUA": self.env.uid or None,
                 }

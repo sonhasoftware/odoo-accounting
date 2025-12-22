@@ -418,7 +418,7 @@ class AccTscdGtLtH(models.Model):
                     "MA_TK1": ma_tk1 or "",
                     "DVCS": self._get_parent_value(record, vals, 'DVCS').id or 1,
                     "CHI_NHANH": self._get_parent_value(record, vals, 'CHI_NHANH').id or 0,
-                    "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 337,
+                    "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 383,
                     "NGUOI_TAO": self.create_uid.id or None,
                     "NGUOI_SUA": self.env.uid or None,
                 }
