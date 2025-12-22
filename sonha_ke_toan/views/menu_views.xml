@@ -232,4 +232,27 @@
               parent="menu_phieu_tscd"
               action="nl_acc_tscd_gg_lt_h_action"
               sequence="4"/>
+
+    <menuitem id="menu_kc_cuoi_thang"
+              name="KC cuối tháng"
+              parent="menu_sonha_accounting"
+              sequence="3"/>
+
+    <menuitem id="menu_khau_hao"
+              name="Khấu hao TSCĐ/CCDC"
+              parent="menu_kc_cuoi_thang"
+              action="khau_hao_action"
+              sequence="1"/>
+
+    <menuitem id="menu_gia_von"
+              name="Tính Giá Vốn"
+              parent="menu_kc_cuoi_thang"
+              action="gia_von_action"
+              sequence="2"/>
+
+    <menuitem id="menu_kc_lai_lo"
+              name="KC lãi lỗ"
+              parent="menu_kc_cuoi_thang"
+              action="kc_lai_lo_action"
+              sequence="3"/>
 </odoo>

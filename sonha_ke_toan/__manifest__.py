@@ -45,8 +45,12 @@
         'views/acc_tscd_gt_lt_h_views.xml',
         'views/acc_tscd_gg_nc_h_views.xml',
         'views/acc_tscd_gg_lt_h_views.xml',
+        'views/acc_kchuyen_views.xml',
         'wizard/thong_bao_wizard_views.xml',
         'wizard/popup_tim_kiem_views.xml',
+        'wizard/popup_khau_hao_views.xml',
+        'wizard/popup_gia_von_views.xml',
+        'wizard/popup_kc_lai_lo_views.xml',
         'views/menu_views.xml',
     ],
     'assets': {
