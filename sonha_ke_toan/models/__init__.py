@@ -52,3 +52,5 @@ from . import nl_acc_tscd_gg_nc_d
 
 from . import nl_acc_tscd_gg_lt_h
 from . import nl_acc_tscd_gg_lt_d
+
+from . import res_company

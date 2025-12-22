@@ -44,8 +44,10 @@
         'views/acc_tscd_gt_lt_h_views.xml',
         'views/acc_tscd_gg_nc_h_views.xml',
         'views/acc_tscd_gg_lt_h_views.xml',
+        'views/res_company_view.xml',
         'wizard/thong_bao_wizard_views.xml',
         'wizard/popup_tim_kiem_views.xml',
+        'wizard/popup_change_field_view.xml',
         'views/menu_views.xml',
     ],
     'assets': {
@@ -56,6 +58,7 @@
             'sonha_ke_toan/static/src/js/confirm_before_save.js',
             'sonha_ke_toan/static/src/css/style.css',
             'sonha_ke_toan/static/src/js/list_button.js',
+            'sonha_ke_toan/static/src/js/list_focus.js',
             'sonha_ke_toan/static/src/xml/button_list_button.xml',
         ],
     },
