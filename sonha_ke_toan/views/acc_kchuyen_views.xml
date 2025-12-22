@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_acc_kchuyen_tree" model="ir.ui.view">
+        <field name="name">acc.kchuyen.tree</field>
+        <field name="model">acc.kchuyen</field>
+        <field name="arch" type="xml">
+            <tree string="Bảng kết chuyển" class="hide-breadcrumb" editable="bottom">
+                <field name="TU_TK"/>
+                <field name="SANG_TK"/>
+                <field name="LAN"/>
+                <field name="TU_BEN"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="acc_kchuyen_action" model="ir.actions.act_window">
+        <field name="name">Bảng kết chuyển</field>
+        <field name="res_model">acc.kchuyen</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+</odoo>

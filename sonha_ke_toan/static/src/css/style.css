@@ -98,3 +98,17 @@ div#TSCDContainer {
 div#MA_TK1_IDContainer {
     display: none !important;
 }
+
+
+.hide-breadcrumb ol.breadcrumb.flex-nowrap.text-nowrap.small.lh-sm {
+    display: none !important;
+}
+
+.hide-breadcrumb .o_last_breadcrumb_item.active.d-flex.gap-2.align-items-center.min-w-0.lh-sm {
+    font-size: 1rem !important;
+    padding-top: 5px !important;
+}
+
+.hide-breadcrumb span.min-w-0.text-truncate {
+    height: 25px !important;
+}

@@ -50,6 +50,9 @@ access_nl_acc_tong_hop_log,nl.acc.tong.hop.log,model_nl_acc_tong_hop_log,,1,1,1,
 
 access_popup_tim_kiem,popup.tim.kiem,model_popup_tim_kiem,,1,1,1,1
 
+access_nl_acc_nk_sx_h,nl.acc.nk.sx.h,model_nl_acc_nk_sx_h,,1,1,1,1
+access_nl_acc_nk_sx_d,nl.acc.nk.sx.d,model_nl_acc_nk_sx_d,,1,1,1,1
+
 access_nl_acc_ap_ck_h,nl.acc.ap.ck.h,model_nl_acc_ap_ck_h,,1,1,1,1
 access_nl_acc_ap_ck_d,nl.acc.ap.ck.d,model_nl_acc_ap_ck_d,,1,1,1,1
 
@@ -66,6 +69,10 @@ access_nl_acc_tscd_gg_nc_d,nl.acc.tscd.gg.nc.d,model_nl_acc_tscd_gg_nc_d,,1,1,1,
 access_nl_acc_tscd_gg_lt_h,nl.acc.tscd.gg.lt.h,model_nl_acc_tscd_gg_lt_h,,1,1,1,1
 access_nl_acc_tscd_gg_lt_d,nl.acc.tscd.gg.lt.d,model_nl_acc_tscd_gg_lt_d,,1,1,1,1
 
+access_acc_kchuyen,acc.kchuyen,model_acc_kchuyen,,1,1,1,1
+access_popup_khau_hao,popup.khau.hao,model_popup_khau_hao,,1,1,1,1
+access_popup_gia_von,popup.gia.von,model_popup_gia_von,,1,1,1,1
+access_popup_kc_lai_lo,popup.kc.lai.lo,model_popup_kc_lai_lo,,1,1,1,1
 
 
 

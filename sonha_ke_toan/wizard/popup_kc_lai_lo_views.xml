@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_popup_kc_lai_lo_form" model="ir.ui.view">
+        <field name="name">popup.kc.lai.lo.form</field>
+        <field name="model">popup.kc.lai.lo</field>
+        <field name="arch" type="xml">
+            <form string="KC lãi lỗ">
+                <header>
+                    <button name="action_create_kc_table" string="Tạo bảng kết chuyển" type="object" class="oe_highlight"/>
+                    <button name="action_create_kcct_table" string="Tạo bảng kết chuyển chi tiết" type="object" class="oe_highlight"/>
+                </header>
+                <group>
+                    <group>
+                        <field name="thang"/>
+                    </group>
+                    <group>
+                        <field name="nam"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Xử lý" type="object" name="action_handle" class="oe_highlight"/>
+                    <button string="Xem" type="object" name="action_view" class="oe_highlight"/>
+                    <button string="Hủy" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="kc_lai_lo_action" model="ir.actions.act_window">
+        <field name="name">KC lãi lỗ</field>
+        <field name="res_model">popup.kc.lai.lo</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>
