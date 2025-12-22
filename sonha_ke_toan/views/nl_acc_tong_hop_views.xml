@@ -4,7 +4,7 @@
         <field name="name">nl.acc.tong.hop.tree</field>
         <field name="model">nl.acc.tong.hop</field>
         <field name="arch" type="xml">
-            <tree string="Tổng hợp" create="false" editable="bottom" edit="true">
+            <tree string="Tổng hợp" create="false" editable="bottom" edit="true" js_class="button_click_f9">
                 <field name="NGAY_CT" optional="show"/>
                 <field name="CHUNG_TU" optional="show"/>
                 <field name="SO_HD" optional="show"/>

@@ -51,6 +51,9 @@
         'wizard/popup_khau_hao_views.xml',
         'wizard/popup_gia_von_views.xml',
         'wizard/popup_kc_lai_lo_views.xml',
+        'views/res_company_view.xml',
+        'wizard/thong_bao_wizard_views.xml',
+        'wizard/popup_change_field_view.xml',
         'views/menu_views.xml',
     ],
     'assets': {
@@ -61,6 +64,7 @@
             'sonha_ke_toan/static/src/js/confirm_before_save.js',
             'sonha_ke_toan/static/src/css/style.css',
             'sonha_ke_toan/static/src/js/list_button.js',
+            'sonha_ke_toan/static/src/js/list_focus.js',
             'sonha_ke_toan/static/src/xml/button_list_button.xml',
         ],
     },
