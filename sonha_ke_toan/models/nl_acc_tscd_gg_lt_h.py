@@ -322,46 +322,103 @@ class AccTscdGgLtH(models.Model):
 
         return rec
 
+    def _get_parent_value(self, record, vals, field_name):
+        if field_name in vals:
+            value = vals[field_name]
+            field = record._fields[field_name]
+
+            if field.type == 'many2one':
+                return self.env[field.comodel_name].browse(value) if value else self.env[field.comodel_name]
+            return value
+        value = record[field_name]
+        return value
+
+    def read_to_vals(self, read_dict):
+        vals = {}
+
+        for key, val in read_dict.items():
+            if key in {
+                'id', 'display_name',
+                'create_uid', 'create_date',
+                'write_uid', 'write_date',
+                '__last_update'
+            }:
+                continue
+            if isinstance(val, tuple):
+                vals[key] = val[0] if val else False
+            elif val is None or val is False:
+                vals[key] = False
+            else:
+                vals[key] = val
+
+        return vals
+
     def write(self, vals):
         """Ghi dữ liệu acc.ap.h, sao lưu dữ liệu acc.ap.d sang bảng tổng hợp trước khi ghi."""
-        res = super(AccTscdGgLtH, self).write(vals)
 
         for record in self:
-            for recs in record.ACC_SP_D:
+            # Lấy D records từ vals hoặc D records hiện có
+            if 'ACC_AP_D' in vals or 'ACC_SP_D' in vals:
+                # Nếu D records được edit từ form, lấy từ vals (dưới dạng (0, 0, {...}))
+                new_d_records = vals.get('ACC_AP_D') or vals.get('ACC_SP_D') or []
 
+                # Chuyển đổi command format Odoo sang dict
+                d_records_to_validate = []
+                for cmd in new_d_records:
+                    if cmd[0] == 0:  # Create command
+                        d_records_to_validate.append(cmd[2])
+                    elif cmd[0] == 1:  # Write command
+                        # Lấy record và update với giá trị mới
+                        d_record = self.env['nl.acc.tscd.gg.lt.d'].browse(cmd[1])
+                        read_data = d_record.read()[0]
+                        d_dict = self.read_to_vals(read_data)
+                        d_dict.update(cmd[2])
+                        d_records_to_validate.append(d_dict)
+            else:
+                # Không có D records được edit, lấy D records hiện có
+                all_d_records = self.env['nl.acc.tscd.gg.lt.d'].search([('ACC_AP_H', '=', record.id)])
+                d_records_to_validate = []
+                for d in all_d_records:
+                    read_data = d.read()[0]
+                    d_vals = self.read_to_vals(read_data)
+                    d_records_to_validate.append(d_vals)
+            # VALIDATE từng D record
+
+            for d_vals in d_records_to_validate:
+                ma_tk0 = self.env['acc.tai.khoan'].search([('id', '=', d_vals.get('MA_TK0_ID'))]).MA
+                ma_tk1 = self.env['acc.tai.khoan'].search([('id', '=', d_vals.get('MA_TK1_ID'))]).MA
                 vals_dict = {
-                    "HANG_HOA": recs.HANG_HOA.id or None,
-                    "MA_TK0": recs.MA_TK0 or "",
-                    "SO_LUONG": recs.SO_LUONG,
-                    "DON_GIA": recs.DON_GIA,
-                    "PS_NO1": recs.PS_NO1,
-                    "TIEN_NTE": recs.TIEN_NTE,
-                    "VAT": recs.VAT,
-                    "NGAY_CT": str(record.NGAY_CT) or "",
-                    "CHUNG_TU": record.CHUNG_TU or "",
-                    "CTGS": record.CTGS or "",
-                    "SO_HD": record.SO_HD or "",
-                    "SERI_HD": record.SERI_HD or "",
-                    "NGAY_HD": str(record.NGAY_HD) or None,
-                    "MAU_SO": record.MAU_SO or None,
-                    "PT_THUE": record.PT_THUE.PT_THUE or "",
-                    "ONG_BA": record.ONG_BA or "",
-                    "GHI_CHU": record.GHI_CHU or "",
-                    "KHACH_HANG": record.KHACH_HANG.id or 0,
-                    "KH_THUE": record.KH_THUE or "",
-                    "MS_THUE": record.MS_THUE or "",
-                    "DC_THUE": record.DC_THUE or "",
-                    "BO_PHAN": record.BO_PHAN.id or 0,
-                    "VVIEC": record.VVIEC.id or 0,
-                    "KHO": record.KHO.id or 0,
-                    "KHOAN_MUC": record.KHOAN_MUC.id or 0,
-                    "TIEN_TE": record.TIEN_TE.id or "",
-                    "TY_GIA": record.TY_GIA or "",
-                    "MA_TK1": recs.MA_TK1 or "",
-                    "DVCS": record.DVCS.id or 1,
-                    "CHI_NHANH": record.CHI_NHANH.id or 0,
-                    "TSCD": recs.TSCD.id or 0,
-                    "MENU_ID": record.MENU_ID.id or 385,
+                    "HANG_HOA": d_vals.get('HANG_HOA') or None,
+                    "MA_TK0": ma_tk0 or "",
+                    "SO_LUONG": d_vals.get('SO_LUONG'),
+                    "DON_GIA": d_vals.get('DON_GIA'),
+                    "PS_NO1": d_vals.get('PS_NO1'),
+                    "TIEN_NTE": d_vals.get('TIEN_NTE'),
+                    "VAT": d_vals.get('VAT'),
+                    "NGAY_CT": str(self._get_parent_value(record, vals, 'NGAY_CT')) or "",
+                    "CHUNG_TU": self._get_parent_value(record, vals, 'CHUNG_TU') or "",
+                    "CTGS": self._get_parent_value(record, vals, 'CTGS') or "",
+                    "SO_HD": self._get_parent_value(record, vals, 'SO_HD') or "",
+                    "SERI_HD": self._get_parent_value(record, vals, 'SERI_HD') or "",
+                    "NGAY_HD": str(self._get_parent_value(record, vals, 'NGAY_HD')) or None,
+                    "MAU_SO": self._get_parent_value(record, vals, 'MAU_SO') or None,
+                    "PT_THUE": self._get_parent_value(record, vals, 'PT_THUE').PT_THUE or "",
+                    "ONG_BA": self._get_parent_value(record, vals, 'ONG_BA') or "",
+                    "GHI_CHU": self._get_parent_value(record, vals, 'GHI_CHU') or "",
+                    "KHACH_HANG": self._get_parent_value(record, vals, 'KHACH_HANG').id or 0,
+                    "KH_THUE": self._get_parent_value(record, vals, 'KH_THUE') or "",
+                    "MS_THUE": self._get_parent_value(record, vals, 'MS_THUE') or "",
+                    "DC_THUE": self._get_parent_value(record, vals, 'DC_THUE') or "",
+                    "BO_PHAN": self._get_parent_value(record, vals, 'BO_PHAN').id or 0,
+                    "VVIEC": self._get_parent_value(record, vals, 'VVIEC').id or 0,
+                    "KHO": self._get_parent_value(record, vals, 'KHO').id or 0,
+                    "KHOAN_MUC": self._get_parent_value(record, vals, 'KHOAN_MUC').id or 0,
+                    "TIEN_TE": self._get_parent_value(record, vals, 'TIEN_TE').id or "",
+                    "TY_GIA": self._get_parent_value(record, vals, 'TY_GIA') or "",
+                    "MA_TK1": ma_tk1 or "",
+                    "DVCS": self._get_parent_value(record, vals, 'DVCS').id or 1,
+                    "CHI_NHANH": self._get_parent_value(record, vals, 'CHI_NHANH').id or 0,
+                    "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 337,
                     "NGUOI_TAO": self.create_uid.id or None,
                     "NGUOI_SUA": self.env.uid or None,
                 }
@@ -369,33 +426,28 @@ class AccTscdGgLtH(models.Model):
                 table_name = 'nl.acc.tscd.gg.lt.h'
 
                 json_data = json.dumps(vals_dict)
-                self.env.cr.execute("""SELECT * FROM fn_check_nl(%s::text, %s::jsonb);""", (table_name, json_data))
+
+                self.env.cr.execute(
+                    """SELECT * FROM fn_check_nl(%s::text, %s::jsonb);""",
+                    (table_name, json_data)
+                )
+
                 check = self.env.cr.dictfetchall()
                 if check:
                     result = check[0]
                     loi = list(result.values())[0]
-                    if loi == None:
-                        pass
-                    else:
+                    if loi:
                         raise ValidationError(loi)
+
+        res = super(AccTscdGgLtH, self).write(vals)
+
+        for record in self:
             all_d_records = self.env['nl.acc.tscd.gg.lt.d'].search([('ACC_AP_H', '=', record.id)])
 
-            # 1️⃣ Sao lưu dữ liệu D sang bảng tổng hợp log
+            # Copy D records sang bảng log
             self._copy_to_tong_hop_abc(all_d_records)
 
-            # 2️⃣ Chuẩn bị dữ liệu H và D để tạo lại (convert đúng kiểu)
-            vals_h = {}
-            for field_name, field in record._fields.items():
-                if field_name in ['id', '__last_update', 'line_ids', 'create_date', 'write_date', 'create_uid', 'write_uid']:
-                    continue
-                value = record[field_name]
-                if field.type == 'many2one':
-                    vals_h[field_name] = value.id if value else False
-                elif field.type in ['one2many', 'many2many']:
-                    continue
-                else:
-                    vals_h[field_name] = value
-
+            # Chuẩn bị dữ liệu D
             d_vals_list = []
             for d in all_d_records:
                 vals_d = {}
