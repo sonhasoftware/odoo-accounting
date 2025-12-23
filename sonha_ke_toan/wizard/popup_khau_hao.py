@@ -22,6 +22,12 @@ class PopupKhauHao(models.TransientModel):
                              default=lambda self: self._get_default_month())
     nam = fields.Integer(string="Năm", store=True, default=lambda self: self.default_nam())
 
+    @api.constrains('nam')
+    def _check_nam(self):
+        for r in self:
+            if r.nam <= 0:
+                raise ValidationError("Năm không thể nhỏ hơn 1!")
+
     def _get_default_month(self):
         now = datetime.now().date()
         month = now.month
