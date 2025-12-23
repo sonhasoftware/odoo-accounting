@@ -6,8 +6,8 @@
         <field name="arch" type="xml">
             <form string="Thông báo" class="form-thong-bao">
                 <sheet>
-                    <field name="TIEU_DE" style="font-size: 1.2rem;"/>
-                    <field name="NOI_DUNG" widget="text" rows="8"/>
+                    <field name="TIEU_DE" style="font-size: 1.2rem;" readonly="1"/>
+                    <field name="NOI_DUNG" widget="text" rows="8" readonly="1"/>
                 </sheet>
                 <footer>
                     <button string="Cancel" class="btn-secondary" special="cancel"/>
