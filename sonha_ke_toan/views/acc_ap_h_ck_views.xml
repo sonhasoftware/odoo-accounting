@@ -7,10 +7,12 @@
             <tree string="Phiếu chuyển kho">
                 <field name="NGAY_CT" optional="show"/>
                 <field name="CHUNG_TU" optional="show"/>
-                <field name="SO_HD" optional="show"/>
-                <field name="SERI_HD" optional="show"/>
-                <field name="NGAY_HD" optional="show"/>
+                <field name="CHI_NHANH" optional="show"/>
+<!--                <field name="SO_HD" optional="show"/>-->
+<!--                <field name="SERI_HD" optional="show"/>-->
+<!--                <field name="NGAY_HD" optional="show"/>-->
                 <field name="KHO" optional="show"/>
+                <field name="KHOC" optional="show"/>
                 <field name="create_uid" string="Người tạo" optional="hide"/>
                 <field name="write_uid" string="Người sửa" optional="hide"/>
                 <field name="create_date" string="Ngày tạo" optional="hide"/>
@@ -34,8 +36,8 @@
                         <field name="NGAY_CT"/>
                         <label for="LOAIDL">Loại DL</label>
                         <field name="LOAIDL"/>
-                        <label for="PT_THUE">% Thuế</label>
-                        <field name="PT_THUE"/>
+<!--                        <label for="PT_THUE">% Thuế</label>-->
+<!--                        <field name="PT_THUE"/>-->
                     </div>
 
                     <div class="form-row">
@@ -45,14 +47,14 @@
                         <field name="CTGS" string="YC Mua"/>
                     </div>
 
-                    <div class="form-row">
-                        <label for="SO_HD">Số HĐ</label>
-                        <field name="SO_HD"/>
-                        <label for="SERI_HD">SERI HĐ</label>
-                        <field name="SERI_HD"/>
-                        <label for="NGAY_HD">Ngày HĐ</label>
-                        <field name="NGAY_HD"/>
-                    </div>
+<!--                    <div class="form-row">-->
+<!--                        <label for="SO_HD">Số HĐ</label>-->
+<!--                        <field name="SO_HD"/>-->
+<!--                        <label for="SERI_HD">SERI HĐ</label>-->
+<!--                        <field name="SERI_HD"/>-->
+<!--                        <label for="NGAY_HD">Ngày HĐ</label>-->
+<!--                        <field name="NGAY_HD"/>-->
+<!--                    </div>-->
 
                     <div class="form-row">
                         <label for="CHI_NHANH">Chi nhánh</label>
@@ -94,8 +96,8 @@
                     </div>
 
                     <div class="form-row">
-                        <label for="KHO_NHAN">Kho nhận</label>
-                        <field name="KHO_NHAN"/>
+                        <label for="KHOC">Kho nhận</label>
+                        <field name="KHOC"/>
                     </div>
 
                     <div class="form-row">
@@ -105,15 +107,15 @@
                         <field name="TY_GIA"/>
                     </div>
 
-                    <div class="form-row">
-                        <label for="MA_TK0_ID">Nợ</label>
-                        <field name="MA_TK0_ID"/>
-                    </div>
+<!--                    <div class="form-row">-->
+<!--                        <label for="MA_TK0_ID">Nợ</label>-->
+<!--                        <field name="MA_TK0_ID"/>-->
+<!--                    </div>-->
 
-                    <div class="form-row">
-                        <label for="MA_TK1_ID">Có</label>
-                        <field name="MA_TK1_ID"/>
-                    </div>
+<!--                    <div class="form-row">-->
+<!--                        <label for="MA_TK1_ID">Có</label>-->
+<!--                        <field name="MA_TK1_ID"/>-->
+<!--                    </div>-->
 <!--                    <div class="form-row">-->
 <!--                        <label for="KH_THUE">KH thuế</label>-->
 <!--                        <field name="KH_THUE"/>-->
@@ -144,6 +146,8 @@
                     <field name="HANG_HOA"/>
 <!--                    <field name="HEAD_NO"/>-->
 <!--                    <field name="MA_TK0_ID"/>-->
+                    <field name="MA_TK0_ID"/>
+                    <field name="MA_TK1_ID"/>
                     <field name="SO_LUONG" widget="float"/>
                     <field name="DON_GIA" widget="float"/>
                     <field name="PS_NO1"/>
