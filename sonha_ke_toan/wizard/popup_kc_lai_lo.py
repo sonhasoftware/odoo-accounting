@@ -50,10 +50,19 @@ class PopupKcLaiLo(models.TransientModel):
         else:
             thang = datetime.now().date().month
         handle_date = date(self.nam, thang, 1) + relativedelta(months=1) - timedelta(days=1)
-        query = "SELECT * FROM fn_tinh_lai_lo(%s, %s, %s, %s)"
+        query = "SELECT * FROM fn_tinh_lai_lo(%s, %s, %s, date %s)"
         self.env.cr.execute(query, (company, user, menu, handle_date))
         result = self.env.cr.dictfetchone()
-        raise ValidationError(result["fn_tinh_lai_lo"])
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Thông báo',
+            'res_model': 'thong.bao.wizard',
+            'view_mode': 'form',
+            'context': {
+                'default_NOI_DUNG': result["fn_tinh_lai_lo"],
+            },
+            'target': 'new',
+        }
 
     def action_view(self):
         company = self.env.company.id
@@ -86,10 +95,19 @@ class PopupKcLaiLo(models.TransientModel):
         else:
             thang = datetime.now().date().month
         handle_date = date(self.nam, thang, 1) + relativedelta(months=1) - timedelta(days=1)
-        query = "SELECT * FROM fn_delete_lai_lo_khau_hao(%s, %s, %s, %s)"
+        query = "SELECT * FROM fn_delete_lai_lo_khau_hao(%s, %s, %s, date %s)"
         self.env.cr.execute(query, (company, user, menu, handle_date))
         result = self.env.cr.dictfetchone()
-        raise ValidationError(result["fn_delete_lai_lo_khau_hao"])
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Thông báo',
+            'res_model': 'thong.bao.wizard',
+            'view_mode': 'form',
+            'context': {
+                'default_NOI_DUNG': result["fn_delete_lai_lo_khau_hao"],
+            },
+            'target': 'new',
+        }
 
 
     def action_create_kc_table(self):

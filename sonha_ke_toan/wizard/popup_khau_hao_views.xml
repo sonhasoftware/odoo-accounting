@@ -16,7 +16,7 @@
                 <footer>
                     <button string="Xử lý" type="object" name="action_handle" class="oe_highlight"/>
                     <button string="Xem" type="object" name="action_view" class="oe_highlight"/>
-                    <button string="Hủy" type="object" class="oe_highlight" name="action_cancel"/>
+                    <button string="Hủy" type="object" class="oe_highlight" name="action_cancel" confirm="Bạn có chắc chắn muốn hủy khấu hao không?"/>
                 </footer>
             </form>
         </field>

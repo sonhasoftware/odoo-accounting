@@ -49,7 +49,16 @@ class PopupGiaVon(models.TransientModel):
             thang = datetime.now().date().month
         from_date = date(self.nam, thang, 1)
         to_date = from_date + relativedelta(months=1) - timedelta(days=1)
-        query = "SELECT * FROM fn_tinh_gia_von_tb_thang(%s, %s, %s)"
+        query = "SELECT * FROM fn_tinh_gia_von_tb_thang(%s, %s, date %s)"
         self.env.cr.execute(query, (company, from_date, to_date))
         result = self.env.cr.dictfetchone()
-        raise ValidationError(result["fn_tinh_gia_von_tb_thang"])
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Thông báo',
+            'res_model': 'thong.bao.wizard',
+            'view_mode': 'form',
+            'context': {
+                'default_NOI_DUNG': result["fn_tinh_gia_von_tb_thang"],
+            },
+            'target': 'new',
+        }
