@@ -1,10 +1,12 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
-from datetime import datetime
+from datetime import datetime, date, timedelta
+from dateutil.relativedelta import relativedelta
 
 
 class PopupKcLaiLo(models.TransientModel):
     _name = "popup.kc.lai.lo"
+    _inherit = ['get.month']
 
     thang = fields.Selection([('mot', 1),
                               ('hai', 2),
@@ -30,42 +32,65 @@ class PopupKcLaiLo(models.TransientModel):
     def _get_default_month(self):
         now = datetime.now().date()
         month = now.month
-        if month == 1:
-            return 'mot'
-        elif month == 2:
-            return 'hai'
-        elif month == 3:
-            return 'ba'
-        elif month == 4:
-            return 'bon'
-        elif month == 5:
-            return 'nam'
-        elif month == 6:
-            return 'sau'
-        elif month == 7:
-            return 'bay'
-        elif month == 8:
-            return 'tam'
-        elif month == 9:
-            return 'chin'
-        elif month == 10:
-            return 'muoi'
-        elif month == 11:
-            return 'muoi_mot'
-        elif month == 12:
-            return 'muoi_hai'
-        else:
-            return None
+        return self.get_month_key(month)
 
     def default_nam(self):
         now = datetime.now().date()
         return now.year
 
+    def get_month(self):
+        return self.get_month_value(self.thang)
+
     def action_handle(self):
-        pass
+        company = self.env.company.id
+        user = self.env.user.id
+        menu = 391
+        if self.thang:
+            thang = self.get_month()
+        else:
+            thang = datetime.now().date().month
+        handle_date = date(self.nam, thang, 1) + relativedelta(months=1) - timedelta(days=1)
+        query = "SELECT * FROM fn_tinh_lai_lo(%s, %s, %s, %s)"
+        self.env.cr.execute(query, (company, user, menu, handle_date))
+        result = self.env.cr.dictfetchone()
+        raise ValidationError(result["fn_tinh_lai_lo"])
 
     def action_view(self):
-        pass
+        company = self.env.company.id
+        menu = 391
+        if self.thang:
+            thang = self.get_month()
+        else:
+            thang = datetime.now().date().month
+        from_date = date(self.nam, thang, 1)
+        to_date = from_date + relativedelta(months=1) - timedelta(days=1)
+        domain = [('NGAY_CT', '>=', from_date),
+                  ('NGAY_CT', '<=', to_date),
+                  ('DVCS', '=', company),
+                  ('MENU_ID', '=', menu)]
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Tổng hợp',
+            'res_model': 'nl.acc.tong.hop',
+            'view_mode': 'tree,form',
+            'domain': domain,
+            'target': 'current',
+        }
+
+    def action_cancel(self):
+        company = self.env.company.id
+        user = self.env.user.id
+        menu = 391
+        if self.thang:
+            thang = self.get_month()
+        else:
+            thang = datetime.now().date().month
+        handle_date = date(self.nam, thang, 1) + relativedelta(months=1) - timedelta(days=1)
+        query = "SELECT * FROM fn_delete_lai_lo_khau_hao(%s, %s, %s, %s)"
+        self.env.cr.execute(query, (company, user, menu, handle_date))
+        result = self.env.cr.dictfetchone()
+        raise ValidationError(result["fn_delete_lai_lo_khau_hao"])
+
 
     def action_create_kc_table(self):
         return {
