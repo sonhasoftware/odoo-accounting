@@ -332,7 +332,7 @@ class NlAccApTlD(models.Model):
                 ''', (uid, uid, now, now, row_id))
 
         self._cr.commit()
-        self.env['nl.acc.tong.hop'].sudo().search([('ACC_TL_D', '=', None)]).unlink()
+        # self.env['nl.acc.tong.hop'].sudo().search([('ACC_TL_D', '=', None)]).unlink()
 
         _logger.info(f"[AUTO] Inserted acc.ap.d id={rec.id} into {table_name}")
 
