@@ -50,7 +50,7 @@ class PopupKcLaiLo(models.TransientModel):
         else:
             thang = datetime.now().date().month
         handle_date = date(self.nam, thang, 1) + relativedelta(months=1) - timedelta(days=1)
-        query = "SELECT * FROM fn_tinh_lai_lo(%s, %s, %s, %s)"
+        query = "SELECT * FROM fn_tinh_lai_lo(%s, %s, %s, date %s)"
         self.env.cr.execute(query, (company, user, menu, handle_date))
         result = self.env.cr.dictfetchone()
         raise ValidationError(result["fn_tinh_lai_lo"])
@@ -86,7 +86,7 @@ class PopupKcLaiLo(models.TransientModel):
         else:
             thang = datetime.now().date().month
         handle_date = date(self.nam, thang, 1) + relativedelta(months=1) - timedelta(days=1)
-        query = "SELECT * FROM fn_delete_lai_lo_khau_hao(%s, %s, %s, %s)"
+        query = "SELECT * FROM fn_delete_lai_lo_khau_hao(%s, %s, %s, date %s)"
         self.env.cr.execute(query, (company, user, menu, handle_date))
         result = self.env.cr.dictfetchone()
         raise ValidationError(result["fn_delete_lai_lo_khau_hao"])
