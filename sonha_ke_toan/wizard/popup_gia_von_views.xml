@@ -15,8 +15,6 @@
                 </group>
                 <footer>
                     <button string="Xử lý" type="object" name="action_handle" class="oe_highlight"/>
-                    <button string="Xem" type="object" name="action_view" class="oe_highlight"/>
-                    <button string="Hủy" class="btn-secondary" special="cancel"/>
                 </footer>
             </form>
         </field>
