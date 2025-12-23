@@ -296,7 +296,6 @@ class NLAccApCkH(models.Model):
                 "NGUOI_TAO": self.env.uid or None,
                 "NGUOI_SUA": self.env.uid or None,
             }
-            print('ttttttttttt', vals_dict)
 
             table_name = 'nl.acc.ap.ck.d'
 
@@ -366,7 +365,6 @@ class NLAccApCkH(models.Model):
                 }
 
                 table_name = 'nl.acc.ap.ck.d'
-                print('ttttttttttt', vals_dict)
 
                 json_data = json.dumps(vals_dict)
                 self.env.cr.execute("""SELECT * FROM fn_check_nl(%s::text, %s::jsonb);""", (table_name, json_data))
