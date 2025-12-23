@@ -10,8 +10,8 @@ _logger = logging.getLogger(__name__)
 from odoo.exceptions import ValidationError
 
 
-class AccTscdGgLtH(models.Model):
-    _name = 'nl.acc.tscd.gg.lt.h'
+class NlAccNkSxH(models.Model):
+    _name = 'nl.acc.nk.sx.h'
     _order = 'NGAY_CT DESC'
     _rec_name = 'CHUNG_TU'
 
@@ -24,7 +24,7 @@ class AccTscdGgLtH(models.Model):
     MAU_SO = fields.Char(string="Mẫu số", store=True, size=10)
     PT_THUE = fields.Many2one('acc.thue', string="% Thuế", store=True)
     ONG_BA = fields.Char(string="Ông bà", store=True , size=60)
-    GHI_CHU = fields.Char(string="Ghi chú", store=True, default="Ghi giảm TCSĐ (Lắp thêm)", size=200)
+    GHI_CHU = fields.Char(string="Ghi chú", store=True, default="Phiếu nhập mua hàng", size=200)
 
     KHACH_HANG = fields.Many2one('acc.khach.hang', string="Khách hàng", store=True)
     KH_THUE = fields.Char(string="KH Thuế", store=True, size=150)
@@ -49,6 +49,9 @@ class AccTscdGgLtH(models.Model):
     MA_TK1_ID = fields.Many2one('acc.tai.khoan', string="Có", store=True)
     MA_TK1 = fields.Char(related='MA_TK1_ID.MA', string="Có", store=True)
 
+    MA_TK0_ID = fields.Many2one('acc.tai.khoan', string="Nợ", store=True, compute='get_ma_tk_id', readonly=False)
+    MA_TK0 = fields.Char(related='MA_TK0_ID.MA', string="Nợ", store=True)
+
     # Liên kết đến bảng đơn vị cơ sở (DVCS)
     DVCS = fields.Many2one('res.company', string="ĐV", store=True, default=lambda self: self.env.company, readonly=True)
 
@@ -56,7 +59,7 @@ class AccTscdGgLtH(models.Model):
     CHI_NHANH = fields.Many2one('acc.chi.nhanh', string="Chi nhánh", store=True)
 
     ACC_SP_D = fields.One2many(
-        comodel_name="nl.acc.tscd.gg.lt.d",
+        comodel_name="nl.acc.nk.sx.d",
         inverse_name="ACC_AP_H",
         string="Bảng chi tiết",
         store=True
@@ -101,24 +104,26 @@ class AccTscdGgLtH(models.Model):
     #     return [('id', 'in', ids)]
 
     def default_get(self, fields_list):
-        res = super(AccTscdGgLtH, self).default_get(fields_list)
+        res = super(NlAccNkSxH, self).default_get(fields_list)
         # Tìm phân quyền của user hiện tại
         permission = self.env['sonha.phan.quyen.nl'].sudo().search([
-            ('MENU', '=', 385),
+            ('MENU', '=', 381),
         ], limit=1)
         dl = self.env['acc.loaidl'].sudo().search([('id', '=', 5)])
 
-        res.update({
-            'BO_PHAN': permission.BO_PHAN.id or None,
-            'KHO': permission.KHO.id or None,
-            'KHOAN_MUC': permission.KHOAN_MUC.id or None,
-            'VVIEC': permission.VVIEC.id or None,
-            'CHI_NHANH': permission.CHI_NHANH.id or None,
-            'TIEN_TE': permission.TIEN_TE.id or None,
-            'MENU_ID': permission.MENU.id or 385,
-            'MA_TK1_ID': permission.MA_TK1_ID.id or None,
-            'LOAIDL': permission.LOAI_DL.id or dl.id,
-        })
+        if permission:
+            res.update({
+                'BO_PHAN': permission.BO_PHAN.id or None,
+                'KHO': permission.KHO.id or None,
+                'KHOAN_MUC': permission.KHOAN_MUC.id or None,
+                'VVIEC': permission.VVIEC.id or None,
+                'CHI_NHANH': permission.CHI_NHANH.id or None,
+                'DVCS': permission.DVCS.id or None,
+                'TIEN_TE': permission.TIEN_TE.id or None,
+                'MENU_ID': permission.MENU.id or None,
+                'MA_TK1_ID': permission.MA_TK1_ID.id or None,
+                'LOAIDL': permission.LOAI_DL.id or dl.id,
+            })
 
         return res
 
@@ -263,7 +268,7 @@ class AccTscdGgLtH(models.Model):
 
             vals_dict = {
                 "HANG_HOA": recs.HANG_HOA.id or None,
-                "MA_TK0": recs.MA_TK0 or "",
+                "MA_TK0": temp_rec.MA_TK0 or "",
                 "SO_LUONG": recs.SO_LUONG,
                 "DON_GIA": recs.DON_GIA,
                 "PS_NO1": recs.PS_NO1,
@@ -289,16 +294,15 @@ class AccTscdGgLtH(models.Model):
                 "KHOAN_MUC": temp_rec.KHOAN_MUC.id or 0,
                 "TIEN_TE": temp_rec.TIEN_TE.id or "",
                 "TY_GIA": temp_rec.TY_GIA or "",
-                "MA_TK1": recs.MA_TK1 or "",
+                "MA_TK1": temp_rec.MA_TK1 or "",
                 "DVCS": temp_rec.DVCS.id or 1,
                 "CHI_NHANH": temp_rec.CHI_NHANH.id or 0,
-                "TSCD": recs.TSCD.id or 0,
-                "MENU_ID": temp_rec.MENU_ID.id or 385,
+                "MENU_ID": temp_rec.MENU_ID.id or 381,
                 "NGUOI_TAO": self.env.uid or None,
                 "NGUOI_SUA": self.env.uid or None,
             }
 
-            table_name = 'nl.acc.tscd.gg.lt.h'
+            table_name = 'nl.acc.nk.sx.h'
 
             json_data = json.dumps(vals_dict)
 
@@ -313,9 +317,9 @@ class AccTscdGgLtH(models.Model):
                     raise ValidationError(loi)
 
         # Gọi function sinh chứng từ tự động
-        rec = super(AccTscdGgLtH, self).create(vals)
+        rec = super(NlAccNkSxH, self).create(vals)
         query = "SELECT * FROM fn_chung_tu_tu_dong(%s, %s)"
-        self.env.cr.execute(query, ('menu_385', str(rec.NGAY_CT)))
+        self.env.cr.execute(query, ('menu_381', str(rec.NGAY_CT)))
         rows = self.env.cr.fetchall()
         if rows:
             rec.CHUNG_TU = rows[0][0]
@@ -369,14 +373,14 @@ class AccTscdGgLtH(models.Model):
                         d_records_to_validate.append(cmd[2])
                     elif cmd[0] == 1:  # Write command
                         # Lấy record và update với giá trị mới
-                        d_record = self.env['nl.acc.tscd.gg.lt.d'].browse(cmd[1])
+                        d_record = self.env['nl.acc.nk.sx.d'].browse(cmd[1])
                         read_data = d_record.read()[0]
                         d_dict = self.read_to_vals(read_data)
                         d_dict.update(cmd[2])
                         d_records_to_validate.append(d_dict)
             else:
                 # Không có D records được edit, lấy D records hiện có
-                all_d_records = self.env['nl.acc.tscd.gg.lt.d'].search([('ACC_AP_H', '=', record.id)])
+                all_d_records = self.env['nl.acc.nk.sx.d'].search([('ACC_AP_H', '=', record.id)])
                 d_records_to_validate = []
                 for d in all_d_records:
                     read_data = d.read()[0]
@@ -386,10 +390,9 @@ class AccTscdGgLtH(models.Model):
 
             for d_vals in d_records_to_validate:
                 ma_tk0 = self.env['acc.tai.khoan'].search([('id', '=', d_vals.get('MA_TK0_ID'))]).MA
-                ma_tk1 = self.env['acc.tai.khoan'].search([('id', '=', d_vals.get('MA_TK1_ID'))]).MA
                 vals_dict = {
                     "HANG_HOA": d_vals.get('HANG_HOA') or None,
-                    "MA_TK0": ma_tk0 or "",
+                    "MA_TK0": self._get_parent_value(record, vals, 'MA_TK0_ID').MA or "",
                     "SO_LUONG": d_vals.get('SO_LUONG'),
                     "DON_GIA": d_vals.get('DON_GIA'),
                     "PS_NO1": d_vals.get('PS_NO1'),
@@ -415,15 +418,15 @@ class AccTscdGgLtH(models.Model):
                     "KHOAN_MUC": self._get_parent_value(record, vals, 'KHOAN_MUC').id or 0,
                     "TIEN_TE": self._get_parent_value(record, vals, 'TIEN_TE').id or "",
                     "TY_GIA": self._get_parent_value(record, vals, 'TY_GIA') or "",
-                    "MA_TK1": ma_tk1 or "",
+                    "MA_TK1": self._get_parent_value(record, vals, 'MA_TK1_ID').MA or "",
                     "DVCS": self._get_parent_value(record, vals, 'DVCS').id or 1,
                     "CHI_NHANH": self._get_parent_value(record, vals, 'CHI_NHANH').id or 0,
-                    "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 385,
+                    "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 337,
                     "NGUOI_TAO": self.create_uid.id or None,
                     "NGUOI_SUA": self.env.uid or None,
                 }
 
-                table_name = 'nl.acc.tscd.gg.lt.h'
+                table_name = 'nl.acc.nk.sx.h'
 
                 json_data = json.dumps(vals_dict)
 
@@ -439,10 +442,10 @@ class AccTscdGgLtH(models.Model):
                     if loi:
                         raise ValidationError(loi)
 
-        res = super(AccTscdGgLtH, self).write(vals)
+        res = super(NlAccNkSxH, self).write(vals)
 
         for record in self:
-            all_d_records = self.env['nl.acc.tscd.gg.lt.d'].search([('ACC_AP_H', '=', record.id)])
+            all_d_records = self.env['nl.acc.nk.sx.d'].search([('ACC_AP_H', '=', record.id)])
 
             # Copy D records sang bảng log
             self._copy_to_tong_hop_abc(all_d_records)
@@ -463,11 +466,11 @@ class AccTscdGgLtH(models.Model):
                         vals_d[field_name] = value
                 d_vals_list.append(vals_d)
 
-            self.env['nl.acc.tong.hop'].sudo().search([('ACC_GG_LT', 'in', all_d_records.ids)]).unlink()
-            self.env['nl.acc.tscd.gg.lt.d'].sudo().search([('id', 'in', all_d_records.ids)]).unlink()
+            self.env['nl.acc.tong.hop'].sudo().search([('ACC_AP_D', 'in', all_d_records.ids)]).unlink()
+            self.env['nl.acc.nk.sx.d'].sudo().search([('id', 'in', all_d_records.ids)]).unlink()
 
             if d_vals_list:
-                self.env['nl.acc.tscd.gg.lt.d'].sudo().create(d_vals_list)
+                self.env['nl.acc.nk.sx.d'].sudo().create(d_vals_list)
 
         return res
 

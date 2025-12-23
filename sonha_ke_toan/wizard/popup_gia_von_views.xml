@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_popup_gia_von_form" model="ir.ui.view">
+        <field name="name">popup.gia.von.form</field>
+        <field name="model">popup.gia.von</field>
+        <field name="arch" type="xml">
+            <form string="Tính Giá Vốn">
+                <group>
+                    <group>
+                        <field name="thang"/>
+                    </group>
+                    <group>
+                        <field name="nam"/>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Xử lý" type="object" name="action_handle" class="oe_highlight"/>
+                    <button string="Xem" type="object" name="action_view" class="oe_highlight"/>
+                    <button string="Hủy" class="btn-secondary" special="cancel"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="gia_von_action" model="ir.actions.act_window">
+        <field name="name">Tính Giá Vốn</field>
+        <field name="res_model">popup.gia.von</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

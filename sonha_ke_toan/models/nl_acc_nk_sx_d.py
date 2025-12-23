@@ -9,10 +9,10 @@ _logger = logging.getLogger(__name__)
 # from odoo.exceptions import ValidationError
 
 
-class NLAccTSCDGtNcD(models.Model):
-    _name = 'nl.acc.tscd.gt.nc.d'
+class NlAccNkSxD(models.Model):
+    _name = 'nl.acc.nk.sx.d'
 
-    ACC_AP_H = fields.Many2one('nl.acc.tscd.gt.nc.h', string="ID Header", store=True)
+    ACC_AP_H = fields.Many2one('nl.acc.nk.sx.h', string="ID Header", store=True)
 
     MA_TK0_ID = fields.Many2one('acc.tai.khoan', string="Nợ", store=True, compute='get_ma_tk_id', readonly=False)
     MA_TK0 = fields.Char(related='MA_TK0_ID.MA', string="Nợ", store=True)
@@ -37,7 +37,7 @@ class NLAccTSCDGtNcD(models.Model):
     ONG_BA = fields.Char(string="Ông bà", store=True, size=60)
     GHI_CHU = fields.Char(string="Ghi chú", store=True, size=200)
 
-    KHACH_HANG = fields.Many2one('acc.khach.hang', string="Khách hàng", store=True)
+    KHACH_HANG = fields.Many2one('acc.khach.hang', string="Khách hàng", compute="_get_hang_hoa", store=True)
     KH_THUE = fields.Char(string="KH Thuế", store=True, size=150)
     MS_THUE = fields.Char(string="Mã số Thuế", store=True, size=20)
     DC_THUE = fields.Char(string="Địa chỉ Thuế", store=True, size=200)
@@ -91,7 +91,7 @@ class NLAccTSCDGtNcD(models.Model):
     @api.onchange('DON_GIA')
     def _onchange_don_gia(self):
         permission = self.env['sonha.phan.quyen.nl'].sudo().search([
-            ('MENU', '=', 382),
+            ('MENU', '=', 381),
         ], limit=1)
         for r in self:
             if permission.GIA_MUA:
@@ -137,7 +137,7 @@ class NLAccTSCDGtNcD(models.Model):
     @api.depends('SO_LUONG', 'PS_NO1', 'HANG_HOA')
     def _get_don_gia(self):
         for r in self:
-            check = self.env['sonha.phan.quyen.nl'].sudo().search([('MENU', '=', 382),
+            check = self.env['sonha.phan.quyen.nl'].sudo().search([('MENU', '=', 381),
                                                                    ('GIA_MUA', '=', True)])
             if r.ACC_AP_H.DG_THEO_TIEN:
                 r.DON_GIA = r.PS_NO1 / (r.SO_LUONG * r.TY_GIA)
@@ -224,7 +224,7 @@ class NLAccTSCDGtNcD(models.Model):
     def create(self, vals):
         # --- Merge dữ liệu header nếu có ---
         if vals.get('ACC_AP_H'):
-            related = self.env['nl.acc.tscd.gt.nc.h'].sudo().browse(vals['ACC_AP_H'])
+            related = self.env['nl.acc.nk.sx.h'].sudo().browse(vals['ACC_AP_H'])
             if related.exists():
                 vals.update({
                     'NGAY_CT': related.NGAY_CT or None,
@@ -247,9 +247,11 @@ class NLAccTSCDGtNcD(models.Model):
                     'KHOAN_MUC': related.KHOAN_MUC.id if related.KHOAN_MUC else False,
                     'TIEN_TE': related.TIEN_TE.id if related.TIEN_TE else False,
                     'TY_GIA': related.TY_GIA,
+                    'MA_TK1_ID': related.MA_TK1_ID.id if related.MA_TK1_ID else False,
+                    'MA_TK0_ID': related.MA_TK0_ID.id if related.MA_TK0_ID else False,
                     'DVCS': related.DVCS.id if related.DVCS else False,
                     'CHI_NHANH': related.CHI_NHANH.id if related.CHI_NHANH else False,
-                    'MENU_ID': related.MENU_ID.id if related.MENU_ID else 382,
+                    'MENU_ID': related.MENU_ID.id if related.MENU_ID else False,
 
                     'KHACH_HANGC': related.KHACH_HANGC.id if related.KHACH_HANGC else False,
                     'KHOC': related.KHOC.id if related.KHOC else False,
@@ -257,10 +259,11 @@ class NLAccTSCDGtNcD(models.Model):
                     'NGUON': related.NGUON.id if related.NGUON else False,
                     'LOAIDL': related.LOAIDL.id if related.LOAIDL else False,
 
+                    'TSCD': related.TSCD.id if related.TSCD else False,
                 })
 
         # --- Tạo bản ghi acc.ap.d ---
-        rec = super(NLAccTSCDGtNcD, self).create(vals)
+        rec = super(NlAccNkSxD, self).create(vals)
 
         # --- Chuẩn bị dữ liệu để insert vào bảng tổng hợp ---
         raw = rec.read()[0]
@@ -290,8 +293,7 @@ class NLAccTSCDGtNcD(models.Model):
                 data[fld] = val
 
         # --- Thêm khóa ngoại ---
-        data['ACC_GT_NC'] = rec.id
-        data['KEY_CHUNG'] = rec.id
+        data['ACC_NK_SX_D'] = rec.id
 
         # --- Loại bỏ toàn bộ system fields (tránh lỗi CREATE_DATE, WRITE_UID, __last_update, …) ---
         system_fields = {'CREATE_UID', 'CREATE_DATE', 'WRITE_UID', 'WRITE_DATE', '__LAST_UPDATE'}
@@ -312,9 +314,17 @@ class NLAccTSCDGtNcD(models.Model):
         sql = f'INSERT INTO "{table_name}" ({", ".join(cols)}) VALUES ({placeholders});'
         self._cr.execute(sql, values)
         self._cr.commit()
-        # self.env['nl.acc.tong.hop'].sudo().search([('ACC_GT_NC', '=', None)]).unlink()
+        self.env['nl.acc.tong.hop'].sudo().search([('ACC_NK_SX_D', '=', None)]).unlink()
 
         _logger.info(f"[AUTO] Inserted acc.ap.d id={rec.id} into {table_name}")
 
         return rec
+
+    @api.depends('SAN_PHAM.HANG_HOA')
+    def _get_hang_hoa(self):
+        for r in self:
+            if r.SAN_PHAM:
+                r.HANG_HOA = r.SAN_PHAM.HANG_HOA.id if r.SAN_PHAM.HANG_HOA else None
+            else:
+                r.HANG_HOA = None
 

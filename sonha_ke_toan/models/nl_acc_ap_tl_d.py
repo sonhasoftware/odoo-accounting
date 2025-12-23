@@ -246,6 +246,7 @@ class NlAccApTlD(models.Model):
                     'TIEN_TE': related.TIEN_TE.id if related.TIEN_TE else False,
                     'TY_GIA': related.TY_GIA,
                     'MA_TK1_ID': related.MA_TK1_ID.id if related.MA_TK1_ID else False,
+                    'MA_TK0_ID': related.MA_TK0_ID.id if related.MA_TK0_ID else False,
                     'DVCS': related.DVCS.id if related.DVCS else False,
                     'CHI_NHANH': related.CHI_NHANH.id if related.CHI_NHANH else False,
                     'MENU_ID': related.MENU_ID.id if related.MENU_ID else 380,
@@ -289,6 +290,7 @@ class NlAccApTlD(models.Model):
 
         # --- Thêm khóa ngoại ---
         data['ACC_TL_D'] = rec.id
+        data['KEY_CHUNG'] = rec.id
 
         # --- Loại bỏ toàn bộ system fields (tránh lỗi CREATE_DATE, WRITE_UID, __last_update, …) ---
         system_fields = {'CREATE_UID', 'CREATE_DATE', 'WRITE_UID', 'WRITE_DATE', '__LAST_UPDATE'}
@@ -315,8 +317,8 @@ class NlAccApTlD(models.Model):
 
         return rec
 
-    @api.depends('SALESMAN', 'ACC_AP_H.KHACH_HANG')
-    @api.onchange('SALESMAN', 'ACC_AP_H.KHACH_HANG')
+    @api.depends('SALESMAN', 'ACC_AP_H.KHACH_HANG', 'ACC_AP_H.KHACH_HANG.NVBH')
+    @api.onchange('SALESMAN', 'ACC_AP_H.KHACH_HANG', 'ACC_AP_H.KHACH_HANG.NVBH')
     def _get_sales_man(self):
         for r in self:
             if not r.SALESMAN:

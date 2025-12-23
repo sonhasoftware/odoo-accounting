@@ -343,6 +343,7 @@ class AccApD(models.Model):
 
         # --- Thêm khóa ngoại ---
         data['ACC_AP_D'] = rec.id
+        data['KEY_CHUNG'] = rec.id
 
         # --- Loại bỏ toàn bộ system fields (tránh lỗi CREATE_DATE, WRITE_UID, __last_update, …) ---
         system_fields = {'CREATE_UID', 'CREATE_DATE', 'WRITE_UID', 'WRITE_DATE', '__LAST_UPDATE'}
