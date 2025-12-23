@@ -112,3 +112,224 @@ div#MA_TK1_IDContainer {
 .hide-breadcrumb span.min-w-0.text-truncate {
     height: 25px !important;
 }
+
+.o_list_view th[data-name="HANG_HOA"] {
+    width: 400px !important;
+    min-width: 400px !important;
+    max-width: 400px !important;
+}
+
+.o_list_view th[data-name="MA_TK0_ID"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.o_list_view th[data-name="SO_LUONG"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.o_list_view th[data-name="DON_GIA"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.o_list_view th[data-name="PS_NO1"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.o_list_view th[data-name="TIEN_NTE"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.o_list_view th[data-name="VAT"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+
+.o_list_view th[data-name="NGAY_CT"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+.o_list_view th[data-name="CHUNG_TU"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+.o_list_view th[data-name="SO_HD"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.o_list_view th[data-name="SERI_HD"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.o_list_view th[data-name="NGAY_HD"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.o_list_view th[data-name="MAU_SO"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.o_list_view th[data-name="PT_THUE"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+.o_list_view th[data-name="ONG_BA"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+.o_list_view th[data-name="GHI_CHU"] {
+    width: 400px !important;
+    min-width: 400px !important;
+    max-width: 400px !important;
+}
+.o_list_view th[data-name="KHACH_HANG"] {
+    width: 400px !important;
+    min-width: 400px !important;
+    max-width: 400px !important;
+}
+.o_list_view th[data-name="KH_THUE"] {
+    width: 400px !important;
+    min-width: 400px !important;
+    max-width: 400px !important;
+}
+.o_list_view th[data-name="MS_THUE"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+.o_list_view th[data-name="DC_THUE"] {
+    width: 400px !important;
+    min-width: 400px !important;
+    max-width: 400px !important;
+}
+.o_list_view th[data-name="BO_PHAN"] {
+    width: 400px !important;
+    min-width: 400px !important;
+    max-width: 400px !important;
+}
+.o_list_view th[data-name="VVIEC"] {
+    width: 400px !important;
+    min-width: 400px !important;
+    max-width: 400px !important;
+}
+.o_list_view th[data-name="KHO"] {
+    width: 400px !important;
+    min-width: 400px !important;
+    max-width: 400px !important;
+}
+.o_list_view th[data-name="KHOAN_MUC"] {
+    width: 400px !important;
+    min-width: 400px !important;
+    max-width: 400px !important;
+}
+.o_list_view th[data-name="TIEN_TE"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+.o_list_view th[data-name="TY_GIA"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+.o_list_view th[data-name="KHACH_HANGC"] {
+    width: 400px !important;
+    min-width: 400px !important;
+    max-width: 400px !important;
+}
+.o_list_view th[data-name="KHOC"] {
+    width: 400px !important;
+    min-width: 400px !important;
+    max-width: 400px !important;
+}
+.o_list_view th[data-name="TINH"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+.o_list_view th[data-name="NGUON"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+.o_list_view th[data-name="LOAIDL"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+.o_list_view th[data-name="HEAD_NO"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.o_list_view th[data-name="SO_LUONG2"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.o_list_view th[data-name="SL_TP"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.o_list_view th[data-name="NHOM_VAT"] {
+    width: 400px !important;
+    min-width: 400px !important;
+    max-width: 400px !important;
+}
+
+.o_list_view th[data-name="THUE_NK"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.o_list_view th[data-name="SAN_PHAM"] {
+    width: 400px !important;
+    min-width: 400px !important;
+    max-width: 400px !important;
+}
+
+.o_list_view th[data-name="SO_LO"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.o_list_view th[data-name="DAT"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.o_list_view th[data-name="SO_LENHSX"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
