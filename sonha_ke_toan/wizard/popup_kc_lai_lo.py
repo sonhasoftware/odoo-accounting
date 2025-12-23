@@ -70,4 +70,10 @@ class PopupKcLaiLo(models.TransientModel):
         }
 
     def action_create_kcct_table(self):
-        pass
+        return {
+            'type': 'ir.actions.act_window',
+            'name': 'Bảng kết chuyển chi tiết',
+            'res_model': 'acc.kchuyen.ct',
+            'view_mode': 'tree',
+            'target': 'current',
+        }

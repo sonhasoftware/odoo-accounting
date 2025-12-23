@@ -1,5 +1,7 @@
 from odoo import models, fields, api
-from datetime import datetime
+from odoo.exceptions import ValidationError
+from datetime import datetime, date, timedelta
+from dateutil.relativedelta import relativedelta
 
 
 class PopupGiaVon(models.TransientModel):
@@ -19,6 +21,34 @@ class PopupGiaVon(models.TransientModel):
                               ('muoi_hai', 12), ], string="Tháng", store=True,
                              default=lambda self: self._get_default_month())
     nam = fields.Integer(string="Năm", store=True, default=lambda self: self.default_nam())
+
+    def get_month(self):
+        if self.thang == 'mot':
+            return 1
+        elif self.thang == 'hai':
+            return 2
+        elif self.thang == 'ba':
+            return 3
+        elif self.thang == 'bon':
+            return 4
+        elif self.thang == 'nam':
+            return 5
+        elif self.thang == 'sau':
+            return 6
+        elif self.thang == 'bay':
+            return 7
+        elif self.thang == 'tam':
+            return 8
+        elif self.thang == 'chin':
+            return 9
+        elif self.thang == 'muoi':
+            return 10
+        elif self.thang == 'muoi_mot':
+            return 11
+        elif self.thang == 'muoi_hai':
+            return 12
+        else:
+            return None
 
     def _get_default_month(self):
         now = datetime.now().date()
@@ -55,7 +85,17 @@ class PopupGiaVon(models.TransientModel):
         return now.year
 
     def action_handle(self):
-        pass
+        company = self.env.company.id
+        if self.thang:
+            thang = self.get_month()
+        else:
+            thang = datetime.now().date().month
+        from_date = date(self.nam, thang, 1)
+        to_date = from_date + relativedelta(months=1) - timedelta(days=1)
+        query = "SELECT * FROM fn_tinh_gia_von_tb_thang(%s, %s, %s)"
+        self.env.cr.execute(query, (company, from_date, to_date))
+        result = self.env.cr.dictfetchone()
+        raise ValidationError(result["fn_tinh_gia_von_tb_thang"])
 
     def action_view(self):
         pass

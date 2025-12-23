@@ -1,5 +1,7 @@
 from odoo import models, fields, api
-from datetime import datetime
+from odoo.exceptions import ValidationError
+from datetime import datetime, date, timedelta
+from dateutil.relativedelta import relativedelta
 
 
 class PopupKhauHao(models.TransientModel):
@@ -50,12 +52,52 @@ class PopupKhauHao(models.TransientModel):
         else:
             return None
 
+    def get_month(self):
+        if self.thang == 'mot':
+            return 1
+        elif self.thang == 'hai':
+            return 2
+        elif self.thang == 'ba':
+            return 3
+        elif self.thang == 'bon':
+            return 4
+        elif self.thang == 'nam':
+            return 5
+        elif self.thang == 'sau':
+            return 6
+        elif self.thang == 'bay':
+            return 7
+        elif self.thang == 'tam':
+            return 8
+        elif self.thang == 'chin':
+            return 9
+        elif self.thang == 'muoi':
+            return 10
+        elif self.thang == 'muoi_mot':
+            return 11
+        elif self.thang == 'muoi_hai':
+            return 12
+        else:
+            return None
+
     def default_nam(self):
         now = datetime.now().date()
         return now.year
 
     def action_handle(self):
-        pass
+        company = self.env.company.id
+        user = self.env.user.id
+        menu = 389
+        if self.thang:
+            thang = self.get_month()
+        else:
+            thang = datetime.now().date().month
+        handle_date = date(self.nam, thang, 1) + relativedelta(months=1) - timedelta(days=1)
+        query = "SELECT * FROM fn_tinh_khau_hao_tscd_thang(%s, %s, %s, %s)"
+        self.env.cr.execute(query, (company, user, menu, handle_date))
+        result = self.env.cr.dictfetchone()
+        raise ValidationError(result["fn_tinh_khau_hao_tscd_thang"])
+
 
     def action_view(self):
         pass
