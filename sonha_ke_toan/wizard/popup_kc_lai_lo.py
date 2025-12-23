@@ -102,6 +102,7 @@ class PopupKcLaiLo(models.TransientModel):
         }
 
     def action_create_kcct_table(self):
+        self.env.cr.execute("CALL public.pr_ins_ket_chuyen_ct()")
         return {
             'type': 'ir.actions.act_window',
             'name': 'Bảng kết chuyển chi tiết',
