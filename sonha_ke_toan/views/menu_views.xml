@@ -159,6 +159,12 @@
               action="acc_nguon_action"
               sequence="24"/>
 
+<!--    <menuitem id="menu_acc_bao_cao"-->
+<!--              name="Danh mục báo cáo"-->
+<!--              parent="menu_danh_muc_accounting"-->
+<!--              action="acc_bao_cao_action"-->
+<!--              sequence="25"/>-->
+
 
 
 <!--    menu cho nhập liệu-->
@@ -203,6 +209,12 @@
               parent="menu_sonha_accounting"
               action="tim_kiem_action"
               sequence="10"/>
+
+    <menuitem id="menu_bao_cao"
+              name="Báo cáo"
+              parent="menu_sonha_accounting"
+              action="bao_cao_action"
+              sequence="11"/>
 
     <menuitem id="menu_phieu_tscd"
               name="Phiếu TSCĐ"

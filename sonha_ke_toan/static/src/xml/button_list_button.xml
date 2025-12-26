@@ -11,4 +11,12 @@
            </button>
        </xpath>
    </t>
+
+    <t t-name="button_bao_cao.ListView.Buttons" t-inherit="web.ListView.Buttons">
+       <xpath expr="//div[hasclass('o_list_buttons')]" position="after">
+           <button type="button" class="btn btn-primary" style="margin-left: 10px;"  t-on-click="onExitClick">
+               Thoát
+           </button>
+       </xpath>
+   </t>
 </templates>

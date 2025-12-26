@@ -58,3 +58,6 @@ from . import nl_acc_tscd_gg_lt_d
 from . import acc_kchuyen
 from . import res_company
 from . import acc_kchuyen_ct
+
+from . import danh_muc_bao_cao
+from . import nl_acc_bao_cao

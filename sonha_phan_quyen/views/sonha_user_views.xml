@@ -10,6 +10,8 @@
                 <field name="NGAY_KHOA"/>
                 <field name="SO_NGAY_KHOA"/>
                 <field name="USER_KHAI_THAC"/>
+                <field name="QUYEN_DOC" widget="many2many_tags"/>
+                <field name="QUYEN_SUA" widget="many2many_tags"/>
                 <button name="action_phan_quyen" type="object" string="Phân quyền" class="btn-primary"/>
             </tree>
         </field>

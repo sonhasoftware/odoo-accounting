@@ -85,3 +85,20 @@ class AccBom(models.Model):
             return False
 
         return True
+
+    @api.model
+    def default_get(self, fields_list):
+        res = super().default_get(fields_list)
+
+        active_id = self.env.context.get('active_id')
+        active_model = self.env.context.get('active_model')
+
+        if active_id and active_model == 'acc.bom':
+            source = self.browse(active_id)
+
+            # 🔥 CHỈ DEFAULT 2 FIELD
+            for field in ['SAN_PHAM', 'SAN_PHAM_NAME']:
+                if field in fields_list:
+                    res[field] = source[field]
+
+        return res
