@@ -85,9 +85,11 @@ access_popup_kc_lai_lo,popup.kc.lai.lo,model_popup_kc_lai_lo,,1,1,1,1
 access_acc_kchuyen_ct,acc.kchuyen.ct,model_acc_kchuyen_ct,,1,1,1,1
 
 
+access_nl_acc_pc_h,nl.acc.pc.h,model_nl_acc_pc_h,,1,1,1,1
+access_nl_acc_pc_d,nl.acc.pc.d,model_nl_acc_pc_d,,1,1,1,1
 
-
-
+access_nl_acc_pt_h,nl.acc.pt.h,model_nl_acc_pt_h,,1,1,1,1
+access_nl_acc_pt_d,nl.acc.pt.d,model_nl_acc_pt_d,,1,1,1,1
 
 
 
