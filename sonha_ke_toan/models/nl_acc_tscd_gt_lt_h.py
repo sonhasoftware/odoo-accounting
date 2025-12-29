@@ -259,9 +259,50 @@ class AccTscdGtLtH(models.Model):
     def create(self, vals):
 
         temp_rec = self.new(vals)
+        vals_dict = {
+            "HANG_HOA": None,
+            "MA_TK0": "",
+            "SO_LUONG": 0,
+            "DON_GIA": 0,
+            "PS_NO1": 0,
+            "TIEN_NTE": 0,
+            "VAT": 0,
+            "NGAY_CT": str(temp_rec.NGAY_CT) or "",
+            "CHUNG_TU": temp_rec.CHUNG_TU or "",
+            "CTGS": temp_rec.CTGS or "",
+            "SO_HD": temp_rec.SO_HD or "",
+            "SERI_HD": temp_rec.SERI_HD or "",
+            "NGAY_HD": str(temp_rec.NGAY_HD) or None,
+            "MAU_SO": temp_rec.MAU_SO or None,
+            "PT_THUE": temp_rec.PT_THUE.PT_THUE or "",
+            "ONG_BA": temp_rec.ONG_BA or "",
+            "GHI_CHU": temp_rec.GHI_CHU or "",
+            "KHACH_HANG": temp_rec.KHACH_HANG.id or 0,
+            "KH_THUE": temp_rec.KH_THUE or "",
+            "MS_THUE": temp_rec.MS_THUE or "",
+            "DC_THUE": temp_rec.DC_THUE or "",
+            "BO_PHAN": temp_rec.BO_PHAN.id or 0,
+            "VVIEC": temp_rec.VVIEC.id or 0,
+            "KHO": temp_rec.KHO.id or 0,
+            "KHOAN_MUC": temp_rec.KHOAN_MUC.id or 0,
+            "TIEN_TE": temp_rec.TIEN_TE.id or "",
+            "TY_GIA": temp_rec.TY_GIA or "",
+            "MA_TK1": "",
+            "DVCS": temp_rec.DVCS.id or 1,
+            "CHI_NHANH": temp_rec.CHI_NHANH.id or 0,
+            "TSCD": 0,
+            "MENU_ID": temp_rec.MENU_ID.id or 383,
+            "NGUOI_TAO": self.env.uid or None,
+            "NGUOI_SUA": self.env.uid or None,
+        }
+
+        table_name = 'nl.acc.tscd.gt.lt.h'
+
+        if len(temp_rec.ACC_SP_D) == 0:
+            raise ValidationError("Không được phép để trống phần dữ liệu bên dưới!")
         for recs in temp_rec.ACC_SP_D:
 
-            vals_dict = {
+            vals_dict.update({
                 "HANG_HOA": recs.HANG_HOA.id or None,
                 "MA_TK0": recs.MA_TK0 or "",
                 "SO_LUONG": recs.SO_LUONG,
@@ -269,36 +310,9 @@ class AccTscdGtLtH(models.Model):
                 "PS_NO1": recs.PS_NO1,
                 "TIEN_NTE": recs.TIEN_NTE,
                 "VAT": recs.VAT,
-                "NGAY_CT": str(temp_rec.NGAY_CT) or "",
-                "CHUNG_TU": temp_rec.CHUNG_TU or "",
-                "CTGS": temp_rec.CTGS or "",
-                "SO_HD": temp_rec.SO_HD or "",
-                "SERI_HD": temp_rec.SERI_HD or "",
-                "NGAY_HD": str(temp_rec.NGAY_HD) or None,
-                "MAU_SO": temp_rec.MAU_SO or None,
-                "PT_THUE": temp_rec.PT_THUE.PT_THUE or "",
-                "ONG_BA": temp_rec.ONG_BA or "",
-                "GHI_CHU": temp_rec.GHI_CHU or "",
-                "KHACH_HANG": temp_rec.KHACH_HANG.id or 0,
-                "KH_THUE": temp_rec.KH_THUE or "",
-                "MS_THUE": temp_rec.MS_THUE or "",
-                "DC_THUE": temp_rec.DC_THUE or "",
-                "BO_PHAN": temp_rec.BO_PHAN.id or 0,
-                "VVIEC": temp_rec.VVIEC.id or 0,
-                "KHO": temp_rec.KHO.id or 0,
-                "KHOAN_MUC": temp_rec.KHOAN_MUC.id or 0,
-                "TIEN_TE": temp_rec.TIEN_TE.id or "",
-                "TY_GIA": temp_rec.TY_GIA or "",
                 "MA_TK1": recs.MA_TK1 or "",
-                "DVCS": temp_rec.DVCS.id or 1,
-                "CHI_NHANH": temp_rec.CHI_NHANH.id or 0,
                 "TSCD": recs.TSCD.id or 0,
-                "MENU_ID": temp_rec.MENU_ID.id or 383,
-                "NGUOI_TAO": self.env.uid or None,
-                "NGUOI_SUA": self.env.uid or None,
-            }
-
-            table_name = 'nl.acc.tscd.gt.lt.h'
+            })
 
             json_data = json.dumps(vals_dict)
 
@@ -384,10 +398,52 @@ class AccTscdGtLtH(models.Model):
                     d_records_to_validate.append(d_vals)
             # VALIDATE từng D record
 
+            vals_dict = {
+                "HANG_HOA": None,
+                "MA_TK0": "",
+                "SO_LUONG": 0,
+                "DON_GIA": 0,
+                "PS_NO1": 0,
+                "TIEN_NTE": 0,
+                "VAT": 0,
+                "NGAY_CT": str(self._get_parent_value(record, vals, 'NGAY_CT')) or "",
+                "CHUNG_TU": self._get_parent_value(record, vals, 'CHUNG_TU') or "",
+                "CTGS": self._get_parent_value(record, vals, 'CTGS') or "",
+                "SO_HD": self._get_parent_value(record, vals, 'SO_HD') or "",
+                "SERI_HD": self._get_parent_value(record, vals, 'SERI_HD') or "",
+                "NGAY_HD": str(self._get_parent_value(record, vals, 'NGAY_HD')) or None,
+                "MAU_SO": self._get_parent_value(record, vals, 'MAU_SO') or None,
+                "PT_THUE": self._get_parent_value(record, vals, 'PT_THUE').PT_THUE or "",
+                "ONG_BA": self._get_parent_value(record, vals, 'ONG_BA') or "",
+                "GHI_CHU": self._get_parent_value(record, vals, 'GHI_CHU') or "",
+                "KHACH_HANG": self._get_parent_value(record, vals, 'KHACH_HANG').id or 0,
+                "KH_THUE": self._get_parent_value(record, vals, 'KH_THUE') or "",
+                "MS_THUE": self._get_parent_value(record, vals, 'MS_THUE') or "",
+                "DC_THUE": self._get_parent_value(record, vals, 'DC_THUE') or "",
+                "BO_PHAN": self._get_parent_value(record, vals, 'BO_PHAN').id or 0,
+                "VVIEC": self._get_parent_value(record, vals, 'VVIEC').id or 0,
+                "KHO": self._get_parent_value(record, vals, 'KHO').id or 0,
+                "KHOAN_MUC": self._get_parent_value(record, vals, 'KHOAN_MUC').id or 0,
+                "TIEN_TE": self._get_parent_value(record, vals, 'TIEN_TE').id or "",
+                "TY_GIA": self._get_parent_value(record, vals, 'TY_GIA') or "",
+                "MA_TK1": "",
+                "DVCS": self._get_parent_value(record, vals, 'DVCS').id or 1,
+                "CHI_NHANH": self._get_parent_value(record, vals, 'CHI_NHANH').id or 0,
+                "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 383,
+                "TSCD": 0,
+                "NGUOI_TAO": self.create_uid.id or None,
+                "NGUOI_SUA": self.env.uid or None,
+            }
+
+            table_name = 'nl.acc.tscd.gt.lt.h'
+
+            if len(d_records_to_validate) == 0:
+                raise ValidationError("Không được phép để trống phần dữ liệu bên dưới!")
+
             for d_vals in d_records_to_validate:
                 ma_tk0 = self.env['acc.tai.khoan'].search([('id', '=', d_vals.get('MA_TK0_ID'))]).MA
                 ma_tk1 = self.env['acc.tai.khoan'].search([('id', '=', d_vals.get('MA_TK1_ID'))]).MA
-                vals_dict = {
+                vals_dict.update({
                     "HANG_HOA": d_vals.get('HANG_HOA') or None,
                     "MA_TK0": ma_tk0 or "",
                     "SO_LUONG": d_vals.get('SO_LUONG'),
@@ -395,35 +451,9 @@ class AccTscdGtLtH(models.Model):
                     "PS_NO1": d_vals.get('PS_NO1'),
                     "TIEN_NTE": d_vals.get('TIEN_NTE'),
                     "VAT": d_vals.get('VAT'),
-                    "NGAY_CT": str(self._get_parent_value(record, vals, 'NGAY_CT')) or "",
-                    "CHUNG_TU": self._get_parent_value(record, vals, 'CHUNG_TU') or "",
-                    "CTGS": self._get_parent_value(record, vals, 'CTGS') or "",
-                    "SO_HD": self._get_parent_value(record, vals, 'SO_HD') or "",
-                    "SERI_HD": self._get_parent_value(record, vals, 'SERI_HD') or "",
-                    "NGAY_HD": str(self._get_parent_value(record, vals, 'NGAY_HD')) or None,
-                    "MAU_SO": self._get_parent_value(record, vals, 'MAU_SO') or None,
-                    "PT_THUE": self._get_parent_value(record, vals, 'PT_THUE').PT_THUE or "",
-                    "ONG_BA": self._get_parent_value(record, vals, 'ONG_BA') or "",
-                    "GHI_CHU": self._get_parent_value(record, vals, 'GHI_CHU') or "",
-                    "KHACH_HANG": self._get_parent_value(record, vals, 'KHACH_HANG').id or 0,
-                    "KH_THUE": self._get_parent_value(record, vals, 'KH_THUE') or "",
-                    "MS_THUE": self._get_parent_value(record, vals, 'MS_THUE') or "",
-                    "DC_THUE": self._get_parent_value(record, vals, 'DC_THUE') or "",
-                    "BO_PHAN": self._get_parent_value(record, vals, 'BO_PHAN').id or 0,
-                    "VVIEC": self._get_parent_value(record, vals, 'VVIEC').id or 0,
-                    "KHO": self._get_parent_value(record, vals, 'KHO').id or 0,
-                    "KHOAN_MUC": self._get_parent_value(record, vals, 'KHOAN_MUC').id or 0,
-                    "TIEN_TE": self._get_parent_value(record, vals, 'TIEN_TE').id or "",
-                    "TY_GIA": self._get_parent_value(record, vals, 'TY_GIA') or "",
                     "MA_TK1": ma_tk1 or "",
-                    "DVCS": self._get_parent_value(record, vals, 'DVCS').id or 1,
-                    "CHI_NHANH": self._get_parent_value(record, vals, 'CHI_NHANH').id or 0,
-                    "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 383,
-                    "NGUOI_TAO": self.create_uid.id or None,
-                    "NGUOI_SUA": self.env.uid or None,
-                }
-
-                table_name = 'nl.acc.tscd.gt.lt.h'
+                    "TSCD": d_vals.get('TSCD') or 0,
+                })
 
                 json_data = json.dumps(vals_dict)
 
