@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_popup_bao_cao_form" model="ir.ui.view">
+        <field name="name">popup.bao.cao.form</field>
+        <field name="model">popup.bao.cao</field>
+        <field name="arch" type="xml">
+            <form string="Báo cáo">
+                <group>
+                    <field name="bao_cao"/>
+                </group>
+                <group>
+                    <group>
+                        <field name="start_date"/>
+                    </group>
+                    <group>
+                        <field name="end_date"/>
+                    </group>
+                </group>
+                <div style="border-top: 2px solid black;"></div>
+                <group>
+                    <field name="tai_khoan"/>
+                    <field name="chi_nhanh"/>
+                    <field name="khach_hang"/>
+                    <field name="hang_hoa"/>
+                    <field name="kho"/>
+                    <field name="tscd"/>
+                    <field name="bo_phan"/>
+                    <field name="khoan_muc"/>
+                    <field name="vu_viec"/>
+                    <field name="thanh_pham"/>
+                </group>
+                <footer>
+                    <button string="Báo cáo" type="object" name="action_search" class="oe_highlight"/>
+                    <button string="Cancel" class="btn-secondary" special="cancel"/>
+                    <button string="View Báo Cáo" type="object" name="action_view" class="oe_highlight" groups="sonha_ke_toan.group_admin_account"/>
+                </footer>
+            </form>
+        </field>
+    </record>
+
+    <record id="bao_cao_action" model="ir.actions.act_window">
+        <field name="name">Báo cáo</field>
+        <field name="res_model">popup.bao.cao</field>
+        <field name="view_mode">form</field>
+        <field name="target">new</field>
+    </record>
+
+</odoo>

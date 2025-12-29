@@ -361,8 +361,29 @@ class AccApD(models.Model):
         placeholders = ', '.join(['%s'] * len(clean_data))
         values = list(clean_data.values())
 
-        sql = f'INSERT INTO "{table_name}" ({", ".join(cols)}) VALUES ({placeholders});'
+        now = fields.Datetime.now()
+        uid = self.env.uid
+
+        sql = f'''
+            INSERT INTO "{table_name}" ({", ".join(cols)})
+            VALUES ({placeholders})
+            RETURNING id
+        '''
+
         self._cr.execute(sql, values)
+        row_id = self._cr.fetchone()[0]
+
+        # 🔥 UPDATE AUDIT FIELD NGAY SAU INSERT
+        self._cr.execute(f'''
+            UPDATE "{table_name}"
+            SET
+                "create_uid" = %s,
+                "write_uid" = %s,
+                "create_date" = %s,
+                "write_date" = %s
+            WHERE id = %s
+        ''', (uid, uid, now, now, row_id))
+
         self._cr.commit()
 
         _logger.info(f"[AUTO] Inserted acc.ap.d id={rec.id} into {table_name}")

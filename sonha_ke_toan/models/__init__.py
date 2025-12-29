@@ -64,3 +64,5 @@ from . import nl_acc_pc_d
 
 from . import nl_acc_pt_h
 from . import nl_acc_pt_d
+from . import danh_muc_bao_cao
+from . import nl_acc_bao_cao

@@ -1,0 +1,40 @@
+<odoo>
+
+    <record id="view_nl_acc_bao_cao_tree" model="ir.ui.view">
+        <field name="name">nl.acc.bao.cao.tree</field>
+        <field name="model">nl.acc.bao.cao</field>
+        <field name="arch" type="xml">
+            <tree string="Báo cáo" create="false" edit="false">
+                <field name="ma_tk0" optional="show"/>
+                <field name="ma_tk1" optional="show"/>
+                <field name="ten_tk" optional="show"/>
+                <field name="hang_hoa" optional="show"/>
+                <field name="so_luong" optional="show"/>
+                <field name="don_gia" optional="show"/>
+                <field name="ps_no1" optional="show"/>
+                <field name="tien_nte" optional="show"/>
+                <field name="vat" optional="show"/>
+                <field name="ngay_ct" optional="show"/>
+                <field name="chung_tu" optional="show"/>
+            </tree>
+        </field>
+    </record>
+
+
+    <record id="action_nl_acc_bao_cao" model="ir.actions.act_window">
+        <field name="name">Báo cáo</field>
+        <field name="res_model">nl.acc.bao.cao</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+    <record id="view_nl_acc_bao_cao_list_js" model="ir.ui.view">
+        <field name="name">nl.acc.bao.cao.list.js</field>
+        <field name="model">nl.acc.bao.cao</field>
+        <field name="inherit_id" ref="sonha_ke_toan.view_nl_acc_bao_cao_tree"/>
+        <field name="arch" type="xml">
+            <xpath expr="//tree" position="attributes">
+                <attribute name="js_class">button_in_tree_bao_cao</attribute>
+            </xpath>
+        </field>
+    </record>
+</odoo>

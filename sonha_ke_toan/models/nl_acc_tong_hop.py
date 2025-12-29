@@ -152,3 +152,47 @@ class NLAccTongHop(models.Model):
                 'url': url,
                 'target': 'self',
             }
+
+    def _check_read_permission(self):
+        user = self.env.user
+
+        for rec in self:
+            # Người tạo luôn được xem
+            if rec.create_uid == user:
+                continue
+
+            permission = self.env['sonha.user'].search([
+                ('NGUOI_DUNG', '=', rec.create_uid.id)
+            ], limit=1)
+
+            if not permission or user not in permission.QUYEN_DOC.NGUOI_DUNG:
+                raise ValidationError(
+                    "Bạn không có quyền xem bản ghi này."
+                )
+
+    def _check_write_permission(self):
+        user = self.env.user
+
+        for rec in self:
+            # Người tạo luôn được sửa
+            if rec.create_uid == user:
+                continue
+
+            permission = self.env['sonha.user'].search([
+                ('NGUOI_DUNG', '=', rec.create_uid.id)
+            ], limit=1)
+
+            if not permission or user not in permission.QUYEN_SUA.NGUOI_DUNG:
+                raise ValidationError(
+                    "Bạn không có quyền sửa bản ghi này."
+                )
+
+    @api.model
+    def read(self, fields=None, load='_classic_read'):
+        records = super().read(fields=fields, load=load)
+        self._check_read_permission()
+        return records
+
+    def write(self, vals):
+        self._check_write_permission()
+        return super().write(vals)
