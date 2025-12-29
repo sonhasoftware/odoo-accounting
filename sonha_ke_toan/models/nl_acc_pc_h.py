@@ -330,7 +330,7 @@ class NlAccPcH(models.Model):
                 "PT_THUE": recs.PT_THUE.id or "",
                 "SO_HD": recs.SO_HD or "",
                 "SERI_HD": recs.SERI_HD or "",
-                "NGAY_HD": recs.NGAY_HD or None,
+                "NGAY_HD": str(recs.NGAY_HD) or None,
 
             })
 
@@ -483,7 +483,7 @@ class NlAccPcH(models.Model):
                     "PT_THUE": d_vals.get('PT_THUE') or "",
                     "SO_HD": d_vals.get('SO_HD') or "",
                     "SERI_HD": d_vals.get('SERI_HD') or "",
-                    "NGAY_HD": d_vals.get('NGAY_HD') or None,
+                    "NGAY_HD": str(d_vals.get('NGAY_HD')) or None,
                 })
                 json_data = json.dumps(vals_dict)
 

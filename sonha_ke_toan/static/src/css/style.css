@@ -120,6 +120,12 @@ div#MA_TK1_IDContainer {
     max-width: 150px !important;
 }
 
+.o_list_view th[data-name="MA_TK1_ID"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
 .o_list_view th[data-name="SO_LUONG"] {
     width: 150px !important;
     min-width: 150px !important;
