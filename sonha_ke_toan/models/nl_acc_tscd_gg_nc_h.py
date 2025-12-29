@@ -299,17 +299,7 @@ class AccTscdGgNcH(models.Model):
 
         table_name = 'nl.acc.tscd.gg.nc.h'
         if len(temp_rec.ACC_SP_D) == 0:
-            json_data = json.dumps(vals_dict)
-
-            self.env.cr.execute("""SELECT * FROM fn_check_nl(%s::text, %s::jsonb);""", (table_name, json_data))
-            check = self.env.cr.dictfetchall()
-            if check:
-                result = check[0]
-                loi = list(result.values())[0]
-                if loi == None:
-                    pass
-                else:
-                    raise ValidationError(loi)
+            raise ValidationError("Không được phép để trống phần dữ liệu bên dưới!")
 
         for recs in temp_rec.ACC_SP_D:
 
@@ -410,13 +400,13 @@ class AccTscdGgNcH(models.Model):
             # VALIDATE từng D record
 
             vals_dict = {
-                "HANG_HOA": d_vals.get('HANG_HOA') or None,
-                "MA_TK0": ma_tk0 or "",
-                "SO_LUONG": d_vals.get('SO_LUONG'),
-                "DON_GIA": d_vals.get('DON_GIA'),
-                "PS_NO1": d_vals.get('PS_NO1'),
-                "TIEN_NTE": d_vals.get('TIEN_NTE'),
-                "VAT": d_vals.get('VAT'),
+                "HANG_HOA": None,
+                "MA_TK0": "",
+                "SO_LUONG": 0,
+                "DON_GIA": 0,
+                "PS_NO1": 0,
+                "TIEN_NTE": 0,
+                "VAT": 0,
                 "NGAY_CT": str(self._get_parent_value(record, vals, 'NGAY_CT')) or "",
                 "CHUNG_TU": self._get_parent_value(record, vals, 'CHUNG_TU') or "",
                 "CTGS": self._get_parent_value(record, vals, 'CTGS') or "",
@@ -437,7 +427,7 @@ class AccTscdGgNcH(models.Model):
                 "KHOAN_MUC": self._get_parent_value(record, vals, 'KHOAN_MUC').id or 0,
                 "TIEN_TE": self._get_parent_value(record, vals, 'TIEN_TE').id or "",
                 "TY_GIA": self._get_parent_value(record, vals, 'TY_GIA') or "",
-                "MA_TK1": ma_tk1 or "",
+                "MA_TK1": "",
                 "DVCS": self._get_parent_value(record, vals, 'DVCS').id or 1,
                 "CHI_NHANH": self._get_parent_value(record, vals, 'CHI_NHANH').id or 0,
                 "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 384,
@@ -449,19 +439,7 @@ class AccTscdGgNcH(models.Model):
             table_name = 'nl.acc.tscd.gg.nc.h'
 
             if len(d_records_to_validate) == 0:
-                json_data = json.dumps(vals_dict)
-
-                self.env.cr.execute(
-                    """SELECT * FROM fn_check_nl(%s::text, %s::jsonb);""",
-                    (table_name, json_data)
-                )
-
-                check = self.env.cr.dictfetchall()
-                if check:
-                    result = check[0]
-                    loi = list(result.values())[0]
-                    if loi:
-                        raise ValidationError(loi)
+                raise ValidationError("Không được phép để trống phần dữ liệu bên dưới!")
 
             for d_vals in d_records_to_validate:
                 ma_tk0 = self.env['acc.tai.khoan'].search([('id', '=', d_vals.get('MA_TK0_ID'))]).MA
