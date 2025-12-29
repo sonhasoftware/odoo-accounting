@@ -304,16 +304,7 @@ class AccApH(models.Model):
             "NGUOI_SUA": self.env.uid,
         }
         if len(temp_rec.ACC_SP_D) == 0:
-            self.env.cr.execute(
-                """SELECT * FROM fn_check_nl(%s::text, %s::jsonb);""",
-                ('nl.acc.ap.h', json.dumps(vals_dict))
-            )
-
-            check = self.env.cr.dictfetchall()
-            if check:
-                loi = list(check[0].values())[0]
-                if loi:
-                    raise ValidationError(loi)
+            raise ValidationError("Không được phép để trống phần dữ liệu bên dưới!")
 
         for recs in temp_rec.ACC_SP_D:
 
@@ -449,19 +440,7 @@ class AccApH(models.Model):
 
             # VALIDATE từng D record
             if len(d_records_to_validate) == 0:
-                json_data = json.dumps(vals_dict)
-
-                self.env.cr.execute(
-                    """SELECT * FROM fn_check_nl(%s::text, %s::jsonb);""",
-                    (table_name, json_data)
-                )
-
-                check = self.env.cr.dictfetchall()
-                if check:
-                    result = check[0]
-                    loi = list(result.values())[0]
-                    if loi:
-                        raise ValidationError(loi)
+                raise ValidationError("Không được phép để trống phần dữ liệu bên dưới!")
             for d_vals in d_records_to_validate:
                 ma_tk0 = self.env['acc.tai.khoan'].search([('id', '=', d_vals.get('MA_TK0_ID'))]).MA
                 vals_dict.update({
