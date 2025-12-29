@@ -46,6 +46,8 @@
         'views/acc_tscd_gg_nc_h_views.xml',
         'views/acc_tscd_gg_lt_h_views.xml',
         'views/acc_kchuyen_views.xml',
+        'views/nl_acc_pc_h_views.xml',
+        'views/nl_acc_pt_h_views.xml',
         'views/acc_kchuyen_ct_views.xml',
         'wizard/thong_bao_wizard_views.xml',
         'wizard/popup_tim_kiem_views.xml',

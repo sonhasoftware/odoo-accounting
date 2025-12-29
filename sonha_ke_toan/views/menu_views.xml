@@ -255,4 +255,21 @@
               parent="menu_kc_cuoi_thang"
               action="kc_lai_lo_action"
               sequence="3"/>
+
+    <menuitem id="menu_thu_chi"
+              name="Phiếu thu/chi"
+              parent="menu_sonha_accounting"
+              sequence="4"/>
+
+    <menuitem id="menu_phieu_chi"
+              name="Phiếu chi"
+              parent="menu_thu_chi"
+              action="acc_nl_pc_h_action"
+              sequence="1"/>
+
+    <menuitem id="menu_phieu_thu"
+              name="Phiếu thu"
+              parent="menu_thu_chi"
+              action="acc_nl_pt_h_action"
+              sequence="1"/>
 </odoo>

@@ -14,6 +14,8 @@ class NLAccTongHop(models.Model):
     ACC_GG_NC = fields.Many2one('nl.acc.tscd.gg.nc.d', string="ACC AP TL D", store=True)
     ACC_GG_LT = fields.Many2one('nl.acc.tscd.gg.lt.d', string="ACC AP TL D", store=True)
     ACC_CK_D = fields.Many2one('nl.acc.ap.ck.d', string="ACC AP TL D", store=True)
+    ACC_PC_D = fields.Many2one('nl.acc.pc.d', string="ACC PC D", store=True)
+    ACC_PT_D = fields.Many2one('nl.acc.pt.d', string="ACC PT D", store=True)
     KEY_CHUNG = fields.Integer("Key (bảng d)", store=True)
 
     MA_TK0_ID = fields.Many2one('acc.tai.khoan', string="Nợ", store=True, compute='get_ma_tk_id', readonly=False)
@@ -131,6 +133,14 @@ class NLAccTongHop(models.Model):
                 model = 'nl.acc.tscd.gg.lt.h'
                 action_id = self.env.ref('sonha_ke_toan.nl_acc_tscd_gg_lt_h_action').id
                 id = self.env['nl.acc.tscd.gg.lt.d'].browse(rec.ACC_GG_LT.id).ACC_AP_H.id
+            elif rec.ACC_PC_D:
+                model = 'nl.acc.pc.d'
+                action_id = self.env.ref('sonha_ke_toan.acc_nl_pc_h_action').id
+                id = self.env['nl.acc.pc.d'].browse(rec.ACC_PC_D.id).ACC_AP_H.id
+            elif rec.ACC_PT_D:
+                model = 'nl.acc.pt.d'
+                action_id = self.env.ref('sonha_ke_toan.acc_nl_pt_h_action').id
+                id = self.env['nl.acc.pt.d'].browse(rec.ACC_PT_D.id).ACC_AP_H.id
 
             else:
                 raise ValidationError("Khồng tìm thấy bản ghi")
