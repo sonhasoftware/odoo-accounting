@@ -105,7 +105,7 @@ class NlAccVcnbH(models.Model):
         res = super(NlAccVcnbH, self).default_get(fields_list)
         # Tìm phân quyền của user hiện tại
         permission = self.env['sonha.phan.quyen.nl'].sudo().search([
-            ('MENU', '=', 380),
+            ('MENU', '=', 404),
         ], limit=1)
         dl = self.env['acc.loaidl'].sudo().search([('id', '=', 5)])
 
@@ -117,7 +117,7 @@ class NlAccVcnbH(models.Model):
                 'VVIEC': permission.VVIEC.id or None,
                 'CHI_NHANH': permission.CHI_NHANH.id or None,
                 'TIEN_TE': permission.TIEN_TE.id or None,
-                'MENU_ID': permission.MENU.id or 380,
+                'MENU_ID': permission.MENU.id or 404,
                 'MA_TK1_ID': permission.MA_TK1_ID.id or None,
                 'LOAIDL': permission.LOAI_DL.id or dl.id,
             })
@@ -293,7 +293,7 @@ class NlAccVcnbH(models.Model):
             "MA_TK1": temp_rec.MA_TK1 or "",
             "DVCS": temp_rec.DVCS.id or 1,
             "CHI_NHANH": temp_rec.CHI_NHANH.id or 0,
-            "MENU_ID": temp_rec.MENU_ID.id or 380,
+            "MENU_ID": temp_rec.MENU_ID.id or 404,
             "NGUOI_TAO": self.env.uid or None,
             "NGUOI_SUA": self.env.uid or None,
         }
@@ -329,7 +329,7 @@ class NlAccVcnbH(models.Model):
         # Gọi function sinh chứng từ tự động
         rec = super(NlAccVcnbH, self).create(vals)
         query = "SELECT * FROM fn_chung_tu_tu_dong(%s, %s)"
-        self.env.cr.execute(query, ('menu_380', str(rec.NGAY_CT)))
+        self.env.cr.execute(query, ('menu_404', str(rec.NGAY_CT)))
         rows = self.env.cr.fetchall()
         if rows:
             rec.CHUNG_TU = rows[0][0]
@@ -428,7 +428,7 @@ class NlAccVcnbH(models.Model):
                 "MA_TK1": self._get_parent_value(record, vals, 'MA_TK1_ID').MA or "",
                 "DVCS": self._get_parent_value(record, vals, 'DVCS').id or 1,
                 "CHI_NHANH": self._get_parent_value(record, vals, 'CHI_NHANH').id or 0,
-                "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 380,
+                "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 404,
                 "NGUOI_TAO": self.create_uid.id or None,
                 "NGUOI_SUA": self.env.uid or None,
             }

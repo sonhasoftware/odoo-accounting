@@ -105,7 +105,7 @@ class NlAccHdbhH(models.Model):
         res = super(NlAccHdbhH, self).default_get(fields_list)
         # Tìm phân quyền của user hiện tại
         permission = self.env['sonha.phan.quyen.nl'].sudo().search([
-            ('MENU', '=', 380),
+            ('MENU', '=', 403),
         ], limit=1)
         dl = self.env['acc.loaidl'].sudo().search([('id', '=', 5)])
 
@@ -117,7 +117,7 @@ class NlAccHdbhH(models.Model):
                 'VVIEC': permission.VVIEC.id or None,
                 'CHI_NHANH': permission.CHI_NHANH.id or None,
                 'TIEN_TE': permission.TIEN_TE.id or None,
-                'MENU_ID': permission.MENU.id or 380,
+                'MENU_ID': permission.MENU.id or 403,
                 'MA_TK1_ID': permission.MA_TK1_ID.id or None,
                 'LOAIDL': permission.LOAI_DL.id or dl.id,
             })
@@ -332,7 +332,7 @@ class NlAccHdbhH(models.Model):
         # Gọi function sinh chứng từ tự động
         rec = super(NlAccHdbhH, self).create(vals)
         query = "SELECT * FROM fn_chung_tu_tu_dong(%s, %s)"
-        self.env.cr.execute(query, ('menu_380', str(rec.NGAY_CT)))
+        self.env.cr.execute(query, ('menu_403', str(rec.NGAY_CT)))
         rows = self.env.cr.fetchall()
         if rows:
             rec.CHUNG_TU = rows[0][0]

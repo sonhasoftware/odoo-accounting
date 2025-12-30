@@ -89,7 +89,7 @@ class NlAccVcnbD(models.Model):
     @api.onchange('DON_GIA')
     def _onchange_don_gia(self):
         permission = self.env['sonha.phan.quyen.nl'].sudo().search([
-            ('MENU', '=', 380),
+            ('MENU', '=', 404),
         ], limit=1)
         for r in self:
             if permission.GIA_MUA:
@@ -135,7 +135,7 @@ class NlAccVcnbD(models.Model):
     @api.depends('SO_LUONG', 'PS_NO1', 'HANG_HOA')
     def _get_don_gia(self):
         for r in self:
-            check = self.env['sonha.phan.quyen.nl'].sudo().search([('MENU', '=', 380),
+            check = self.env['sonha.phan.quyen.nl'].sudo().search([('MENU', '=', 404),
                                                                    ('GIA_MUA', '=', True)])
             if r.ACC_AP_H.DG_THEO_TIEN:
                 r.DON_GIA = r.PS_NO1 / (r.SO_LUONG * r.TY_GIA)
@@ -249,7 +249,7 @@ class NlAccVcnbD(models.Model):
                     'MA_TK0_ID': related.MA_TK0_ID.id if related.MA_TK0_ID else False,
                     'DVCS': related.DVCS.id if related.DVCS else False,
                     'CHI_NHANH': related.CHI_NHANH.id if related.CHI_NHANH else False,
-                    'MENU_ID': related.MENU_ID.id if related.MENU_ID else 380,
+                    'MENU_ID': related.MENU_ID.id if related.MENU_ID else 404,
 
                     'KHACH_HANGC': related.KHACH_HANGC.id if related.KHACH_HANGC else False,
                     'KHOC': related.KHOC.id if related.KHOC else False,
