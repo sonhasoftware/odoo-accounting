@@ -62,6 +62,11 @@ from . import acc_kchuyen_ct
 from . import nl_acc_pc_h
 from . import nl_acc_pc_d
 
+from . import nl_acc_bn_h
+from . import nl_acc_bn_d
+from . import nl_acc_bc_h
+from . import nl_acc_bc_d
+
 from . import nl_acc_pt_h
 from . import nl_acc_pt_d
 from . import danh_muc_bao_cao

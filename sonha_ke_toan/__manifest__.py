@@ -52,6 +52,7 @@
         'views/nl_acc_bao_cao_views.xml',
         'views/acc_kchuyen_ct_views.xml',
         'views/nl_acc_ap_h_bn_views.xml',
+        'views/nl_acc_ap_h_bc_views.xml',
         'wizard/thong_bao_wizard_views.xml',
         'wizard/popup_tim_kiem_views.xml',
         'wizard/popup_bao_cao_views.xml',

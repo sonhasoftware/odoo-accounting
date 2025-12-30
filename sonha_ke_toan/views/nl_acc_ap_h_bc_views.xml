@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-        <record id="view_nl_acc_ap_h_bn_tree" model="ir.ui.view">
-        <field name="name">acc.ap.bn.h.bn.tree</field>
-        <field name="model">nl.acc.ap.bn.h</field>
+        <record id="view_nl_acc_ap_h_bc_tree" model="ir.ui.view">
+        <field name="name">acc.ap.bc.h.bc.tree</field>
+        <field name="model">nl.acc.ap.bc.h</field>
         <field name="arch" type="xml">
-            <tree string="Phiếu báo nợ">
+            <tree string="Phiếu báo có">
                 <field name="NGAY_CT" optional="show"/>
                 <field name="CHUNG_TU" optional="show"/>
                 <field name="CHI_NHANH" optional="show"/>
@@ -23,11 +23,11 @@
         </field>
     </record>
 
-    <record id="view_nl_acc_ap_h_bn_form" model="ir.ui.view">
-    <field name="name">nl.acc.ap.h.bn.form</field>
-    <field name="model">nl.acc.ap.bn.h</field>
+    <record id="view_nl_acc_ap_h_bc_form" model="ir.ui.view">
+    <field name="name">nl.acc.ap.h.bc.form</field>
+    <field name="model">nl.acc.ap.bc.h</field>
     <field name="arch" type="xml">
-        <form string="Phiếu báo nợ">
+        <form string="Phiếu báo có">
             <div class="two-column-form">
 
                 <!-- Cột trái -->
@@ -197,12 +197,12 @@
         </form>
     </field>
 </record>
-    <record id="acc_nl_ap_h_bn_action" model="ir.actions.act_window">
-        <field name="name">Phiếu báo nợ</field>
+    <record id="acc_nl_ap_h_bc_action" model="ir.actions.act_window">
+        <field name="name">Phiếu báo có</field>
         <field name="type">ir.actions.act_window</field>
-        <field name="res_model">nl.acc.ap.bn.h</field>
+        <field name="res_model">nl.acc.ap.bc.h</field>
         <field name="view_ids" eval="[(5, 0, 0),
-                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_nl_acc_ap_h_bn_tree')}),
-                (0, 0, {'view_mode': 'form', 'view_id': ref('view_nl_acc_ap_h_bn_form')})]"/>
+                (0, 0, {'view_mode': 'tree', 'view_id': ref('view_nl_acc_ap_h_bc_tree')}),
+                (0, 0, {'view_mode': 'form', 'view_id': ref('view_nl_acc_ap_h_bc_form')})]"/>
     </record>
 </odoo>

@@ -452,6 +452,7 @@ class NlAccPtH(models.Model):
                 raise ValidationError("Không được phép để trống phần dữ liệu bên dưới!")
             for d_vals in d_records_to_validate:
                 ma_tk1 = self.env['acc.tai.khoan'].search([('id', '=', d_vals.get('MA_TK1_ID'))]).MA
+                pt_thue = self.env['acc.thue'].search([('id', '=', d_vals.get('PT_THUE'))]).PT_THUE
                 vals_dict.update({
                     "MA_TK1": ma_tk1 or "",
                     "SO_LUONG": d_vals.get('SO_LUONG'),
@@ -460,7 +461,7 @@ class NlAccPtH(models.Model):
                     "TIEN_NTE": d_vals.get('TIEN_NTE'),
                     "VAT": d_vals.get('VAT'),
                     "KHACH_HANG": d_vals.get('KHACH_HANG') or 0,
-                    "PT_THUE": d_vals.get('PT_THUE') or "",
+                    "PT_THUE": pt_thue or "",
                     "SO_HD": d_vals.get('SO_HD') or "",
                     "SERI_HD": d_vals.get('SERI_HD') or "",
                     "NGAY_HD": str(d_vals.get('NGAY_HD')) or None,

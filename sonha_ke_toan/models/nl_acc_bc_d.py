@@ -6,10 +6,10 @@ import json
 
 _logger = logging.getLogger(__name__)
 
-class NLAccApBnD(models.Model):
-    _name = 'nl.acc.ap.bn.d'
+class NLAccApBcD(models.Model):
+    _name = 'nl.acc.ap.bc.d'
 
-    ACC_AP_H = fields.Many2one('nl.acc.ap.bn.h', string="ID Header", store=True)
+    ACC_AP_H = fields.Many2one('nl.acc.ap.bc.h', string='ID Header', required=True)
 
     # Liên kết đến bảng tài khoản
     MA_TK0_ID = fields.Many2one('acc.tai.khoan', string="Nợ", store=True, compute='get_ma_tk_id', readonly=False)
@@ -219,7 +219,7 @@ class NLAccApBnD(models.Model):
     def create(self, vals):
         # --- Merge dữ liệu header nếu có ---
         if vals.get('ACC_AP_H'):
-            related = self.env['nl.acc.ap.bn.h'].sudo().browse(vals['ACC_AP_H'])
+            related = self.env['nl.acc.ap.bc.h'].sudo().browse(vals['ACC_AP_H'])
             if related.exists():
                 vals.update({
                     'NGAY_CT': related.NGAY_CT or None,
@@ -255,7 +255,7 @@ class NLAccApBnD(models.Model):
                 })
 
         # --- Tạo bản ghi acc.ap.d ---
-        rec = super(NLAccApBnD, self).create(vals)
+        rec = super(NLAccApBcD, self).create(vals)
 
         # --- Chuẩn bị dữ liệu để insert vào bảng tổng hợp ---
         raw = rec.read()[0]
@@ -285,7 +285,7 @@ class NLAccApBnD(models.Model):
                 data[fld] = val
 
         # --- Thêm khóa ngoại ---
-        data['ACC_BN_D'] = rec.id
+        data['ACC_BC_D'] = rec.id
         data['KEY_CHUNG'] = rec.id
 
         # --- Loại bỏ toàn bộ system fields (tránh lỗi CREATE_DATE, WRITE_UID, __last_update, …) ---

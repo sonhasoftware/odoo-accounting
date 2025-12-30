@@ -283,5 +283,18 @@
               name="Phiếu thu"
               parent="menu_thu_chi"
               action="acc_nl_pt_h_action"
-              sequence="1"/>
+              sequence="2"/>
+
+    <menuitem id="menu_phieu_bao_no"
+              name="Phiếu báo nợ"
+              parent="menu_thu_chi"
+              action="acc_nl_ap_h_bn_action"
+              sequence="3"/>
+
+    <menuitem id="menu_phieu_bao_co"
+              name="Phiếu báo có"
+              parent="menu_thu_chi"
+              action="acc_nl_ap_h_bc_action"
+              sequence="4"/>
+
 </odoo>

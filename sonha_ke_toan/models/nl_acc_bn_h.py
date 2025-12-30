@@ -103,7 +103,7 @@ class NLAccApBnH(models.Model):
         res = super(NLAccApBnH, self).default_get(fields_list)
         # Tìm phân quyền của user hiện tại
         permission = self.env['sonha.phan.quyen.nl'].sudo().search([
-            ('MENU', '=', 386),
+            ('MENU', '=', 396),
         ], limit=1)
         dl = self.env['acc.loaidl'].sudo().search([('id', '=', 5)])
 
@@ -260,45 +260,61 @@ class NLAccApBnH(models.Model):
     def create(self, vals):
 
         temp_rec = self.new(vals)
+        vals_dict = {
+            "MA_TK0": "",
+            "MA_TK1": "",
+            "KHACH_HANG": 0,
+            "PS_NO1": 0,
+            "TIEN_NTE": 0,
+            "VVIEC": 0,
+            "PT_THUE": "",
+            "SERI_HD": "",
+            "SO_HD": "",
+            "NGAY_HD": None,
+            "VAT": 0,
+            "HANG_HOA": None,
+            "SO_LUONG": 0,
+            "DON_GIA": 0,
+            "NGAY_CT": str(temp_rec.NGAY_CT) or "",
+            "CHUNG_TU": temp_rec.CHUNG_TU or "",
+            "CTGS": temp_rec.CTGS or "",
+            "MAU_SO": temp_rec.MAU_SO or None,
+            "ONG_BA": temp_rec.ONG_BA or "",
+            "GHI_CHU": temp_rec.GHI_CHU or "",
+            "KH_THUE": temp_rec.KH_THUE or "",
+            "MS_THUE": temp_rec.MS_THUE or "",
+            "DC_THUE": temp_rec.DC_THUE or "",
+            "BO_PHAN": temp_rec.BO_PHAN.id or 0,
+            "KHO": temp_rec.KHO.id or 0,
+            "KHOAN_MUC": temp_rec.KHOAN_MUC.id or 0,
+            "TIEN_TE": temp_rec.TIEN_TE.id or "",
+            "TY_GIA": temp_rec.TY_GIA or "",
+            "DVCS": temp_rec.DVCS.id or 1,
+            "CHI_NHANH": temp_rec.CHI_NHANH.id or 0,
+            "MENU_ID": temp_rec.MENU_ID.id or 396,
+            "NGUOI_TAO": self.env.uid or None,
+            "NGUOI_SUA": self.env.uid or None,
+        }
+
+        table_name = 'nl.acc.ap.bn.d'
+
+        if len(temp_rec.ACC_SP_D) == 0:
+            raise ValidationError("Không được phép để trống phần dữ liệu chi tiết!")
+
         for recs in temp_rec.ACC_SP_D:
-
-            vals_dict = {
-                "HANG_HOA": recs.HANG_HOA.id or None,
-                "MA_TK0": recs.MA_TK0 or "",
-                "SO_LUONG": recs.SO_LUONG,
-                "DON_GIA": recs.DON_GIA,
-                "PS_NO1": recs.PS_NO1,
-                "TIEN_NTE": recs.TIEN_NTE,
-                "VAT": recs.VAT,
-                "NGAY_CT": str(temp_rec.NGAY_CT) or "",
-                "CHUNG_TU": temp_rec.CHUNG_TU or "",
-                "CTGS": temp_rec.CTGS or "",
-                "SO_HD": temp_rec.SO_HD or "",
-                "SERI_HD": temp_rec.SERI_HD or "",
-                "NGAY_HD": str(temp_rec.NGAY_HD) or None,
-                "MAU_SO": temp_rec.MAU_SO or None,
-                "PT_THUE": temp_rec.PT_THUE.PT_THUE or "",
-                "ONG_BA": temp_rec.ONG_BA or "",
-                "GHI_CHU": temp_rec.GHI_CHU or "",
-                "KHACH_HANG": temp_rec.KHACH_HANG.id or 0,
-                "KH_THUE": temp_rec.KH_THUE or "",
-                "MS_THUE": temp_rec.MS_THUE or "",
-                "DC_THUE": temp_rec.DC_THUE or "",
-                "BO_PHAN": temp_rec.BO_PHAN.id or 0,
-                "VVIEC": temp_rec.VVIEC.id or 0,
-                "KHO": temp_rec.KHO.id or 0,
-                "KHOAN_MUC": temp_rec.KHOAN_MUC.id or 0,
-                "TIEN_TE": temp_rec.TIEN_TE.id or "",
-                "TY_GIA": temp_rec.TY_GIA or "",
-                "MA_TK1": recs.MA_TK1_ID.MA or "",
-                "DVCS": temp_rec.DVCS.id or 1,
-                "CHI_NHANH": temp_rec.CHI_NHANH.id or 0,
-                "MENU_ID": temp_rec.MENU_ID.id or 386,
-                "NGUOI_TAO": self.env.uid or None,
-                "NGUOI_SUA": self.env.uid or None,
-            }
-
-            table_name = 'nl.acc.ap.bn.d'
+            vals_dict.update({
+            "MA_TK0": recs.MA_TK0 or "",
+            "MA_TK1": recs.MA_TK1 or "",
+            "KHACH_HANG": recs.KHACH_HANG.id or 0,
+            "PS_NO1": recs.PS_NO1,
+            "TIEN_NTE": recs.TIEN_NTE,
+            "VVIEC": recs.VVIEC.id or 0,
+            "PT_THUE": recs.PT_THUE.PT_THUE or "",
+            "SERI_HD": recs.SERI_HD or "",
+            "SO_HD": recs.SO_HD or "",
+            "NGAY_HD": str(recs.NGAY_HD) or None,
+            "VAT": recs.VAT,
+            })
 
             json_data = json.dumps(vals_dict)
 
@@ -313,9 +329,9 @@ class NLAccApBnH(models.Model):
                     raise ValidationError(loi)
 
         # Gọi function sinh chứng từ tự động
-        rec = super(NLAccApCkH, self).create(vals)
+        rec = super(NLAccApBnH, self).create(vals)
         query = "SELECT * FROM fn_chung_tu_tu_dong(%s, %s)"
-        self.env.cr.execute(query, ('menu_386', str(rec.NGAY_CT)))
+        self.env.cr.execute(query, ('menu_396', str(rec.NGAY_CT)))
         rows = self.env.cr.fetchall()
         if rows:
             rec.CHUNG_TU = rows[0][0]
@@ -376,7 +392,7 @@ class NLAccApBnH(models.Model):
                         d_records_to_validate.append(d_dict)
             else:
                 # Không có D records được edit, lấy D records hiện có
-                all_d_records = self.env['nl.acc.ap.ck.d'].search([('ACC_AP_H', '=', record.id)])
+                all_d_records = self.env['nl.acc.ap.bn.d'].search([('ACC_AP_H', '=', record.id)])
                 d_records_to_validate = []
                 for d in all_d_records:
                     read_data = d.read()[0]
@@ -384,46 +400,64 @@ class NLAccApBnH(models.Model):
                     d_records_to_validate.append(d_vals)
             # VALIDATE từng D record
 
+            vals_dict = {
+                "MA_TK0": "",
+                "MA_TK1": "",
+                "KHACH_HANG": 0,
+                "PS_NO1": 0,
+                "TIEN_NTE": 0,
+                "VVIEC": 0,
+                "PT_THUE": "",
+                "SERI_HD": "",
+                "SO_HD": "",
+                "NGAY_HD": None,
+                "VAT": 0,
+                "HANG_HOA": None,
+                "SO_LUONG": 0,
+                "DON_GIA": 0,
+                "NGAY_CT": str(self._get_parent_value(record, vals, 'NGAY_CT')) or "",
+                "CHUNG_TU": self._get_parent_value(record, vals, 'CHUNG_TU') or "",
+                "CTGS": self._get_parent_value(record, vals, 'CTGS') or "",
+                "MAU_SO": self._get_parent_value(record, vals, 'MAU_SO') or None,
+                "ONG_BA": self._get_parent_value(record, vals, 'ONG_BA') or "",
+                "GHI_CHU": self._get_parent_value(record, vals, 'GHI_CHU') or "",
+                "KH_THUE": self._get_parent_value(record, vals, 'KH_THUE') or "",
+                "MS_THUE": self._get_parent_value(record, vals, 'MS_THUE') or "",
+                "DC_THUE": self._get_parent_value(record, vals, 'DC_THUE') or "",
+                "BO_PHAN": self._get_parent_value(record, vals, 'BO_PHAN').id or 0,
+                "KHO": self._get_parent_value(record, vals, 'KHO').id or 0,
+                "KHOAN_MUC": self._get_parent_value(record, vals, 'KHOAN_MUC').id or 0,
+                "TIEN_TE": self._get_parent_value(record, vals, 'TIEN_TE').id or "",
+                "TY_GIA": self._get_parent_value(record, vals, 'TY_GIA') or "",
+                "DVCS": self._get_parent_value(record, vals, 'DVCS').id or 1,
+                "CHI_NHANH": self._get_parent_value(record, vals, 'CHI_NHANH').id or 0,
+                "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 396,
+                "NGUOI_TAO": self.create_uid.id or None,
+                "NGUOI_SUA": self.env.uid or None,
+            }
+
+            table_name = 'nl.acc.ap.bn.d'
+
+            if len(d_records_to_validate) == 0:
+                raise ValidationError("Không được phép để trống phần dữ liệu chi tiết!")
+
             for d_vals in d_records_to_validate:
                 ma_tk0 = self.env['acc.tai.khoan'].search([('id', '=', d_vals.get('MA_TK0_ID'))]).MA
                 ma_tk1 = self.env['acc.tai.khoan'].search([('id', '=', d_vals.get('MA_TK1_ID'))]).MA
-                vals_dict = {
-                    "HANG_HOA": recs.HANG_HOA.id or None,
-                    "MA_TK0": recs.MA_TK0 or "",
-                    "SO_LUONG": recs.SO_LUONG,
-                    "DON_GIA": recs.DON_GIA,
-                    "PS_NO1": recs.PS_NO1,
-                    "TIEN_NTE": recs.TIEN_NTE,
-                    "VAT": recs.VAT,
-                    "NGAY_CT": str(record.NGAY_CT) or "",
-                    "CHUNG_TU": record.CHUNG_TU or "",
-                    "CTGS": record.CTGS or "",
-                    "SO_HD": record.SO_HD or "",
-                    "SERI_HD": record.SERI_HD or "",
-                    "NGAY_HD": str(record.NGAY_HD) or None,
-                    "MAU_SO": record.MAU_SO or None,
-                    "PT_THUE": record.PT_THUE.PT_THUE or "",
-                    "ONG_BA": record.ONG_BA or "",
-                    "GHI_CHU": record.GHI_CHU or "",
-                    "KHACH_HANG": record.KHACH_HANG.id or 0,
-                    "KH_THUE": record.KH_THUE or "",
-                    "MS_THUE": record.MS_THUE or "",
-                    "DC_THUE": record.DC_THUE or "",
-                    "BO_PHAN": record.BO_PHAN.id or 0,
-                    "VVIEC": record.VVIEC.id or 0,
-                    "KHO": record.KHO.id or 0,
-                    "KHOAN_MUC": record.KHOAN_MUC.id or 0,
-                    "TIEN_TE": record.TIEN_TE.id or "",
-                    "TY_GIA": record.TY_GIA or "",
-                    "MA_TK1": recs.MA_TK1_ID.MA or "",
-                    "DVCS": record.DVCS.id or 1,
-                    "CHI_NHANH": record.CHI_NHANH.id or 0,
-                    "MENU_ID": record.MENU_ID.id or 386,
-                    "NGUOI_TAO": self.create_uid.id or None,
-                    "NGUOI_SUA": self.env.uid or None,
-                }
-
-                table_name = 'nl.acc.ap.bn.d'
+                pt_thue = self.env['acc.thue'].search([('id', '=', d_vals.get('PT_THUE'))]).PT_THUE
+                vals_dict.update({
+                    "MA_TK0": ma_tk0 or "",
+                    "MA_TK1": ma_tk1 or "",
+                    "KHACH_HANG": d_vals.get('KHACH_HANG') or 0,
+                    "PS_NO1": d_vals.get('PS_NO1'),
+                    "TIEN_NTE": d_vals.get('TIEN_NTE'),
+                    "VVIEC": d_vals.get('VVIEC') or 0,
+                    "PT_THUE": pt_thue or "",
+                    "SERI_HD": d_vals.get('SERI_HD') or "",
+                    "SO_HD": d_vals.get('SO_HD') or "",
+                    "NGAY_HD": str(d_vals.get('NGAY_HD')) or None,
+                    "VAT": d_vals.get('VAT') or 0,
+                })
 
                 json_data = json.dumps(vals_dict)
 
@@ -439,7 +473,7 @@ class NLAccApBnH(models.Model):
                     if loi:
                         raise ValidationError(loi)
 
-        res = super(NLAccApCkH, self).write(vals)
+        res = super(NLAccApBnH, self).write(vals)
 
         for record in self:
             all_d_records = self.env['nl.acc.ap.bn.d'].search([('ACC_AP_H', '=', record.id)])
