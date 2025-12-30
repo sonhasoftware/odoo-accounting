@@ -23,7 +23,7 @@ class NLAccApBcH(models.Model):
     MAU_SO = fields.Char(string="Mẫu số", store=True, size=10)
     PT_THUE = fields.Many2one('acc.thue', string="% Thuế", store=True)
     ONG_BA = fields.Char(string="Ông bà", store=True, size=60)
-    GHI_CHU = fields.Char(string="Ghi chú", store=True, default="Phiếu báo nợ", size=200)
+    GHI_CHU = fields.Char(string="Ghi chú", store=True, default="Phiếu báo có", size=200)
 
     KHACH_HANG = fields.Many2one('acc.khach.hang', string="Khách hàng", store=True)
     KH_THUE = fields.Char(string="KH Thuế", store=True, size=150)
@@ -80,7 +80,7 @@ class NLAccApBcH(models.Model):
             r.TOTAL_VAT = (
                 f"Tổng tiền:{sum(lines.mapped('PS_NO1'))}, "
                 f"VAT:{sum(lines.mapped('VAT'))}, "
-                f"Tổng SL:{sum(lines.mapped('SO_LUONG'))}"
+                # f"Tổng SL:{sum(lines.mapped('SO_LUONG'))}"
             )
 
     # @api.model

@@ -79,7 +79,7 @@ class NLAccApBnH(models.Model):
             r.TOTAL_VAT = (
                 f"Tổng tiền:{sum(lines.mapped('PS_NO1'))}, "
                 f"VAT:{sum(lines.mapped('VAT'))}, "
-                f"Tổng SL:{sum(lines.mapped('SO_LUONG'))}"
+                # f"Tổng SL:{sum(lines.mapped('SO_LUONG'))}"
             )
 
     # @api.model

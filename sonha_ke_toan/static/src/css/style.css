@@ -334,3 +334,35 @@ div#MA_TK1_IDContainer {
     min-width: 150px !important;
     max-width: 150px !important;
 }
+
+div#MA_TK0_IDContainer {
+    display: none !important;
+}
+
+div#KHACH_HANGContainer {
+    display: none !important;
+}
+
+div#VVIECContainer {
+    display: none !important;
+}
+
+div#PT_THUEContainer {
+    display: none;
+}
+
+div#SERI_HDContainer {
+    display: none !important;
+}
+
+div#SO_HDContainer {
+    display: none !important;
+}
+
+.date-input {
+    display: none !important;
+}
+
+.arrow {
+    display: none !important;
+}
