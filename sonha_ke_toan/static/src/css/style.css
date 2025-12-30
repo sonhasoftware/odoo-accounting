@@ -369,3 +369,9 @@ div[name="ACC_SP_D"] .arrow {
     min-width: 150px !important;
     max-width: 150px !important;
 }
+
+.o_list_view th[data-name="GHI_CHU_CT"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
