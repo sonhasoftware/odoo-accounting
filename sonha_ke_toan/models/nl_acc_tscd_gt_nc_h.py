@@ -437,9 +437,6 @@ class NLAccTSCDGtNcH(models.Model):
 
             table_name = 'nl.acc.tscd.gt.nc.h'
 
-            if len(d_records_to_validate) == 0:
-                raise ValidationError("Không được phép để trống phần dữ liệu bên dưới!")
-
             for d_vals in d_records_to_validate:
                 ma_tk0 = self.env['acc.tai.khoan'].search([('id', '=', d_vals.get('MA_TK0_ID'))]).MA
                 ma_tk1 = self.env['acc.tai.khoan'].search([('id', '=', d_vals.get('MA_TK1_ID'))]).MA
@@ -473,6 +470,8 @@ class NLAccTSCDGtNcH(models.Model):
 
         for record in self:
             all_d_records = self.env['nl.acc.tscd.gt.nc.d'].search([('ACC_AP_H', '=', record.id)])
+            if len(all_d_records) == 0:
+                raise ValidationError("Không được phép để trống phần dữ liệu bên dưới!")
 
             # Copy D records sang bảng log
             self._copy_to_tong_hop_abc(all_d_records)

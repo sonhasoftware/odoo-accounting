@@ -94,6 +94,41 @@ div#MA_TK1_IDContainer {
     display: none !important;
 }
 
+div[name="ACC_SP_D"] div#VVIECContainer {
+    display: none !important;
+}
+
+div[name="ACC_SP_D"] div#MA_TK0_IDContainer {
+    display: none !important;
+}
+
+div[name="ACC_SP_D"] div#KHACH_HANGContainer {
+    display: none !important;
+}
+
+div[name="ACC_SP_D"] div#KHOAN_MUCContainer {
+    display: none !important;
+}
+
+div[name="ACC_SP_D"] div#PT_THUEContainer {
+    display: none !important;
+}
+
+div[name="ACC_SP_D"] div#SERI_HDContainer {
+    display: none !important;
+}
+
+div[name="ACC_SP_D"] div#SO_HDContainer {
+    display: none !important;
+}
+
+div[name="ACC_SP_D"] .date-input {
+    display: none !important;
+}
+
+div[name="ACC_SP_D"] .arrow {
+    display: none !important;
+}
 
 .hide-breadcrumb ol.breadcrumb.flex-nowrap.text-nowrap.small.lh-sm {
     display: none !important;
@@ -330,6 +365,12 @@ div#MA_TK1_IDContainer {
 }
 
 .o_list_view th[data-name="SO_LENHSX"] {
+    width: 150px !important;
+    min-width: 150px !important;
+    max-width: 150px !important;
+}
+
+.o_list_view th[data-name="GHI_CHU_CT"] {
     width: 150px !important;
     min-width: 150px !important;
     max-width: 150px !important;
