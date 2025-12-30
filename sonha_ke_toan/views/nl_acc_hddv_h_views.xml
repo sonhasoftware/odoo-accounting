@@ -65,7 +65,7 @@
                     </div>
                     <div class="form-row">
                         <label for="GHI_CHU">Diễn giải</label>
-                        <field name="GHI_CHU"/>
+                        <field name="GHI_CHU" string="Diễn giải"/>
                     </div>
                     <div class="form-row">
                         <label for="KHACH_HANG">Khách hàng</label>
@@ -120,6 +120,7 @@
                 <tree editable="bottom" toggle_visibility="true" class="o_list_view parent-one2many">
                     <field name="MA_TK0_ID"/>
                     <field name="MA_TK1_ID"/>
+                    <field name="GHI_CHU_CT"/>
                     <field name="PS_NO1"/>
                     <field name="TIEN_NTE" widget="float"/>
                     <field name="VAT"/>

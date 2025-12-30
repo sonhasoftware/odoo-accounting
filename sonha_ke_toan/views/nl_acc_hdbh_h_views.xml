@@ -65,7 +65,7 @@
                     </div>
                     <div class="form-row">
                         <label for="GHI_CHU">Diễn giải</label>
-                        <field name="GHI_CHU"/>
+                        <field name="GHI_CHU" string="Diễn giải"/>
                     </div>
                     <div class="form-row">
                         <label for="KHACH_HANG">Khách hàng</label>
@@ -132,7 +132,7 @@
                     <field name="MA_TK0_ID"/>
                     <field name="MA_TK1_ID"/>
                     <field name="SAN_PHAM" string="Bộ"/>
-                    <field name="SL_TP"/>
+                    <field name="SL_TP" string="SL bộ"/>
                     <field name="HANG_HOA"/>
                     <field name="SO_LUONG" widget="float"/>
                     <field name="DON_GIA" widget="float"/>

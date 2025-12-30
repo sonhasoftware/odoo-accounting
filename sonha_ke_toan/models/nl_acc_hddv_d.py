@@ -88,6 +88,8 @@ class NLAccHddvD(models.Model):
 
     TSCD = fields.Many2one('acc.tscd', string="TSCĐ")
 
+    GHI_CHU_CT = fields.Char(string="Ghi chú CT", store=True)
+
     @api.onchange('DON_GIA')
     def _onchange_don_gia(self):
         permission = self.env['sonha.phan.quyen.nl'].sudo().search([
