@@ -79,7 +79,7 @@ class NLAccApBcH(models.Model):
             lines = r.ACC_SP_D
             r.TOTAL_VAT = (
                 f"Tổng tiền:{sum(lines.mapped('PS_NO1'))}, "
-                f"VAT:{sum(lines.mapped('VAT'))}, "
+                f"VAT:{sum(lines.mapped('VAT'))} "
                 # f"Tổng SL:{sum(lines.mapped('SO_LUONG'))}"
             )
 
@@ -104,7 +104,7 @@ class NLAccApBcH(models.Model):
         res = super(NLAccApBcH, self).default_get(fields_list)
         # Tìm phân quyền của user hiện tại
         permission = self.env['sonha.phan.quyen.nl'].sudo().search([
-            ('MENU', '=', 396),
+            ('MENU', '=', 397),
         ], limit=1)
         dl = self.env['acc.loaidl'].sudo().search([('id', '=', 5)])
 
@@ -291,7 +291,7 @@ class NLAccApBcH(models.Model):
             "TY_GIA": temp_rec.TY_GIA or "",
             "DVCS": temp_rec.DVCS.id or 1,
             "CHI_NHANH": temp_rec.CHI_NHANH.id or 0,
-            "MENU_ID": temp_rec.MENU_ID.id or 396,
+            "MENU_ID": temp_rec.MENU_ID.id or 397,
             "NGUOI_TAO": self.env.uid or None,
             "NGUOI_SUA": self.env.uid or None,
         }
@@ -331,7 +331,7 @@ class NLAccApBcH(models.Model):
         # Gọi function sinh chứng từ tự động
         rec = super(NLAccApBcH, self).create(vals)
         query = "SELECT * FROM fn_chung_tu_tu_dong(%s, %s)"
-        self.env.cr.execute(query, ('menu_396', str(rec.NGAY_CT)))
+        self.env.cr.execute(query, ('menu_397', str(rec.NGAY_CT)))
         rows = self.env.cr.fetchall()
         if rows:
             rec.CHUNG_TU = rows[0][0]
@@ -431,7 +431,7 @@ class NLAccApBcH(models.Model):
                 "TY_GIA": self._get_parent_value(record, vals, 'TY_GIA') or "",
                 "DVCS": self._get_parent_value(record, vals, 'DVCS').id or 1,
                 "CHI_NHANH": self._get_parent_value(record, vals, 'CHI_NHANH').id or 0,
-                "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 396,
+                "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 397,
                 "NGUOI_TAO": self.create_uid.id or None,
                 "NGUOI_SUA": self.env.uid or None,
             }
