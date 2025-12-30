@@ -216,6 +216,12 @@
               action="bao_cao_action"
               sequence="11"/>
 
+<!--    <menuitem id="menu_bao_cao_dt"-->
+<!--              name="Báo cáo chi tiết"-->
+<!--              parent="menu_sonha_accounting"-->
+<!--              action="bao_cao_dt_action"-->
+<!--              sequence="12"/>-->
+
     <menuitem id="menu_phieu_tscd"
               name="Phiếu TSCĐ"
               parent="menu_sonha_accounting"

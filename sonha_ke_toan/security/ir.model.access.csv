@@ -50,6 +50,7 @@ access_nl_acc_tong_hop_log,nl.acc.tong.hop.log,model_nl_acc_tong_hop_log,,1,1,1,
 
 access_popup_tim_kiem,popup.tim.kiem,model_popup_tim_kiem,,1,1,1,1
 access_popup_bao_cao,popup.bao.cao,model_popup_bao_cao,,1,1,1,1
+access_popup_bao_cao_dt,popup.bao.cao.dt,model_popup_bao_cao_dt,,1,1,1,1
 
 
 

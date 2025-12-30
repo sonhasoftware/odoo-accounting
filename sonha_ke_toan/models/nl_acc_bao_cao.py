@@ -1,4 +1,6 @@
 from odoo import models, fields, api
+from odoo.exceptions import ValidationError
+from datetime import timedelta
 
 
 class NlAccBaoCao(models.Model):
@@ -38,13 +40,52 @@ class NlAccBaoCao(models.Model):
     # TY_GIA = fields.Float(string="Thành tiền")
     create_date = fields.Datetime("...")
 
-    def action_exit(self, domain):
-        records = self.search(domain)
-        records.sudo().unlink()
+    @api.model
+    def action_exit(self, ids):
+        if not ids:
+            raise ValidationError("Bạn chưa chọn bản ghi nào")
+        records = self.browse(ids)
+        if len(records) > 1:
+            raise ValidationError("Bạn chỉ được phép chọn 1 bản ghi duy nhất!")
+
+        dvcs = self.env.company.id
+        bao_cao = records.id_bc
+
+        start_date = None
+        end_date = None
+
+        tai_khoan = None
+        chi_nhanh = None
+        khach_hang = None
+        hang_hoa = None
+        kho = None
+        tscd = None
+        bo_phan = None
+        khoan_muc = None
+        vu_viec = None
+        thanh_pham = None
+        id_rec = records.id
+        now = fields.Datetime.now()
+        vals = [dvcs, bao_cao, start_date, end_date, tai_khoan, chi_nhanh, khach_hang,
+                hang_hoa, kho, tscd, bo_phan, khoan_muc, vu_viec, thanh_pham, now, id_rec]
+
+        time_from = now - timedelta(seconds=3)
+        time_to = now + timedelta(seconds=3)
+
+        fn_bao_cao = self.env['acc.bao.cao'].browse(bao_cao)
+
+        sql = fn_bao_cao.FN_GOI_BC
+        self.env.cr.execute(sql, vals)
+        domain = [('id_bc', '=', bao_cao),
+                  ('create_date', '>=', time_from),
+                  ('create_date', '<=', time_to)]
+
         return {
             'type': 'ir.actions.act_window',
             'name': 'Báo cáo',
-            'res_model': 'popup.bao.cao.form',
-            'view_mode': 'form',
-            'target': 'new',
+            'res_model': 'nl.acc.bao.cao',
+            'views': [(False, 'tree')],
+            'domain': domain,
+            'target': 'current',
         }
+

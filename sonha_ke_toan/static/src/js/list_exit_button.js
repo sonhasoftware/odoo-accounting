@@ -12,7 +12,6 @@ export class BaoCaoListController extends ListController {
         super.setup();
         this.orm = useService("orm");
         this.notification = useService("notification");
-        this.actionService = useService("action");
 
         this._onKeyDown = this._onKeyDown.bind(this);
 
@@ -26,15 +25,12 @@ export class BaoCaoListController extends ListController {
     }
 
     async _handleAction() {
-        const root = this.model.root;
+        const selectedRecords = this.model.root.selection || [];
+        const ids = selectedRecords.map(rec => rec.resId);
 
-        // DOMAIN & CONTEXT HIỆN TẠI CỦA LIST VIEW
-        const domain = root.domain || [];
-        const context = root.context || {};
-
-        if (!domain.length) {
+        if (!ids.length) {
             this.notification.add(
-                "Không xác định được domain hiện tại",
+                "Bạn chưa chọn bản ghi nào",
                 { type: "warning" }
             );
             return;
@@ -43,8 +39,7 @@ export class BaoCaoListController extends ListController {
         const action = await this.orm.call(
             "nl.acc.bao.cao",
             "action_exit",
-            [domain],
-            { context }
+            [ids]
         );
 
         if (action) {

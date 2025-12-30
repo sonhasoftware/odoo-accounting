@@ -65,7 +65,10 @@ class AccSanPham(models.Model):
         rec.SAN_PHAM = rec.id
         dvcs = rec.DVCS.id
         hang_hoa = self.env['acc.hang.hoa'].sudo().create({
-            'SAN_PHAM': rec.id
+            'SAN_PHAM': rec.id,
+            'TEN': rec.TEN,
+            'MA': rec.MA,
+            'MA_TEN': rec.MA_TEN
         })
         rec.HANG_HOA = hang_hoa.id
         self.env.cr.execute("CALL public.update_cap(%s, %s);", ['acc_san_pham', dvcs])
