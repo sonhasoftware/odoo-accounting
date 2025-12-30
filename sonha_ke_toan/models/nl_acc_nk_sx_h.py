@@ -24,7 +24,7 @@ class NlAccNkSxH(models.Model):
     MAU_SO = fields.Char(string="Mẫu số", store=True, size=10)
     PT_THUE = fields.Many2one('acc.thue', string="% Thuế", store=True)
     ONG_BA = fields.Char(string="Ông bà", store=True , size=60)
-    GHI_CHU = fields.Char(string="Ghi chú", store=True, default="Phiếu nhập mua hàng", size=200)
+    GHI_CHU = fields.Char(string="Ghi chú", store=True, default="Phiếu nhập kho thành phẩm", size=200)
 
     KHACH_HANG = fields.Many2one('acc.khach.hang', string="Khách hàng", store=True)
     KH_THUE = fields.Char(string="KH Thuế", store=True, size=150)
