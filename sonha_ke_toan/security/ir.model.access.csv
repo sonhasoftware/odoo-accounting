@@ -95,6 +95,13 @@ access_nl_acc_pt_d,nl.acc.pt.d,model_nl_acc_pt_d,,1,1,1,1
 access_nl_acc_hddv_h,nl.acc.hddv.h,model_nl_acc_hddv_h,,1,1,1,1
 access_nl_acc_hddv_d,nl.acc.hddv.d,model_nl_acc_hddv_d,,1,1,1,1
 
+access_acc_phieubn_h,nl.acc.ap.bn.h,model_nl_acc_ap_bn_h,,1,1,1,1
+access_acc_phieubn_d,nl.acc.ap.bn.d,model_nl_acc_ap_bn_d,,1,1,1,1
+
+access_popup_change_field,popup.change.field,model_popup_change_field,,1,1,1,1
+,,,,,,,
+access_acc_phieubc_h,nl.acc.ap.bc.h,model_nl_acc_ap_bc_h,,1,1,1,1
+access_acc_phieubc_d,nl.acc.ap.bc.d,model_nl_acc_ap_bc_d,,1,1,1,
 access_nl_acc_hdbh_h,nl.acc.hdbh.h,model_nl_acc_hdbh_h,,1,1,1,1
 access_nl_acc_hdbh_d,nl.acc.hdbh.d,model_nl_acc_hdbh_d,,1,1,1,1
 
