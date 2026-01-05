@@ -12,6 +12,7 @@ export class BaoCaoListController extends ListController {
         super.setup();
         this.orm = useService("orm");
         this.notification = useService("notification");
+        this.actionService = useService("action");
 
         this._onKeyDown = this._onKeyDown.bind(this);
 
@@ -24,7 +25,7 @@ export class BaoCaoListController extends ListController {
         });
     }
 
-    async _handleAction() {
+    async onDetailClick() {
         const selectedRecords = this.model.root.selection || [];
         const ids = selectedRecords.map(rec => rec.resId);
 
@@ -47,14 +48,30 @@ export class BaoCaoListController extends ListController {
         }
     }
 
-    onExitClick() {
-        this._handleAction();
+    async onSearchClick() {
+        return this.actionService.doAction({
+            type: "ir.actions.act_window",
+            name: 'Tìm kiếm',
+            res_model: "popup.tim.kiem",
+            views: [[false, "form"]],
+            target: "new",
+        });
+    }
+
+    async onThoatClick() {
+        return this.actionService.doAction({
+            type: "ir.actions.act_window",
+            name: 'Báo cáo',
+            res_model: "popup.bao.cao",
+            views: [[false, "form"]],
+            target: "new",
+        });
     }
 
     _onKeyDown(ev) {
         if (ev.key === "F2") {
             ev.preventDefault();
-            this._handleAction();
+            this.onExitClick();
         }
     }
 }

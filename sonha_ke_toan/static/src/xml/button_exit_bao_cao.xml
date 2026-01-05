@@ -2,8 +2,15 @@
 <templates>
    <t t-name="button_bao_cao.ListView.Buttons" t-inherit="web.ListView.Buttons">
        <xpath expr="//div[hasclass('o_list_buttons')]" position="after">
-           <button type="button" class="btn btn-primary" style="margin-left: 10px;"  t-on-click="onExitClick">
-               View báo cáo chi tiết
+           <button type="button" class="btn btn-primary" style="margin-left: 10px;"  t-on-click="onDetailClick">
+               F2
+           </button>
+           <button type="button" class="btn btn-primary" style="margin-left: 10px;"  t-on-click="onSearchClick">
+               🔍 Search
+           </button>
+
+           <button type="button" class="btn btn-primary" style="margin-left: 10px;"  t-on-click="onThoatClick">
+               Thoát
            </button>
        </xpath>
    </t>

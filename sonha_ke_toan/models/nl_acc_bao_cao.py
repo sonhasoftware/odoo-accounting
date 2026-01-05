@@ -88,4 +88,3 @@ class NlAccBaoCao(models.Model):
             'domain': domain,
             'target': 'current',
         }
-
