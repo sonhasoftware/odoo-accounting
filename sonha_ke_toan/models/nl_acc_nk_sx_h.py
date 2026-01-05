@@ -24,7 +24,7 @@ class NlAccNkSxH(models.Model):
     MAU_SO = fields.Char(string="Mẫu số", store=True, size=10)
     PT_THUE = fields.Many2one('acc.thue', string="% Thuế", store=True)
     ONG_BA = fields.Char(string="Ông bà", store=True , size=60)
-    GHI_CHU = fields.Char(string="Ghi chú", store=True, default="Phiếu nhập mua hàng", size=200)
+    GHI_CHU = fields.Char(string="Ghi chú", store=True, default="Phiếu nhập kho thành phẩm", size=200)
 
     KHACH_HANG = fields.Many2one('acc.khach.hang', string="Khách hàng", store=True)
     KH_THUE = fields.Char(string="KH Thuế", store=True, size=150)
@@ -438,9 +438,6 @@ class NlAccNkSxH(models.Model):
 
             table_name = 'nl.acc.nk.sx.h'
 
-            if len(d_records_to_validate) == 0:
-                raise ValidationError("Không được phép để trống phần dữ liệu bên dưới!")
-
             for d_vals in d_records_to_validate:
                 ma_tk0 = self.env['acc.tai.khoan'].search([('id', '=', d_vals.get('MA_TK0_ID'))]).MA
                 vals_dict.update({
@@ -470,6 +467,8 @@ class NlAccNkSxH(models.Model):
 
         for record in self:
             all_d_records = self.env['nl.acc.nk.sx.d'].search([('ACC_AP_H', '=', record.id)])
+            if len(all_d_records) == 0:
+                raise ValidationError("Không được phép để trống phần dữ liệu bên dưới!")
 
             # Copy D records sang bảng log
             self._copy_to_tong_hop_abc(all_d_records)

@@ -50,6 +50,7 @@ access_nl_acc_tong_hop_log,nl.acc.tong.hop.log,model_nl_acc_tong_hop_log,,1,1,1,
 
 access_popup_tim_kiem,popup.tim.kiem,model_popup_tim_kiem,,1,1,1,1
 access_popup_bao_cao,popup.bao.cao,model_popup_bao_cao,,1,1,1,1
+access_popup_bao_cao_dt,popup.bao.cao.dt,model_popup_bao_cao_dt,,1,1,1,1
 
 
 
@@ -91,6 +92,8 @@ access_nl_acc_pc_d,nl.acc.pc.d,model_nl_acc_pc_d,,1,1,1,1
 access_nl_acc_pt_h,nl.acc.pt.h,model_nl_acc_pt_h,,1,1,1,1
 access_nl_acc_pt_d,nl.acc.pt.d,model_nl_acc_pt_d,,1,1,1,1
 
+access_nl_acc_hddv_h,nl.acc.hddv.h,model_nl_acc_hddv_h,,1,1,1,1
+access_nl_acc_hddv_d,nl.acc.hddv.d,model_nl_acc_hddv_d,,1,1,1,1
 
 access_acc_phieubn_h,nl.acc.ap.bn.h,model_nl_acc_ap_bn_h,,1,1,1,1
 access_acc_phieubn_d,nl.acc.ap.bn.d,model_nl_acc_ap_bn_d,,1,1,1,1
@@ -99,3 +102,10 @@ access_popup_change_field,popup.change.field,model_popup_change_field,,1,1,1,1
 ,,,,,,,
 access_acc_phieubc_h,nl.acc.ap.bc.h,model_nl_acc_ap_bc_h,,1,1,1,1
 access_acc_phieubc_d,nl.acc.ap.bc.d,model_nl_acc_ap_bc_d,,1,1,1,
+access_nl_acc_hdbh_h,nl.acc.hdbh.h,model_nl_acc_hdbh_h,,1,1,1,1
+access_nl_acc_hdbh_d,nl.acc.hdbh.d,model_nl_acc_hdbh_d,,1,1,1,1
+
+access_popup_change_field,popup.change.field,model_popup_change_field,,1,1,1,1
+
+access_nl_acc_vcnb_h,nl.acc.vcnb.h,model_nl_acc_vcnb_h,,1,1,1,1
+access_nl_acc_vcnb_d,nl.acc.vcnb.d,model_nl_acc_vcnb_d,,1,1,1,1

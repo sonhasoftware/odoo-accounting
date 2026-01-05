@@ -71,3 +71,12 @@ from . import nl_acc_pt_h
 from . import nl_acc_pt_d
 from . import danh_muc_bao_cao
 from . import nl_acc_bao_cao
+
+from . import nl_acc_hddv_h
+from . import nl_acc_hddv_d
+
+from . import nl_acc_hdbh_h
+from . import nl_acc_hdbh_d
+
+from . import nl_acc_vcnb_h
+from . import nl_acc_vcnb_d

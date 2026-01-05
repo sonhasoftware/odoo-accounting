@@ -6,6 +6,7 @@
         <field name="arch" type="xml">
             <tree string="Bút toán thêm" editable="bottom">
                 <field name="MENU"/>
+                <field name="NOI_DUNG"/>
                 <field name="MA_TK0_ID"/>
                 <field name="MA_TK00"/>
                 <field name="MA_TK1_ID"/>

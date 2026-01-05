@@ -18,6 +18,9 @@ class NLAccTongHop(models.Model):
     ACC_PT_D = fields.Many2one('nl.acc.pt.d', string="ACC PT D", store=True)
     ACC_BN_D = fields.Many2one('nl.acc.ap.bn.d', string="ACC BN D", store=True)
     ACC_BC_D = fields.Many2one('nl.acc.ap.bc.d', string="ACC BC D", store=True)
+    ACC_HDDV = fields.Many2one('nl.acc.hddv.d', string="ACC HDDV D", store=True)
+    ACC_HDBH = fields.Many2one('nl.acc.hdbh.d', string="ACC HDBH D", store=True)
+    ACC_VCNB = fields.Many2one('nl.acc.vcnb.d', string="ACC VCNB D", store=True)
     KEY_CHUNG = fields.Integer("Key (bảng d)", store=True)
 
     MA_TK0_ID = fields.Many2one('acc.tai.khoan', string="Nợ", store=True, compute='get_ma_tk_id', readonly=False)

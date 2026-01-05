@@ -216,6 +216,12 @@
               action="bao_cao_action"
               sequence="11"/>
 
+<!--    <menuitem id="menu_bao_cao_dt"-->
+<!--              name="Báo cáo chi tiết"-->
+<!--              parent="menu_sonha_accounting"-->
+<!--              action="bao_cao_dt_action"-->
+<!--              sequence="12"/>-->
+
     <menuitem id="menu_phieu_tscd"
               name="Phiếu TSCĐ"
               parent="menu_sonha_accounting"
@@ -297,4 +303,28 @@
               action="acc_nl_ap_h_bc_action"
               sequence="4"/>
 
+              sequence="1"/>
+
+    <menuitem id="menu_xuat_hang"
+              name="Xuất hàng"
+              parent="menu_sonha_accounting"
+              sequence="5"/>
+
+    <menuitem id="menu_hddv_h"
+              name="Hóa đơn dịch vụ"
+              parent="menu_xuat_hang"
+              action="nl_acc_hddv_h_action"
+              sequence="1"/>
+
+    <menuitem id="menu_hdbh"
+              name="Hóa đơn bán hàng"
+              parent="menu_xuat_hang"
+              action="nl_acc_hdbh_h_action"
+              sequence="2"/>
+
+    <menuitem id="menu_vcnb"
+              name="Phiếu xuất chuyển kho kiêm vc nội bộ"
+              parent="menu_xuat_hang"
+              action="acc_nl_acc_vcnb_h_action"
+              sequence="3"/>
 </odoo>

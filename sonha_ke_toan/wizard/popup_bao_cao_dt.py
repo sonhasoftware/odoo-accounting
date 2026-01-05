@@ -2,8 +2,8 @@ from odoo import models, fields, api
 from datetime import timedelta
 
 
-class PopupBaoCao(models.TransientModel):
-    _name = "popup.bao.cao"
+class PopupBaoCaoDT(models.TransientModel):
+    _name = "popup.bao.cao.dt"
     _description = "Báo cáo"
 
     bao_cao = fields.Many2one('acc.bao.cao', "Báo cáo", required=True)
@@ -42,10 +42,9 @@ class PopupBaoCao(models.TransientModel):
         khoan_muc = self.khoan_muc.id or None
         vu_viec = self.vu_viec.id or None
         thanh_pham = self.thanh_pham.id or None
-        id_rec = None
 
         vals = [dvcs, bao_cao, start_date, end_date, tai_khoan, chi_nhanh, khach_hang,
-                hang_hoa, kho, tscd, bo_phan, khoan_muc, vu_viec, thanh_pham, now, id_rec]
+                hang_hoa, kho, tscd, bo_phan, khoan_muc, vu_viec, thanh_pham, now]
         sql = self.bao_cao.FN_BAO_CAO
         self.env.cr.execute(sql, vals)
         domain = [('id_bc', '=', self.bao_cao.id),

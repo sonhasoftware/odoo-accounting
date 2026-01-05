@@ -19,3 +19,4 @@ class SonhaBTThem(models.Model):
     DK = fields.Char(string="DK", store=True)
     CO_SL = fields.Boolean(string="Có SL", store=True)
     GIA_TRI = fields.Char(string="Giá trị", store=True)
+    NOI_DUNG = fields.Char("Nội dung", store=True, size=40)

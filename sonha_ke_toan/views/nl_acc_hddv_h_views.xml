@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <odoo>
-    <record id="view_nl_acc_pt_h_tree" model="ir.ui.view">
-        <field name="name">nl.acc.pt.h.tree</field>
-        <field name="model">nl.acc.pt.h</field>
+    <record id="view_nl_acc_hddv_h_tree" model="ir.ui.view">
+        <field name="name">nl.acc.hddv.h.tree</field>
+        <field name="model">nl.acc.hddv.h</field>
         <field name="arch" type="xml">
-            <tree string="Phiếu thu">
+            <tree string="Hóa đơn dịch vụ">
                 <field name="NGAY_CT" optional="show"/>
                 <field name="CHUNG_TU" optional="show"/>
                 <field name="SO_HD" optional="show"/>
@@ -20,11 +20,11 @@
     </record>
 
 
-    <record id="view_nl_acc_pt_h_form" model="ir.ui.view">
-    <field name="name">nl.acc.pt.h.form</field>
-    <field name="model">nl.acc.pt.h</field>
+    <record id="view_nl_acc_hddv_h_form" model="ir.ui.view">
+    <field name="name">nl.acc.hddv.h.form</field>
+    <field name="model">nl.acc.hddv.h</field>
     <field name="arch" type="xml">
-        <form string="Phiếu thu">
+        <form string="Hóa đơn dịch vụ">
             <div class="two-column-form">
 
                 <!-- Cột trái -->
@@ -34,6 +34,8 @@
                         <field name="NGAY_CT"/>
                         <label for="LOAIDL">Loại DL</label>
                         <field name="LOAIDL"/>
+                        <label for="PT_THUE">% Thuế</label>
+                        <field name="PT_THUE"/>
                     </div>
 
                     <div class="form-row">
@@ -41,6 +43,15 @@
                         <field name="CHUNG_TU"/>
                         <label for="CTGS" string="YC Mua">YC Mua</label>
                         <field name="CTGS" string="YC Mua"/>
+                    </div>
+
+                    <div class="form-row">
+                        <label for="SO_HD">Số hợp đồng</label>
+                        <field name="SO_HD"/>
+                        <label for="SERI_HD">SERI</label>
+                        <field name="SERI_HD"/>
+                        <label for="NGAY_HD">Ngày HĐ</label>
+                        <field name="NGAY_HD"/>
                     </div>
 
                     <div class="form-row">
@@ -56,6 +67,10 @@
                         <label for="GHI_CHU">Diễn giải</label>
                         <field name="GHI_CHU" string="Diễn giải"/>
                     </div>
+                    <div class="form-row">
+                        <label for="KHACH_HANG">Khách hàng</label>
+                        <field name="KHACH_HANG"/>
+                    </div>
                 </div>
 
                 <!-- Cột phải -->
@@ -64,7 +79,6 @@
                         <label for="KHOAN_MUC">Khoản mục</label>
                         <field name="KHOAN_MUC"/>
                     </div>
-
                     <div class="form-row">
                         <label for="BO_PHAN">Bộ phận</label>
                         <field name="BO_PHAN"/>
@@ -78,8 +92,16 @@
                     </div>
 
                     <div class="form-row">
-                        <label for="MA_TK0_ID">Nợ</label>
-                        <field name="MA_TK0_ID"/>
+                        <label for="KH_THUE">KH thuế</label>
+                        <field name="KH_THUE"/>
+                    </div>
+                    <div class="form-row">
+                        <label for="MS_THUE">MS thuế</label>
+                        <field name="MS_THUE"/>
+                    </div>
+                    <div class="form-row">
+                        <label for="DC_THUE">DC thuế</label>
+                        <field name="DC_THUE"/>
                     </div>
                 </div>
             </div>
@@ -96,24 +118,25 @@
             <!-- ONE2MANY -->
             <field name="ACC_SP_D">
                 <tree editable="bottom" toggle_visibility="true" class="o_list_view parent-one2many">
+                    <field name="MA_TK0_ID"/>
                     <field name="MA_TK1_ID"/>
-                    <field name="KHACH_HANG"/>
+                    <field name="GHI_CHU_CT"/>
                     <field name="PS_NO1"/>
                     <field name="TIEN_NTE" widget="float"/>
-                    <field name="VVIEC" optional="hide"/>
-                    <field name="PT_THUE"/>
-                    <field name="SERI_HD"/>
-                    <field name="SO_HD"/>
-                    <field name="NGAY_HD"/>
                     <field name="VAT"/>
+                    <field name="VVIEC"/>
 
                     <!-- Các field cần đồng bộ -->
                     <field name="NGAY_CT" optional="hide"/>
                     <field name="CHUNG_TU" optional="hide"/>
+                    <field name="SO_HD" optional="hide"/>
+                    <field name="SERI_HD" optional="hide"/>
                     <field name="NGAY_HD" optional="hide"/>
                     <field name="MAU_SO" optional="hide"/>
+                    <field name="PT_THUE" optional="hide"/>
                     <field name="ONG_BA" optional="hide"/>
                     <field name="GHI_CHU" optional="hide"/>
+                    <field name="KHACH_HANG" optional="hide"/>
                     <field name="KH_THUE" optional="hide"/>
                     <field name="MS_THUE" optional="hide"/>
                     <field name="DC_THUE" optional="hide"/>
@@ -123,20 +146,19 @@
                     <field name="TIEN_TE" optional="hide"/>
                     <field name="TY_GIA" optional="hide"/>
 
-                    <field name="HANG_HOA" optional="hide"/>
+                    <field name="KHACH_HANGC" optional="hide"/>
                     <field name="KHOC" optional="hide"/>
                     <field name="TINH" optional="hide"/>
                     <field name="NGUON" optional="hide"/>
                     <field name="LOAIDL" optional="hide"/>
-                    <field name="HEAD_NO" optional="hide"/>
                     <field name="SO_LUONG2" optional="hide"/>
                     <field name="SL_TP" optional="hide"/>
-                    <field name="NHOM_VAT" optional="hide"/>
-                    <field name="THUE_NK" optional="hide"/>
                     <field name="SAN_PHAM" optional="hide"/>
                     <field name="SO_LO" optional="hide"/>
                     <field name="DAT" optional="hide"/>
                     <field name="SO_LENHSX" optional="hide"/>
+                    <field name="SO_LUONG" widget="float" optional="hide"/>
+                    <field name="DON_GIA" widget="float" optional="hide"/>
                 </tree>
             </field>
 
@@ -144,9 +166,9 @@
     </field>
 </record>
 
-    <record id="acc_nl_pt_h_action" model="ir.actions.act_window">
-        <field name="name">Phiếu thu</field>
-        <field name="res_model">nl.acc.pt.h</field>
+    <record id="nl_acc_hddv_h_action" model="ir.actions.act_window">
+        <field name="name">Hóa đơn dịch vụ</field>
+        <field name="res_model">nl.acc.hddv.h</field>
         <field name="view_mode">tree,form</field>
     </record>
 

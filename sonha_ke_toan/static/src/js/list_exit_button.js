@@ -25,16 +25,13 @@ export class BaoCaoListController extends ListController {
         });
     }
 
-    async _handleAction() {
-        const root = this.model.root;
+    async onDetailClick() {
+        const selectedRecords = this.model.root.selection || [];
+        const ids = selectedRecords.map(rec => rec.resId);
 
-        // DOMAIN & CONTEXT HIỆN TẠI CỦA LIST VIEW
-        const domain = root.domain || [];
-        const context = root.context || {};
-
-        if (!domain.length) {
+        if (!ids.length) {
             this.notification.add(
-                "Không xác định được domain hiện tại",
+                "Bạn chưa chọn bản ghi nào",
                 { type: "warning" }
             );
             return;
@@ -43,8 +40,7 @@ export class BaoCaoListController extends ListController {
         const action = await this.orm.call(
             "nl.acc.bao.cao",
             "action_exit",
-            [domain],
-            { context }
+            [ids]
         );
 
         if (action) {
@@ -52,14 +48,30 @@ export class BaoCaoListController extends ListController {
         }
     }
 
-    onExitClick() {
-        this._handleAction();
+    async onSearchClick() {
+        return this.actionService.doAction({
+            type: "ir.actions.act_window",
+            name: 'Tìm kiếm',
+            res_model: "popup.tim.kiem",
+            views: [[false, "form"]],
+            target: "new",
+        });
+    }
+
+    async onThoatClick() {
+        return this.actionService.doAction({
+            type: "ir.actions.act_window",
+            name: 'Báo cáo',
+            res_model: "popup.bao.cao",
+            views: [[false, "form"]],
+            target: "new",
+        });
     }
 
     _onKeyDown(ev) {
         if (ev.key === "F2") {
             ev.preventDefault();
-            this._handleAction();
+            this.onExitClick();
         }
     }
 }
