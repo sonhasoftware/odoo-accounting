@@ -109,3 +109,7 @@ access_popup_change_field,popup.change.field,model_popup_change_field,,1,1,1,1
 
 access_nl_acc_vcnb_h,nl.acc.vcnb.h,model_nl_acc_vcnb_h,,1,1,1,1
 access_nl_acc_vcnb_d,nl.acc.vcnb.d,model_nl_acc_vcnb_d,,1,1,1,1
+
+
+
+access_save_data,save.data,model_save_data,,1,1,1,1
