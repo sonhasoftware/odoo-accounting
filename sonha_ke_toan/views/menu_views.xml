@@ -325,4 +325,16 @@
               parent="menu_xuat_hang"
               action="acc_nl_acc_vcnb_h_action"
               sequence="3"/>
+
+    <menuitem id="menu_xhtl"
+              name="Phiếu xuất hàng trả lại"
+              parent="menu_xuat_hang"
+              action="acc_nl_ap_h_xhtl_action"
+              sequence="4"/>
+
+    <menuitem id="menu_pxvt"
+              name="Phiếu xuất vật tư"
+              parent="menu_xuat_hang"
+              action="acc_nl_ap_h_pxvt_action"
+              sequence="5"/>
 </odoo>

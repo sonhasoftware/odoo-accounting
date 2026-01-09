@@ -9,8 +9,8 @@ import json
 _logger = logging.getLogger(__name__)
 from odoo.exceptions import ValidationError
 
-class NLAccApXhtlH(models.Model):
-    _name = 'nl.acc.ap.xhtl.h'
+class NlAccApPxvtH(models.Model):
+    _name = 'nl.acc.ap.pxvt.h'
     _order = 'NGAY_CT DESC'
     _rec_name = 'CHUNG_TU'
 
@@ -23,7 +23,7 @@ class NLAccApXhtlH(models.Model):
     MAU_SO = fields.Char(string="Mẫu số", store=True, size=10)
     PT_THUE = fields.Many2one('acc.thue', string="% Thuế", store=True)
     ONG_BA = fields.Char(string="Ông bà", store=True, size=60)
-    GHI_CHU = fields.Char(string="Ghi chú", store=True, default="Phiếu xuất hàng trả lại", size=200)
+    GHI_CHU = fields.Char(string="Ghi chú", store=True, default="Phiếu xuất vật tư", size=200)
 
     KHACH_HANG = fields.Many2one('acc.khach.hang', string="Khách hàng", store=True)
     KH_THUE = fields.Char(string="KH Thuế", store=True, size=150)
@@ -57,7 +57,7 @@ class NLAccApXhtlH(models.Model):
     CHI_NHANH = fields.Many2one('acc.chi.nhanh', string="Chi nhánh", store=True)
 
     ACC_SP_D = fields.One2many(
-        comodel_name="nl.acc.ap.xhtl.d",
+        comodel_name="nl.acc.ap.pxvt.d",
         inverse_name="ACC_AP_H",
         string="Bảng chi tiết",
         store=True
@@ -65,20 +65,19 @@ class NLAccApXhtlH(models.Model):
     MENU_ID = fields.Many2one('ir.ui.menu', string="MENU", store=True)
 
     DG_THEO_TIEN = fields.Boolean("DG theo tiền", store=False)
-    TOTAL_VAT = fields.Char("Tổng tiền, Tổng VAT, tổng SL", store=False, compute="_get_total_vat_sl_tien")
+    TOTAL_VAT = fields.Char("Tổng tiền, tổng SL", store=False, compute="_get_total_vat_sl_tien")
     KHACH_HANGC = fields.Many2one('acc.khach.hang', string="KH có", store=True)
     KHOC = fields.Many2one('acc.kho', string="Kho nhận", store=True)
     TINH = fields.Many2one('acc.tinh', string="Vùng", store=True)
     NGUON = fields.Many2one('acc.nguon', string="HTV Chuyển", store=True)
     LOAIDL = fields.Many2one('acc.loaidl', string="Loại DL", store=True)
 
-    @api.onchange('ACC_SP_D', 'ACC_SP_D.PS_NO1', 'ACC_SP_D.VAT', 'ACC_SP_D.SO_LUONG')
+    @api.onchange('ACC_SP_D', 'ACC_SP_D.PS_NO1', 'ACC_SP_D.SO_LUONG')
     def _get_total_vat_sl_tien(self):
         for r in self:
             lines = r.ACC_SP_D
             r.TOTAL_VAT = (
                 f"Tổng tiền:{sum(lines.mapped('PS_NO1'))}, "
-                f"VAT:{sum(lines.mapped('VAT'))}, "
                 f"Tổng SL:{sum(lines.mapped('SO_LUONG'))}"
             )
 
@@ -100,7 +99,7 @@ class NLAccApXhtlH(models.Model):
     #     return [('id', 'in', ids)]
 
     def default_get(self, fields_list):
-        res = super(NLAccApXhtlH, self).default_get(fields_list)
+        res = super(NlAccApPxvtH, self).default_get(fields_list)
         # Tìm phân quyền của user hiện tại
         permission = self.env['sonha.phan.quyen.nl'].sudo().search([
             ('MENU', '=', 402),
@@ -263,27 +262,29 @@ class NLAccApXhtlH(models.Model):
             "MA_TK0": "",
             "MA_TK1": "",
             "PS_NO1": 0,
-            "TIEN_NTE": 0,
-            "VAT": 0,
             "HANG_HOA": None,
             "SO_LUONG": 0,
+            "SO_LUONG2": 0,
+            "SAN_PHAM": 0,
+            "PXUONG": None,
+            "TSCD": None,
             "DON_GIA": 0,
             "NGAY_CT": str(temp_rec.NGAY_CT) or "",
             "CHUNG_TU": temp_rec.CHUNG_TU or "",
             "CTGS": temp_rec.CTGS or "",
-            "PT_THUE": temp_rec.PT_THUE.PT_THUE or "",
-            "SO_HD": temp_rec.SO_HD or "",
-            "SERI_HD": temp_rec.SERI_HD or "",
-            "NGAY_HD": str(temp_rec.NGAY_HD) or None,
+            # "PT_THUE": temp_rec.PT_THUE.PT_THUE or "",
+            # "SO_HD": temp_rec.SO_HD or "",
+            # "SERI_HD": temp_rec.SERI_HD or "",
+            # "NGAY_HD": str(temp_rec.NGAY_HD) or None,
             "ONG_BA": temp_rec.ONG_BA or "",
             "KHACH_HANG": temp_rec.KHACH_HANG.id or 0,
             "VVIEC": temp_rec.VVIEC.id or 0,
             "KHO": temp_rec.KHO.id or 0,
-            "MAU_SO": temp_rec.MAU_SO or None,
+            # "MAU_SO": temp_rec.MAU_SO or None,
             "GHI_CHU": temp_rec.GHI_CHU or "",
-            "KH_THUE": temp_rec.KH_THUE or "",
-            "MS_THUE": temp_rec.MS_THUE or "",
-            "DC_THUE": temp_rec.DC_THUE or "",
+            # "KH_THUE": temp_rec.KH_THUE or "",
+            # "MS_THUE": temp_rec.MS_THUE or "",
+            # "DC_THUE": temp_rec.DC_THUE or "",
             "BO_PHAN": temp_rec.BO_PHAN.id or 0,
             "KHOAN_MUC": temp_rec.KHOAN_MUC.id or 0,
             "TIEN_TE": temp_rec.TIEN_TE.id or "",
@@ -295,7 +296,7 @@ class NLAccApXhtlH(models.Model):
             "NGUOI_SUA": self.env.uid or None,
         }
 
-        table_name = 'nl.acc.ap.xhtl.d'
+        table_name = 'nl.acc.ap.pxvt.d'
 
         if len(temp_rec.ACC_SP_D) == 0:
             raise ValidationError("Không được phép để trống phần dữ liệu chi tiết!")
@@ -306,10 +307,12 @@ class NLAccApXhtlH(models.Model):
             "MA_TK1": recs.MA_TK1 or "",
             "HANG_HOA": recs.HANG_HOA.id or None,
             "SO_LUONG": recs.SO_LUONG,
+            "SO_LUONG2": recs.SO_LUONG2,
             "DON_GIA": recs.DON_GIA,
             "PS_NO1": recs.PS_NO1,
-            "TIEN_NTE": recs.TIEN_NTE,
             "VAT": recs.VAT,
+            "TSCD": recs.TSCD.id or None,
+            "SAN_PHAM": recs.SAN_PHAM.id or None,
             })
 
             json_data = json.dumps(vals_dict)
@@ -325,7 +328,7 @@ class NLAccApXhtlH(models.Model):
                     raise ValidationError(loi)
 
         # Gọi function sinh chứng từ tự động
-        rec = super(NLAccApXhtlH, self).create(vals)
+        rec = super(NlAccApPxvtH, self).create(vals)
         query = "SELECT * FROM fn_chung_tu_tu_dong(%s, %s)"
         self.env.cr.execute(query, ('menu_402', str(rec.NGAY_CT)))
         rows = self.env.cr.fetchall()
@@ -381,44 +384,45 @@ class NLAccApXhtlH(models.Model):
                         d_records_to_validate.append(cmd[2])
                     elif cmd[0] == 1:  # Write command
                         # Lấy record và update với giá trị mới
-                        d_record = self.env['nl.acc.ap.xhtl.d'].browse(cmd[1])
+                        d_record = self.env['nl.acc.ap.pxvt.d'].browse(cmd[1])
                         read_data = d_record.read()[0]
                         d_dict = self.read_to_vals(read_data)
                         d_dict.update(cmd[2])
                         d_records_to_validate.append(d_dict)
             else:
                 # Không có D records được edit, lấy D records hiện có
-                all_d_records = self.env['nl.acc.ap.xhtl.d'].search([('ACC_AP_H', '=', record.id)])
+                all_d_records = self.env['nl.acc.ap.pxvt.d'].search([('ACC_AP_H', '=', record.id)])
                 d_records_to_validate = []
                 for d in all_d_records:
                     read_data = d.read()[0]
                     d_vals = self.read_to_vals(read_data)
                     d_records_to_validate.append(d_vals)
             # VALIDATE từng D record
-
             vals_dict = {
                 "MA_TK0": "",
                 "MA_TK1": "",
                 "PS_NO1": 0,
-                "TIEN_NTE": 0,
-                "VAT": 0,
                 "HANG_HOA": None,
                 "SO_LUONG": 0,
+                "SO_LUONG2": 0,
+                "SAN_PHAM": 0,
+                "PXUONG": None,
+                "TSCD": None,
                 "DON_GIA": 0,
                 "NGAY_CT": str(self._get_parent_value(record, vals, 'NGAY_CT')) or "",
                 "CHUNG_TU": self._get_parent_value(record, vals, 'CHUNG_TU') or "",
                 "CTGS": self._get_parent_value(record, vals, 'CTGS') or "",
-                "PT_THUE": self._get_parent_value(record, vals, 'PT_THUE').PT_THUE or "",
-                "SO_HD": self._get_parent_value(record, vals, 'SO_HD') or "",
-                "SERI_HD": self._get_parent_value(record, vals, 'SERI_HD') or "",
-                "NGAY_HD": str(self._get_parent_value(record, vals, 'NGAY_HD')) or None,
-                "KHACH_HANG": self._get_parent_value(record, vals, 'KHACH_HANG').id or 0,
-                "MAU_SO": self._get_parent_value(record, vals, 'MAU_SO') or None,
+                # "SO_HD": self._get_parent_value(record, vals, 'SO_HD') or "",
+                # "SERI_HD": self._get_parent_value(record, vals, 'SERI_HD') or "",
+                # "NGAY_HD": str(self._get_parent_value(record, vals, 'NGAY_HD')) or None,
+                # "MAU_SO": self._get_parent_value(record, vals, 'MAU_SO') or None,
+                # "PT_THUE": self._get_parent_value(record, vals, 'PT_THUE').PT_THUE or "",
                 "ONG_BA": self._get_parent_value(record, vals, 'ONG_BA') or "",
                 "GHI_CHU": self._get_parent_value(record, vals, 'GHI_CHU') or "",
-                "KH_THUE": self._get_parent_value(record, vals, 'KH_THUE') or "",
-                "MS_THUE": self._get_parent_value(record, vals, 'MS_THUE') or "",
-                "DC_THUE": self._get_parent_value(record, vals, 'DC_THUE') or "",
+                "KHACH_HANG": self._get_parent_value(record, vals, 'KHACH_HANG').id or 0,
+                # "KH_THUE": self._get_parent_value(record, vals, 'KH_THUE') or "",
+                # "MS_THUE": self._get_parent_value(record, vals, 'MS_THUE') or "",
+                # "DC_THUE": self._get_parent_value(record, vals, 'DC_THUE') or "",
                 "BO_PHAN": self._get_parent_value(record, vals, 'BO_PHAN').id or 0,
                 "VVIEC": self._get_parent_value(record, vals, 'VVIEC').id or 0,
                 "KHO": self._get_parent_value(record, vals, 'KHO').id or 0,
@@ -427,25 +431,27 @@ class NLAccApXhtlH(models.Model):
                 "TY_GIA": self._get_parent_value(record, vals, 'TY_GIA') or "",
                 "DVCS": self._get_parent_value(record, vals, 'DVCS').id or 1,
                 "CHI_NHANH": self._get_parent_value(record, vals, 'CHI_NHANH').id or 0,
-                "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 402,
+                "MENU_ID": self._get_parent_value(record, vals, 'MENU_ID').id or 401,
                 "NGUOI_TAO": self.create_uid.id or None,
                 "NGUOI_SUA": self.env.uid or None,
             }
 
-            table_name = 'nl.acc.ap.xhtl.d'
+            table_name = 'nl.acc.pxvt.h'
 
             for d_vals in d_records_to_validate:
                 ma_tk0 = self.env['acc.tai.khoan'].search([('id', '=', d_vals.get('MA_TK0_ID'))]).MA
                 ma_tk1 = self.env['acc.tai.khoan'].search([('id', '=', d_vals.get('MA_TK1_ID'))]).MA
                 vals_dict.update({
+                    "HANG_HOA": d_vals.get('HANG_HOA') or None,
                     "MA_TK0": ma_tk0 or "",
-                    "MA_TK1": ma_tk1 or "",
-                    "HANG_HOA": d_vals.get('HANG_HOA') or "",
-                    "PS_NO1": d_vals.get('PS_NO1'),
-                    "TIEN_NTE": d_vals.get('TIEN_NTE'),
-                    "VAT": d_vals.get('VAT') or 0,
                     "SO_LUONG": d_vals.get('SO_LUONG'),
+                    "SO_LUONG2": d_vals.get('SO_LUONG2'),
+                    "SAN_PHAM": d_vals.get('SAN_PHAM'),
                     "DON_GIA": d_vals.get('DON_GIA'),
+                    "PS_NO1": d_vals.get('PS_NO1'),
+                    "MA_TK1": ma_tk1 or "",
+                    "TSCD": d_vals.get('TSCD') or 0,
+                    "VVIEC": d_vals.get('VVIEC') or 0,
                 })
 
                 json_data = json.dumps(vals_dict)
@@ -462,13 +468,12 @@ class NLAccApXhtlH(models.Model):
                     if loi:
                         raise ValidationError(loi)
 
-        res = super(NLAccApXhtlH, self).write(vals)
+        res = super(NlAccApPxvtH, self).write(vals)
 
         for record in self:
-            all_d_records = self.env['nl.acc.ap.xhtl.d'].search([('ACC_AP_H', '=', record.id)])
-
-            if len(d_records_to_validate) == 0:
-                raise ValidationError("Không được phép để trống phần dữ liệu chi tiết!")
+            all_d_records = self.env['nl.acc.ap.pxvt.d'].search([('ACC_AP_H', '=', record.id)])
+            if len(all_d_records) == 0:
+                raise ValidationError("Không được phép để trống phần dữ liệu bên dưới!")
 
             # Copy D records sang bảng log
             self._copy_to_tong_hop_abc(all_d_records)
@@ -489,11 +494,11 @@ class NLAccApXhtlH(models.Model):
                         vals_d[field_name] = value
                 d_vals_list.append(vals_d)
 
-            self.env['nl.acc.tong.hop'].sudo().search([('ACC_XHTL_D', 'in', all_d_records.ids)]).unlink()
-            self.env['nl.acc.ap.xhtl.d'].sudo().search([('id', 'in', all_d_records.ids)]).unlink()
+            self.env['nl.acc.tong.hop'].sudo().search([('ACC_PXVT_D', 'in', all_d_records.ids)]).unlink()
+            self.env['nl.acc.ap.pxvt.d'].sudo().search([('id', 'in', all_d_records.ids)]).unlink()
 
             if d_vals_list:
-                self.env['nl.acc.ap.xhtl.d'].sudo().create(d_vals_list)
+                self.env['nl.acc.ap.pxvt.d'].sudo().create(d_vals_list)
 
         return res
 
