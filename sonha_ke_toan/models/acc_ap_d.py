@@ -262,131 +262,133 @@ class AccApD(models.Model):
 
         # --- Tạo bản ghi acc.ap.d ---
         rec = super(AccApD, self).create(vals)
+        records_to_sync = rec
 
         # if '...' not in rec.GHI_CHU:
 
-        # vals_dict = {
-        #     "HANG_HOA": rec.HANG_HOA.id,
-        #     "MA_TK0": rec.MA_TK0 or "",
-        #     "SO_LUONG": rec.SO_LUONG,
-        #     "DON_GIA": rec.DON_GIA,
-        #     "PS_NO1": rec.PS_NO1,
-        #     "TIEN_NTE": rec.TIEN_NTE,
-        #     "VAT": rec.VAT,
-        #     "NGAY_CT": str(rec.NGAY_CT),
-        #     "CHUNG_TU": rec.CHUNG_TU or "",
-        #     "CTGS": rec.CTGS or "",
-        #     "SO_HD": rec.SO_HD or "",
-        #     "SERI_HD": rec.SERI_HD or "",
-        #     "NGAY_HD": str(rec.NGAY_HD) or "",
-        #     "MAU_SO": rec.MAU_SO,
-        #     "PT_THUE": rec.PT_THUE.PT_THUE,
-        #     "ONG_BA": rec.ONG_BA,
-        #     "GHI_CHU": rec.GHI_CHU,
-        #     "KHACH_HANG": rec.KHACH_HANG.id,
-        #     "KH_THUE": rec.KH_THUE,
-        #     "MS_THUE": rec.MS_THUE,
-        #     "DC_THUE": rec.DC_THUE,
-        #     "BO_PHAN": rec.BO_PHAN.id,
-        #     "VVIEC": rec.VVIEC.id,
-        #     "KHO": rec.KHO.id,
-        #     "KHOAN_MUC": rec.KHOAN_MUC.id,
-        #     "TIEN_TE": rec.TIEN_TE.id,
-        #     "TY_GIA": rec.TY_GIA,
-        #     "MA_TK1": rec.MA_TK1,
-        #     "DVCS": rec.DVCS.id or 1,
-        #     "CHI_NHANH": rec.CHI_NHANH.id,
-        #     "MENU_ID": rec.MENU_ID.id or 378,
-        #     "BUT_TOAN_THEM": True
-        # }
-        # json_data = json.dumps(vals_dict)
-        # self.env.cr.execute("SELECT * FROM fn_bt_them(%s::jsonb);", [json_data])
-        # rows = self.env.cr.dictfetchall()
-        #
-        # for data in rows:
-        #     mapped_vals = {}
-        #     for key, value in data.items():
-        #         upper_key = key.upper()
-        #         if upper_key in self._fields:
-        #             mapped_vals[upper_key] = value
-        #     new_d = super(AccApD, self).create(mapped_vals)
+        vals_dict = {
+            "HANG_HOA": rec.HANG_HOA.id or None,
+            "MA_TK0": rec.MA_TK0 or None,
+            "SO_LUONG": rec.SO_LUONG,
+            "DON_GIA": rec.DON_GIA,
+            "PS_NO1": rec.PS_NO1,
+            "TIEN_NTE": rec.TIEN_NTE,
+            "VAT": rec.VAT,
+            "NGAY_CT": str(rec.NGAY_CT) or "",
+            "CHUNG_TU": rec.CHUNG_TU or None,
+            "CTGS": rec.CTGS or None,
+            "SO_HD": rec.SO_HD or None,
+            "SERI_HD": rec.SERI_HD or None,
+            "NGAY_HD": str(rec.NGAY_HD) if rec.NGAY_HD else None,
+            "MAU_SO": rec.MAU_SO or None,
+            "PT_THUE": rec.PT_THUE.id or None,
+            "ONG_BA": rec.ONG_BA or None,
+            "GHI_CHU": rec.GHI_CHU or None,
+            "KHACH_HANG": rec.KHACH_HANG.id or None,
+            "KH_THUE": rec.KH_THUE or None,
+            "MS_THUE": rec.MS_THUE or None,
+            "DC_THUE": rec.DC_THUE or None,
+            "BO_PHAN": rec.BO_PHAN.id or None,
+            "VVIEC": rec.VVIEC.id or None,
+            "KHO": rec.KHO.id or None,
+            "KHOAN_MUC": rec.KHOAN_MUC.id or None,
+            "TIEN_TE": rec.TIEN_TE.id or None,
+            "TY_GIA": rec.TY_GIA or None,
+            "MA_TK1": rec.MA_TK1 or None,
+            "DVCS": rec.DVCS.id or 1,
+            "CHI_NHANH": rec.CHI_NHANH.id or None,
+            "MENU_ID": rec.MENU_ID.id or 378,
+            "BUT_TOAN_THEM": True
+        }
+        json_data = json.dumps(vals_dict)
+        self.env.cr.execute("SELECT * FROM fn_bt_them(%s::jsonb);", [json_data])
+        rows = self.env.cr.dictfetchall()
 
+        for data in rows:
+            mapped_vals = {}
+            for key, value in data.items():
+                upper_key = key.upper()
+                if upper_key in self._fields:
+                    mapped_vals[upper_key] = value
 
+            new_d = super(AccApD, self).create(mapped_vals)
+            records_to_sync |= new_d
 
 
         # --- Chuẩn bị dữ liệu để insert vào bảng tổng hợp ---
-        raw = rec.read()[0]
-        custom_fields = [f for f in self._fields.keys() if f.upper() == f and f not in ('ID',)]
+        for r in records_to_sync:
+            raw = r.read()[0]
+            custom_fields = [f for f in self._fields.keys() if f.upper() == f and f not in ('ID',)]
 
-        data = {}
-        for fld in custom_fields:
-            if fld not in raw:
-                continue
+            data = {}
+            for fld in custom_fields:
+                if fld not in raw:
+                    continue
 
-            val = raw[fld]
-            odoo_field = self._fields.get(fld)
+                val = raw[fld]
+                odoo_field = self._fields.get(fld)
 
-            # 🔥 FIX CHỐT:
-            # False CHỈ GIỮ LẠI CHO Boolean
-            if val is False:
-                if isinstance(odoo_field, fields.Boolean):
-                    data[fld] = False
+                # 🔥 FIX CHỐT:
+                # False CHỈ GIỮ LẠI CHO Boolean
+                if val is False:
+                    if isinstance(odoo_field, fields.Boolean):
+                        data[fld] = False
+                    else:
+                        data[fld] = None
+
+                # Many2one (read() trả (id, name))
+                elif isinstance(val, (list, tuple)):
+                    data[fld] = val[0] if val else None
+
                 else:
-                    data[fld] = None
+                    data[fld] = val
 
-            # Many2one (read() trả (id, name))
-            elif isinstance(val, (list, tuple)):
-                data[fld] = val[0] if val else None
+            # --- Thêm khóa ngoại ---
+            data['ACC_AP_D'] = r.id
+            data['KEY_CHUNG'] = r.id
 
-            else:
-                data[fld] = val
+            # --- Loại bỏ toàn bộ system fields (tránh lỗi CREATE_DATE, WRITE_UID, __last_update, …) ---
+            system_fields = {'CREATE_UID', 'CREATE_DATE', 'WRITE_UID', 'WRITE_DATE', '__LAST_UPDATE'}
+            clean_data = {k: v for k, v in data.items() if k not in system_fields}
 
-        # --- Thêm khóa ngoại ---
-        data['ACC_AP_D'] = rec.id
-        data['KEY_CHUNG'] = rec.id
+            table_name = 'nl_acc_tong_hop'
+            if not re.match(r'^[A-Za-z0-9_]+$', table_name):
+                raise ValueError("Tên bảng không hợp lệ!")
 
-        # --- Loại bỏ toàn bộ system fields (tránh lỗi CREATE_DATE, WRITE_UID, __last_update, …) ---
-        system_fields = {'CREATE_UID', 'CREATE_DATE', 'WRITE_UID', 'WRITE_DATE', '__LAST_UPDATE'}
-        clean_data = {k: v for k, v in data.items() if k not in system_fields}
+            # --- Tạo cột nếu cần ---
+            self.create_dynamic_fields(table_name, clean_data)
 
-        table_name = 'nl_acc_tong_hop'
-        if not re.match(r'^[A-Za-z0-9_]+$', table_name):
-            raise ValueError("Tên bảng không hợp lệ!")
+            # --- Build câu lệnh SQL ---
+            cols = [f'"{k.upper()}"' for k in clean_data.keys()]
+            placeholders = ', '.join(['%s'] * len(clean_data))
+            values = list(clean_data.values())
 
-        # --- Tạo cột nếu cần ---
-        self.create_dynamic_fields(table_name, clean_data)
+            now = fields.Datetime.now()
+            uid = self.env.uid
 
-        # --- Build câu lệnh SQL ---
-        cols = [f'"{k.upper()}"' for k in clean_data.keys()]
-        placeholders = ', '.join(['%s'] * len(clean_data))
-        values = list(clean_data.values())
+            sql = f'''
+                INSERT INTO "{table_name}" ({", ".join(cols)})
+                VALUES ({placeholders})
+                RETURNING id
+            '''
 
-        now = fields.Datetime.now()
-        uid = self.env.uid
+            self._cr.execute(sql, values)
+            row_id = self._cr.fetchone()[0]
 
-        sql = f'''
-            INSERT INTO "{table_name}" ({", ".join(cols)})
-            VALUES ({placeholders})
-            RETURNING id
-        '''
+            # 🔥 UPDATE AUDIT FIELD NGAY SAU INSERT
+            self._cr.execute(f'''
+                UPDATE "{table_name}"
+                SET
+                    "create_uid" = %s,
+                    "write_uid" = %s,
+                    "create_date" = %s,
+                    "write_date" = %s
+                WHERE id = %s
+            ''', (uid, uid, now, now, row_id))
 
-        self._cr.execute(sql, values)
-        row_id = self._cr.fetchone()[0]
+            self._cr.commit()
 
-        # 🔥 UPDATE AUDIT FIELD NGAY SAU INSERT
-        self._cr.execute(f'''
-            UPDATE "{table_name}"
-            SET
-                "create_uid" = %s,
-                "write_uid" = %s,
-                "create_date" = %s,
-                "write_date" = %s
-            WHERE id = %s
-        ''', (uid, uid, now, now, row_id))
+            _logger.info(f"[AUTO] Inserted acc.ap.d id={r.id} into {table_name}")
 
-        self._cr.commit()
-
-        _logger.info(f"[AUTO] Inserted acc.ap.d id={rec.id} into {table_name}")
-
-        return rec
+        return records_to_sync
 
