@@ -1,6 +1,7 @@
 from odoo import models, fields, api
 from odoo.exceptions import ValidationError
 from datetime import timedelta
+from lxml import etree
 
 
 class NlAccBaoCao(models.Model):
@@ -12,14 +13,37 @@ class NlAccBaoCao(models.Model):
     ma_tk1 = fields.Char(string="TK1")
     ten_tk = fields.Char(string="Tên tk")
     hang_hoa = fields.Many2one('acc.hang.hoa', "Hàng hóa")
+    ma_hang = fields.Char(string="Mã hàng")
+    ten_hang = fields.Char(string="Tên hàng")
     so_luong = fields.Float(string="Số lượng")
     don_gia = fields.Float(string="Đơn giá")
     ps_no1 = fields.Integer(string="Thành tiền")
+    ps_co1 = fields.Integer(string="PS có 1")
+    ps_no_nte = fields.Integer(string="PS có 1")
+    ps_co_nte = fields.Integer(string="PS có 1")
+    du_no_dau = fields.Integer(string="PS có 1")
+    du_co_dau = fields.Integer(string="PS có 1")
+    du_no_cuoi = fields.Integer(string="PS có 1")
+    du_no_cuoi_nte = fields.Integer(string="PS có 1")
+    du_co_cuoi = fields.Integer(string="PS có 1")
+    du_co_cuoi_nte = fields.Integer(string="PS có 1")
     tien_nte = fields.Float(string="Tiền ngoại tệ")
     vat = fields.Integer(string="VAT")
     ngay_ct = fields.Date(string="Ngày CT")
     chung_tu = fields.Char(string="Chứng từ")
-    # ctgs = fields.Char(string="CTGS")
+    ghi_chu = fields.Char(string="Ghi chú")
+    khach_hang = fields.Many2one('acc.khach.hang', "Khách hàng")
+    ma_kh = fields.Char(string="Mã khách hàng")
+    ten_kh = fields.Char(string="Tên khách hàng")
+    kh_thue = fields.Char(string="Khách hàng thuế")
+    ms_thue = fields.Char(string="MS thuế")
+    dc_thue = fields.Char(string="DC thuế")
+    bo_phan = fields.Many2one('acc.bo.phan', "Bộ phận")
+    ma_bp = fields.Char(string="Mã bộ phận")
+    ten_bp = fields.Char(string="Tên bộ phận")
+    vviec = fields.Many2one('acc.vviec', "Vụ việc")
+    ma_vviec = fields.Char(string="Mã vụ việc")
+    ten_vviec = fields.Char(string="Tên vụ việc")
     # so_hd = fields.Char(string="Số HĐ")
     # seri_hd = fields.Char(string="Mã HĐ")
     # ngay_hd = fields.Date(string="Ngày HĐ")
@@ -39,6 +63,33 @@ class NlAccBaoCao(models.Model):
     # TIEN_TE = fields.Float(string="Thành tiền")
     # TY_GIA = fields.Float(string="Thành tiền")
     create_date = fields.Datetime("...")
+
+    @api.model
+    def get_view(self, view_id=None, view_type='form', **options):
+        res = super().get_view(view_id=view_id, view_type=view_type, **options)
+        if view_type != 'tree':
+            return res
+
+        record = self.search([], limit=1, order='id desc')
+        bao_cao_id = record.id_bc if record and record.id_bc else None
+        if not bao_cao_id:
+            return res
+
+        config = self.env['acc.bao.cao'].browse(bao_cao_id)
+        allow_fields = set(config.field_ids.mapped('name'))
+
+        arch = res.get('arch')
+        if not arch:
+            return res
+
+        doc = etree.XML(arch)
+
+        for field in doc.xpath("//field"):
+            if field.get('name') not in allow_fields:
+                field.getparent().remove(field)
+
+        res['arch'] = etree.tostring(doc, encoding='unicode')
+        return res
 
     @api.model
     def action_exit(self, ids):
