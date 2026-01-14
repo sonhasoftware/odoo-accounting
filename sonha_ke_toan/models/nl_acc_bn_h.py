@@ -475,8 +475,8 @@ class NLAccApBnH(models.Model):
         for record in self:
             all_d_records = self.env['nl.acc.ap.bn.d'].search([('ACC_AP_H', '=', record.id)])
 
-            if len(d_records_to_validate) == 0:
-                raise ValidationError("Không được phép để trống phần dữ liệu chi tiết!")
+            if len(all_d_records) == 0:
+                raise ValidationError("Không được phép để trống phần dữ liệu bên dưới!")
 
             # Copy D records sang bảng log
             self._copy_to_tong_hop_abc(all_d_records)

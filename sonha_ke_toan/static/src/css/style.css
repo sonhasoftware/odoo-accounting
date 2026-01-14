@@ -370,37 +370,6 @@ div[name="ACC_SP_D"] .arrow {
     max-width: 150px !important;
 }
 
-div#MA_TK0_IDContainer {
-    display: none !important;
-}
-
-div#KHACH_HANGContainer {
-    display: none !important;
-}
-
-div#VVIECContainer {
-    display: none !important;
-}
-
-div#PT_THUEContainer {
-    display: none;
-}
-
-div#SERI_HDContainer {
-    display: none !important;
-}
-
-div#SO_HDContainer {
-    display: none !important;
-}
-
-.date-input {
-    display: none !important;
-}
-
-.arrow {
-    display: none !important;
-}
 .o_list_view th[data-name="GHI_CHU_CT"] {
     width: 306px !important;
     min-width: 281px !important;
