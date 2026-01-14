@@ -21,6 +21,7 @@
                 <field name="DK_SAU" optional="show"/>
                 <field name="DK_GOI_BC" optional="show"/>
                 <field name="FN_GOI_BC" optional="show"/>
+                <field name="field_ids" optional="show" widget="many2many_tags"/>
             </tree>
         </field>
     </record>

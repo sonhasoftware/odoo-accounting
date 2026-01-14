@@ -5,17 +5,19 @@
         <field name="model">nl.acc.bao.cao</field>
         <field name="arch" type="xml">
             <tree string="Báo cáo" create="false" edit="false">
-                <field name="ma_tk0" optional="show"/>
-                <field name="ma_tk1" optional="show"/>
-                <field name="ten_tk" optional="show"/>
-                <field name="hang_hoa" optional="show"/>
-                <field name="so_luong" optional="show"/>
-                <field name="don_gia" optional="show"/>
-                <field name="ps_no1" optional="show"/>
-                <field name="tien_nte" optional="show"/>
-                <field name="vat" optional="show"/>
-                <field name="ngay_ct" optional="show"/>
-                <field name="chung_tu" optional="show"/>
+                <field name="ma_tk0"/>
+                <field name="ma_tk1"/>
+                <field name="ten_tk"/>
+                <field name="hang_hoa"/>
+                <field name="so_luong"/>
+                <field name="don_gia"/>
+                <field name="ps_no1"/>
+                <field name="tien_nte"/>
+                <field name="vat"/>
+                <field name="ngay_ct"/>
+                <field name="chung_tu"/>
+                <field name="bo_phan"/>
+                <field name="ten_vviec"/>
             </tree>
         </field>
     </record>

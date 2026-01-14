@@ -122,6 +122,9 @@ class PopupBaoCao(models.TransientModel):
             'view_mode': 'tree',
             'domain': domain,
             'target': 'current',
+            'context': {
+                'search_default_bao_cao_id': self.id,
+            }
         }
 
     def action_view(self):

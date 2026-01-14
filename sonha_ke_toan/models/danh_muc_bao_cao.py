@@ -22,3 +22,8 @@ class AccBaoCao(models.Model):
     DK_SAU = fields.Char(string="DK sau báo cáo", store=True)
     DK_GOI_BC = fields.Char(string="DK để link báo cáo", store=True)
     FN_GOI_BC = fields.Char(string="Function gọi báo cáo", store=True)
+    field_ids = fields.Many2many(
+        'ir.model.fields',
+        string="Cột hiển thị",
+        domain="[('model', '=', 'nl.acc.bao.cao')]"
+    )
