@@ -44,24 +44,47 @@ class NlAccBaoCao(models.Model):
     vviec = fields.Many2one('acc.vviec', "Vụ việc")
     ma_vviec = fields.Char(string="Mã vviệc")
     ten_vviec = fields.Char(string="Tên vviệc")
-    # so_hd = fields.Char(string="Số HĐ")
-    # seri_hd = fields.Char(string="Mã HĐ")
-    # ngay_hd = fields.Date(string="Ngày HĐ")
-    # # mau_so = fields.Char(string="Mẫu số")
-    # pt_thue = fields.Integer(string="PT Thuế")
-    # ong_ba = fields.Char(string="Ông bà")
-    # ghi_chu = fields.Char(string="Ghi chú")
+
+    kho = fields.Many2one('acc.kho', "Kho")
+    ma_kho = fields.Char(string="Mã kho")
+    ten_kho = fields.Char(string="Tên kho")
+
+    khoan_muc = fields.Many2one('acc.khoan.muc', "Khoản mục")
+    ma_km = fields.Char(string="Mã khoản mục")
+    ten_km = fields.Char(string="Tên khoản mục")
+
+    tien_te = fields.Many2one('acc.tien.te', "Tiền tệ")
+    dvcs = fields.Many2one('res.company', "DVCS")
+    ty_gia = fields.Float("Tỷ giá")
+
+    chi_nhanh = fields.Many2one('acc.chi.nhanh', "Chi nhánh")
+    ma_cn = fields.Char(string="Mã chi nhánh")
+    ten_cn = fields.Char(string="Tên chi nhánh")
+
+    so_luong2 = fields.Float("Số lượng 2")
+    sl_tp = fields.Float("Số lượng TP")
+    nhom_vat = fields.Char("Nhóm VAT")
+
+    san_pham = fields.Many2one('acc.san.pham', "Sản phẩm")
+    ma_sp = fields.Char(string="Mã sản phẩm")
+    ten_sp = fields.Char(string="Tên sản phẩm")
+
+    nvbh = fields.Many2one('acc.nvbh', "NVBH")
+    ma_nvbh = fields.Char(string="Mã NVBH")
+    ten_nvbh = fields.Char(string="Tên NVBH")
+
+    tscd = fields.Many2one('acc.tscd', "TSCĐ")
+    ma_tscd = fields.Char(string="Mã TSCĐ")
+    ten_tscd = fields.Char(string="Tên TSCĐ")
+
+    para_bc = fields.Text(string="Para BC")
+
+    tu_ngay = fields.Date(string="Para BC")
+    den_ngay = fields.Text(string="Para BC")
+
+    ma_tk0_id = fields.Many2one('acc.tai.khoan', "ID tài khoản 0")
+
     id_bc = fields.Integer(string="idbc")
-    # KHACH_HANG = fields.Float(string="Thành tiền")
-    # KH_THUE = fields.Float(string="Thành tiền")
-    # MS_THUE = fields.Float(string="Thành tiền")
-    # DC_THUE = fields.Float(string="Thành tiền")
-    # BO_PHAN = fields.Float(string="Thành tiền")
-    # VVIEC = fields.Float(string="Thành tiền")
-    # KHO = fields.Float(string="Thành tiền")
-    # KHOAN_MUC = fields.Float(string="Thành tiền")
-    # TIEN_TE = fields.Float(string="Thành tiền")
-    # TY_GIA = fields.Float(string="Thành tiền")
     create_date = fields.Datetime("...")
 
     @api.model
