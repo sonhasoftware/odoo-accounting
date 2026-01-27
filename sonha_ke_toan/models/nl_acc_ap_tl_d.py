@@ -341,55 +341,55 @@ class NlAccApTlD(models.Model):
                 else:
                     data[fld] = val
 
-        # --- Thêm khóa ngoại ---
-        data['ACC_TL_D'] = rec.id
-        data['KEY_CHUNG'] = rec.id
+            # --- Thêm khóa ngoại ---
+            data['ACC_TL_D'] = r.id
+            data['KEY_CHUNG'] = r.id
 
-        # --- Loại bỏ toàn bộ system fields (tránh lỗi CREATE_DATE, WRITE_UID, __last_update, …) ---
-        system_fields = {'CREATE_UID', 'CREATE_DATE', 'WRITE_UID', 'WRITE_DATE', '__LAST_UPDATE'}
-        clean_data = {k: v for k, v in data.items() if k not in system_fields}
+            # --- Loại bỏ toàn bộ system fields (tránh lỗi CREATE_DATE, WRITE_UID, __last_update, …) ---
+            system_fields = {'CREATE_UID', 'CREATE_DATE', 'WRITE_UID', 'WRITE_DATE', '__LAST_UPDATE'}
+            clean_data = {k: v for k, v in data.items() if k not in system_fields}
 
-        table_name = 'nl_acc_tong_hop'
-        if not re.match(r'^[A-Za-z0-9_]+$', table_name):
-            raise ValueError("Tên bảng không hợp lệ!")
+            table_name = 'nl_acc_tong_hop'
+            if not re.match(r'^[A-Za-z0-9_]+$', table_name):
+                raise ValueError("Tên bảng không hợp lệ!")
 
-        # --- Tạo cột nếu cần ---
-        self.create_dynamic_fields(table_name, clean_data)
+            # --- Tạo cột nếu cần ---
+            self.create_dynamic_fields(table_name, clean_data)
 
-        # --- Build câu lệnh SQL ---
-        cols = [f'"{k.upper()}"' for k in clean_data.keys()]
-        placeholders = ', '.join(['%s'] * len(clean_data))
-        values = list(clean_data.values())
+            # --- Build câu lệnh SQL ---
+            cols = [f'"{k.upper()}"' for k in clean_data.keys()]
+            placeholders = ', '.join(['%s'] * len(clean_data))
+            values = list(clean_data.values())
 
-        now = fields.Datetime.now()
-        uid = self.env.uid
+            now = fields.Datetime.now()
+            uid = self.env.uid
 
-        sql = f'''
-                    INSERT INTO "{table_name}" ({", ".join(cols)})
-                    VALUES ({placeholders})
-                    RETURNING id
-                '''
+            sql = f'''
+                        INSERT INTO "{table_name}" ({", ".join(cols)})
+                        VALUES ({placeholders})
+                        RETURNING id
+                    '''
 
-        self._cr.execute(sql, values)
-        row_id = self._cr.fetchone()[0]
+            self._cr.execute(sql, values)
+            row_id = self._cr.fetchone()[0]
 
-        # 🔥 UPDATE AUDIT FIELD NGAY SAU INSERT
-        self._cr.execute(f'''
-                    UPDATE "{table_name}"
-                    SET
-                        "create_uid" = %s,
-                        "write_uid" = %s,
-                        "create_date" = %s,
-                        "write_date" = %s
-                    WHERE id = %s
-                ''', (uid, uid, now, now, row_id))
+            # 🔥 UPDATE AUDIT FIELD NGAY SAU INSERT
+            self._cr.execute(f'''
+                        UPDATE "{table_name}"
+                        SET
+                            "create_uid" = %s,
+                            "write_uid" = %s,
+                            "create_date" = %s,
+                            "write_date" = %s
+                        WHERE id = %s
+                    ''', (uid, uid, now, now, row_id))
 
-        self._cr.commit()
-        # self.env['nl.acc.tong.hop'].sudo().search([('ACC_TL_D', '=', None)]).unlink()
+            self._cr.commit()
+            # self.env['nl.acc.tong.hop'].sudo().search([('ACC_TL_D', '=', None)]).unlink()
 
-        _logger.info(f"[AUTO] Inserted acc.ap.d id={rec.id} into {table_name}")
+            _logger.info(f"[AUTO] Inserted acc.ap.d id={r.id} into {table_name}")
 
-        return rec
+        return records_to_sync
 
     @api.depends('SALESMAN', 'ACC_AP_H.KHACH_HANG', 'ACC_AP_H.KHACH_HANG.NVBH')
     @api.onchange('SALESMAN', 'ACC_AP_H.KHACH_HANG', 'ACC_AP_H.KHACH_HANG.NVBH')
