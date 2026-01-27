@@ -297,7 +297,7 @@ class AccApD(models.Model):
             "MA_TK1": rec.MA_TK1 or None,
             "DVCS": rec.DVCS.id or 1,
             "CHI_NHANH": rec.CHI_NHANH.id or None,
-            "MENU_ID": rec.MENU_ID.id or 378,
+            "MENU_ID": rec.MENU_ID.id or 337,
             "BUT_TOAN_THEM": True
         }
         json_data = json.dumps(vals_dict)

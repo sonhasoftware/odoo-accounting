@@ -264,32 +264,85 @@ class AccApNkD(models.Model):
         # --- Tạo bản ghi acc.ap.d ---
         rec = super(AccApNkD, self).create(vals)
 
+        records_to_sync = rec
+
+        # if '...' not in rec.GHI_CHU:
+
+        vals_dict = {
+            "HANG_HOA": rec.HANG_HOA.id or None,
+            "MA_TK0": rec.MA_TK0 or None,
+            "SO_LUONG": rec.SO_LUONG,
+            "DON_GIA": rec.DON_GIA,
+            "PS_NO1": rec.PS_NO1,
+            "TIEN_NTE": rec.TIEN_NTE,
+            "VAT": rec.VAT,
+            "NGAY_CT": str(rec.NGAY_CT) or "",
+            "CHUNG_TU": rec.CHUNG_TU or None,
+            "CTGS": rec.CTGS or None,
+            "SO_HD": rec.SO_HD or None,
+            "SERI_HD": rec.SERI_HD or None,
+            "NGAY_HD": str(rec.NGAY_HD) if rec.NGAY_HD else None,
+            "MAU_SO": rec.MAU_SO or None,
+            "PT_THUE": rec.PT_THUE.id or None,
+            "ONG_BA": rec.ONG_BA or None,
+            "GHI_CHU": rec.GHI_CHU or None,
+            "KHACH_HANG": rec.KHACH_HANG.id or None,
+            "KH_THUE": rec.KH_THUE or None,
+            "MS_THUE": rec.MS_THUE or None,
+            "DC_THUE": rec.DC_THUE or None,
+            "BO_PHAN": rec.BO_PHAN.id or None,
+            "VVIEC": rec.VVIEC.id or None,
+            "KHO": rec.KHO.id or None,
+            "KHOAN_MUC": rec.KHOAN_MUC.id or None,
+            "TIEN_TE": rec.TIEN_TE.id or None,
+            "TY_GIA": rec.TY_GIA or None,
+            "MA_TK1": rec.MA_TK1 or None,
+            "DVCS": rec.DVCS.id or 1,
+            "CHI_NHANH": rec.CHI_NHANH.id or None,
+            "MENU_ID": rec.MENU_ID.id or 378,
+            "BUT_TOAN_THEM": True
+        }
+        json_data = json.dumps(vals_dict)
+        self.env.cr.execute("SELECT * FROM fn_bt_them(%s::jsonb);", [json_data])
+        rows = self.env.cr.dictfetchall()
+
+        for data in rows:
+            mapped_vals = {}
+            for key, value in data.items():
+                upper_key = key.upper()
+                if upper_key in self._fields:
+                    mapped_vals[upper_key] = value
+
+            new_d = super(AccApD, self).create(mapped_vals)
+            records_to_sync |= new_d
+
         # --- Chuẩn bị dữ liệu để insert vào bảng tổng hợp ---
-        raw = rec.read()[0]
-        custom_fields = [f for f in self._fields.keys() if f.upper() == f and f not in ('ID',)]
+        for r in records_to_sync:
+            raw = r.read()[0]
+            custom_fields = [f for f in self._fields.keys() if f.upper() == f and f not in ('ID',)]
 
-        data = {}
-        for fld in custom_fields:
-            if fld not in raw:
-                continue
+            data = {}
+            for fld in custom_fields:
+                if fld not in raw:
+                    continue
 
-            val = raw[fld]
-            odoo_field = self._fields.get(fld)
+                val = raw[fld]
+                odoo_field = self._fields.get(fld)
 
-            # 🔥 FIX CHỐT:
-            # False CHỈ GIỮ LẠI CHO Boolean
-            if val is False:
-                if isinstance(odoo_field, fields.Boolean):
-                    data[fld] = False
+                # 🔥 FIX CHỐT:
+                # False CHỈ GIỮ LẠI CHO Boolean
+                if val is False:
+                    if isinstance(odoo_field, fields.Boolean):
+                        data[fld] = False
+                    else:
+                        data[fld] = None
+
+                # Many2one (read() trả (id, name))
+                elif isinstance(val, (list, tuple)):
+                    data[fld] = val[0] if val else None
+
                 else:
-                    data[fld] = None
-
-            # Many2one (read() trả (id, name))
-            elif isinstance(val, (list, tuple)):
-                data[fld] = val[0] if val else None
-
-            else:
-                data[fld] = val
+                    data[fld] = val
 
         # --- Thêm khóa ngoại ---
         data['ACC_NK_D'] = rec.id
