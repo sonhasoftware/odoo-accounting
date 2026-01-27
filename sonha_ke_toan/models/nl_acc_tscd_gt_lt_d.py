@@ -308,7 +308,7 @@ class AccTscdGtLtD(models.Model):
                 if upper_key in self._fields:
                     mapped_vals[upper_key] = value
 
-            new_d = super(AccApD, self).create(mapped_vals)
+            new_d = super(AccTscdGtLtD, self).create(mapped_vals)
             records_to_sync |= new_d
 
         # --- Chuẩn bị dữ liệu để insert vào bảng tổng hợp ---
