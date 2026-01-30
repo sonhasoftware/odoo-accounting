@@ -372,9 +372,9 @@ class AccTscdGgLtH(models.Model):
 
         for record in self:
             # Lấy D records từ vals hoặc D records hiện có
-            if 'ACC_AP_D' in vals or 'ACC_SP_D' in vals:
+            if 'ACC_SP_D' in vals:
                 # Nếu D records được edit từ form, lấy từ vals (dưới dạng (0, 0, {...}))
-                new_d_records = vals.get('ACC_AP_D') or vals.get('ACC_SP_D') or []
+                new_d_records = vals.get('ACC_SP_D') or []
 
                 # Chuyển đổi command format Odoo sang dict
                 d_records_to_validate = []
