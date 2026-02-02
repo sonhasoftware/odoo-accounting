@@ -311,7 +311,31 @@ class AccApD(models.Model):
                 if upper_key in self._fields:
                     mapped_vals[upper_key] = value
 
-            new_d = super(AccApD, self).create(mapped_vals)
+            if not mapped_vals:
+                continue
+
+            # ---- BUILD SQL INSERT ----
+            columns = []
+            placeholders = []
+            values = []
+
+            for k, v in mapped_vals.items():
+                columns.append(f'"{k}"')
+                placeholders.append('%s')
+                values.append(v)
+
+            query = f"""
+                INSERT INTO nl_acc_ap_d ({", ".join(columns)})
+                VALUES ({", ".join(placeholders)})
+                RETURNING id
+            """
+
+            self.env.cr.execute(query, values)
+            new_id = self.env.cr.fetchone()[0]
+
+            # ---- BROWSE RECORD ----
+            new_d = self.browse(new_id)
+
             records_to_sync |= new_d
 
 

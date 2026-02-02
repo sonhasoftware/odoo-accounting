@@ -5,37 +5,60 @@
         <field name="model">nl.acc.tong.hop</field>
         <field name="arch" type="xml">
             <tree string="Tổng hợp" create="false" editable="bottom" edit="true" js_class="button_click_f9">
-                <field name="NGAY_CT" optional="show"/>
-                <field name="CHUNG_TU" optional="show"/>
-                <field name="SO_HD" optional="show"/>
-                <field name="SERI_HD" optional="show"/>
-                <field name="NGAY_HD" optional="show"/>
-                <field name="PS_NO1" optional="show"/>
-                <field name="TIEN_NTE" optional="show"/>
                 <field name="MA_TK0_ID" optional="show"/>
-                <field name="MA_TK1_ID" optional="show"/>
-                <field name="TIEN_TE" optional="show"/>
-                <field name="TY_GIA" optional="show"/>
                 <field name="HANG_HOA" optional="show"/>
                 <field name="SO_LUONG" optional="show"/>
                 <field name="DON_GIA" optional="show"/>
+                <field name="PS_NO1" optional="show"/>
+                <field name="TIEN_NTE" optional="show"/>
+                <field name="VAT" optional="show"/>
+                <field name="NGAY_CT" optional="show"/>
+                <field name="CHUNG_TU" optional="show"/>
+                <field name="CTGS" optional="show"/>
+                <field name="SO_HD" optional="show"/>
+                <field name="SERI_HD" optional="show"/>
+                <field name="NGAY_HD" optional="show"/>
+                <field name="MAU_SO" optional="show"/>
+                <field name="PT_THUE" optional="show"/>
+                <field name="ONG_BA" optional="show"/>
+                <field name="GHI_CHU" optional="show"/>
                 <field name="KHACH_HANG" optional="show"/>
-                <field name="KHACH_HANGC" optional="show"/>
-                <field name="TSCD" optional="show"/>
-                <field name="KHOAN_MUC" optional="show"/>
-                <field name="BO_PHAN" optional="show"/>
-                <field name="VVIEC" optional="show"/>
-                <field name="SAN_PHAM" optional="show"/>
-                <field name="KHO" optional="show"/>
-                <field name="KHOC" optional="show"/>
+                <field name="KH_THUE" optional="show"/>
                 <field name="MS_THUE" optional="show"/>
                 <field name="DC_THUE" optional="show"/>
-                <field name="KH_THUE" optional="show"/>
-                <field name="MENU_ID" optional="show"/>
+                <field name="BO_PHAN" optional="show"/>
+                <field name="VVIEC" optional="show"/>
+                <field name="KHO" optional="show"/>
+                <field name="KHOAN_MUC" optional="show"/>
+                <field name="TIEN_TE" optional="show"/>
+                <field name="TY_GIA" optional="show"/>
                 <field name="create_uid" string="User nhập" optional="show"/>
                 <field name="write_uid" string="User sửa" optional="show"/>
-                <field name="PT_THUE" optional="show"/>
+                <field name="MA_TK1_ID" optional="show"/>
+                <field name="DVCS" optional="show"/>
+                <field name="CHI_NHANH" optional="show"/>
+                <field name="MENU_ID" optional="show"/>
+                <field name="KHACH_HANGC" optional="show"/>
+                <field name="KHOC" optional="show"/>
+                <field name="TINH" optional="show"/>
+                <field name="NGUON" optional="show"/>
+
+                <field name="LOAIDL" optional="show"/>
+                <field name="HEAD_NO" optional="show"/>
+                <field name="SO_LUONG2" optional="show"/>
+                <field name="SL_TP" optional="show"/>
+                <field name="NHOM_VAT" optional="show"/>
                 <field name="THUE_NK" optional="show"/>
+                <field name="SAN_PHAM" optional="show"/>
+                <field name="SO_LO" optional="show"/>
+
+                <field name="DAT" optional="show"/>
+                <field name="SO_LENHSX" optional="show"/>
+                <field name="BTFIRST" optional="show"/>
+                <field name="PS_CO1" optional="show"/>
+                <field name="NVBH" optional="show"/>
+                <field name="TSCD" optional="show"/>
+
             </tree>
         </field>
     </record>

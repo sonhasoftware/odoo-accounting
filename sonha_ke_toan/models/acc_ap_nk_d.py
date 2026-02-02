@@ -113,7 +113,7 @@ class AccApNkD(models.Model):
             else:
                 pass
 
-    @api.depends('SO_LUONG', 'DON_GIA')
+    @api.depends('SO_LUONG', 'DON_GIA', 'ACC_AP_H', 'ACC_AP_H.TIEN_TE')
     def _get_tien_nte(self):
         for r in self:
             if r.ACC_AP_H.TIEN_TE.MA != "VNĐ":
@@ -121,17 +121,13 @@ class AccApNkD(models.Model):
             else:
                 r.TIEN_NTE = 0
 
-    @api.onchange('SO_LUONG', 'DON_GIA')
-    def _onchange_tien_nte(self):
-        self._get_tien_nte()
-
     @api.depends('SO_LUONG', 'DON_GIA', 'ACC_AP_H.TY_GIA')
     def _get_ps_no1(self):
         for r in self:
             if not r.ACC_AP_H.DG_THEO_TIEN:
                 r.PS_NO1 = r.SO_LUONG * r.DON_GIA * r.ACC_AP_H.TY_GIA
             else:
-                pass
+                r.PS_NO1 = r.SO_LUONG * r.DON_GIA
 
     @api.onchange('SO_LUONG', 'PS_NO1', 'ACC_AP_H.DG_THEO_TIEN', 'HANG_HOA')
     @api.depends('SO_LUONG', 'PS_NO1', 'HANG_HOA')
@@ -153,14 +149,7 @@ class AccApNkD(models.Model):
     @api.depends('PS_NO1', 'PT_THUE')
     def _get_vat(self):
         for r in self:
-            # if r.PT_THUE:
-            #     r.VAT = r.PS_NO1 * (r.PT_THUE.PT_THUE / 100)
-            # else:
             r.VAT = r.PS_NO1 * (r.ACC_AP_H.PT_THUE.PT_THUE / 100)
-
-    @api.onchange('PS_NO1', 'PT_THUE')
-    def _onchange_vat(self):
-        self._get_vat()
 
     def create_dynamic_fields(self, table_name, data_dict):
         """Tự động tạo cột đúng định dạng theo kiểu dữ liệu Odoo."""
@@ -313,7 +302,31 @@ class AccApNkD(models.Model):
                 if upper_key in self._fields:
                     mapped_vals[upper_key] = value
 
-            new_d = super(AccApNkD, self).create(mapped_vals)
+            if not mapped_vals:
+                continue
+
+            # ---- BUILD SQL INSERT ----
+            columns = []
+            placeholders = []
+            values = []
+
+            for k, v in mapped_vals.items():
+                columns.append(f'"{k}"')
+                placeholders.append('%s')
+                values.append(v)
+
+            query = f"""
+                INSERT INTO acc_ap_nk_d ({", ".join(columns)})
+                VALUES ({", ".join(placeholders)})
+                RETURNING id
+            """
+
+            self.env.cr.execute(query, values)
+            new_id = self.env.cr.fetchone()[0]
+
+            # ---- BROWSE RECORD ----
+            new_d = self.browse(new_id)
+
             records_to_sync |= new_d
 
         # --- Chuẩn bị dữ liệu để insert vào bảng tổng hợp ---
@@ -389,8 +402,6 @@ class AccApNkD(models.Model):
 
             self._cr.commit()
             # self.env['nl.acc.tong.hop'].sudo().search([('ACC_NK_D', '=', None)]).unlink()
-
-            _logger.info(f"[AUTO] Inserted acc.ap.d id={rec.id} into {table_name}")
 
         return records_to_sync
 
