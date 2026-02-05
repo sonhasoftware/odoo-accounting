@@ -77,7 +77,7 @@
             'sonha_ke_toan/static/src/js/menu_item_patch.js',
             'sonha_ke_toan/static/src/js/confirm_before_save.js',
             'sonha_ke_toan/static/src/css/style.css',
-            'sonha_ke_toan/static/src/js/list_button.js',
+            # 'sonha_ke_toan/static/src/js/list_button.js',
             'sonha_ke_toan/static/src/js/list_exit_button.js',
             'sonha_ke_toan/static/src/xml/button_list_button.xml',
             'sonha_ke_toan/static/src/xml/button_exit_bao_cao.xml',
