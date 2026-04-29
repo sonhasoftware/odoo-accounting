@@ -58,6 +58,7 @@
         'views/nl_acc_ap_h_bc_views.xml',
         'views/nl_acc_ap_h_xhtl_views.xml',
         'views/nl_acc_ap_h_pxvt_views.xml',
+        'views/phieu_nhap_report.xml',
         'wizard/thong_bao_wizard_views.xml',
         'wizard/popup_tim_kiem_views.xml',
         'wizard/popup_bao_cao_views.xml',

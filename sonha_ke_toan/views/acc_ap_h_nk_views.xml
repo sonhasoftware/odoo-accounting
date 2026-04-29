@@ -25,6 +25,9 @@
     <field name="model">acc.ap.nk.h</field>
     <field name="arch" type="xml">
         <form string="Phiếu nhập mua hàng - Nhập khẩu">
+            <header>
+                <button name="%(action_report_phieu_nhap_nk)d" string="In" type="action" class="oe_highlight"/>
+            </header>
             <div class="two-column-form">
 
                 <!-- Cột trái -->
