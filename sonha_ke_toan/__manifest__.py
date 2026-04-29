@@ -34,6 +34,7 @@
         'views/v_acc_san_pham_views.xml',
         'views/acc_bom_views.xml',
         'views/acc_thue_views.xml',
+        'views/phieu_nhap_report.xml',
         'wizard/loai_dm_wizard_views.xml',
         'views/acc_ap_h_views.xml',
         'views/acc_ap_h_nk_views.xml',
