@@ -2,12 +2,59 @@
 import { ListRenderer } from "@web/views/list/list_renderer";
 import { patch } from "@web/core/utils/patch";
 import { DateRange } from "./components/date_range";
+import { onMounted, onPatched, onWillStart } from "@odoo/owl";
 
 patch(ListRenderer.prototype, {
     setup(){
         super.setup();
         this.domain = [],
         this.selectedItem = null
+
+        this.hiddenFields = []
+        onWillStart(async () => {
+            const modelName = this.props.list?.resModel;
+            if (!modelName) {
+                return;
+            }
+            this.hiddenFields = await this.env.services.orm.call(
+                "column.visibility.rule",
+                "get_hidden_fields",
+                [modelName]
+            );
+        });
+        onMounted(() => this._applyColumnVisibility());
+        onPatched(() => this._applyColumnVisibility());
+    },
+
+
+
+    _applyColumnVisibility() {
+        if (!this.hiddenFields?.length || !this.tableRef?.el) {
+            return;
+        }
+        const hiddenIndexes = [];
+        this.state.columns.forEach((column, index) => {
+            if (this.isColumnHidden(column)) {
+                hiddenIndexes.push(index + 1);
+            }
+        });
+        if (!hiddenIndexes.length) {
+            return;
+        }
+        this.tableRef.el.querySelectorAll("tr").forEach((row) => {
+            hiddenIndexes.forEach((idx) => {
+                const cell = row.children[idx];
+                if (cell) {
+                    cell.style.display = "none";
+                }
+            });
+        });
+    },
+    isColumnHidden(column) {
+        if (!column || !column.name || !this.hiddenFields?.length) {
+            return false;
+        }
+        return this.hiddenFields.includes(column.name);
     },
     // Function for search while clicking "ENTER BUTTON"
     _onKeyPress(ev, name, obj) {

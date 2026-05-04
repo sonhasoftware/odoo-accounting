@@ -1,0 +1,45 @@
+<odoo>
+    <record id="view_column_visibility_rule_tree" model="ir.ui.view">
+        <field name="name">column.visibility.rule.tree.vi</field>
+        <field name="model">column.visibility.rule</field>
+        <field name="arch" type="xml">
+            <tree>
+                <field name="name"/>
+                <field name="model_id"/>
+                <field name="field_id"/>
+                <field name="group_ids" widget="many2many_tags"/>
+                <field name="active"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_column_visibility_rule_form" model="ir.ui.view">
+        <field name="name">column.visibility.rule.form.vi</field>
+        <field name="model">column.visibility.rule</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <group>
+                        <field name="name"/>
+                        <field name="model_id"/>
+                        <field name="field_id"/>
+                        <field name="group_ids" widget="many2many_tags"/>
+                        <field name="active"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_column_visibility_rule" model="ir.actions.act_window">
+        <field name="name">Bảng phân quyền cột</field>
+        <field name="res_model">column.visibility.rule</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <menuitem id="menu_column_visibility_rule"
+              name="Bảng phân quyền cột"
+              parent="base.menu_custom"
+              action="action_column_visibility_rule"
+              groups="base.group_system"/>
+</odoo>
