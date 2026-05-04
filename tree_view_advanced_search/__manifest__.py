@@ -33,7 +33,11 @@
     'company': 'Cybrosys Techno Solutions',
     'maintainer': 'Cybrosys Techno Solutions',
     'website': "https://www.cybrosys.com",
-    'depends': ['web', 'purchase', 'account'],
+    'depends': ['web', 'purchase', 'account', 'base'],
+    'data': [
+        'security/ir.model.access.csv',
+        'views/column_visibility_rule_views.xml',
+    ],
     'assets': {
         'web.assets_backend': [
             'tree_view_advanced_search/static/src/js/components/date_range.js',
