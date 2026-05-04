@@ -2,12 +2,12 @@
 <odoo>
     <template id="report_phieu_nhap_document">
         <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="o">
+            <t t-if="docs" t-foreach="docs" t-as="o">
                 <t t-call="web.external_layout">
                     <div class="page">
                         <h2 style="text-align:center; text-transform: uppercase;">Phiếu nhập kho</h2>
                         <p style="text-align:center;">
-                            Ngày <span t-esc="o.NGAY_CT"/> - Số: <span t-esc="o.CHUNG_TU"/>
+                            Ngày <span t-esc="format_date(o.env, o.NGAY_CT) if o.NGAY_CT else ''"/> - Số: <span t-esc="o.CHUNG_TU or ''"/>
                         </p>
                         <p>
                             <strong>Người giao hàng:</strong> <span t-esc="o.ONG_BA or ''"/>
@@ -36,20 +36,27 @@
                                     <td colspan="7" class="text-center">Không có dữ liệu chi tiết</td>
                                 </tr>
                                 <t t-set="stt" t-value="0"/>
-                                <tr t-foreach="o.ACC_SP_D" t-as="line">
+                                <t t-foreach="o.ACC_SP_D" t-as="line"><tr>
                                     <t t-set="stt" t-value="stt + 1"/>
                                     <td><span t-esc="stt"/></td>
                                     <td><span t-esc="line.HANG_HOA.MA_TEN if line.HANG_HOA else ''"/></td>
                                     <td><span t-esc="line.HANG_HOA.MA if line.HANG_HOA else ''"/></td>
                                     <td><span t-esc="line.HANG_HOA.DVT if line.HANG_HOA else ''"/></td>
-                                    <td class="text-end"><span t-esc="line.SO_LUONG or 0"/></td>
-                                    <td class="text-end"><span t-esc="line.DON_GIA or 0"/></td>
-                                    <td class="text-end"><span t-esc="line.PS_NO1 or 0"/></td>
-                                </tr>
+                                    <td class="text-end"><span t-esc="'%.2f' % (line.SO_LUONG or 0)"/></td>
+                                    <td class="text-end"><span t-esc="'%.2f' % (line.DON_GIA or 0)"/></td>
+                                    <td class="text-end"><span t-esc="'%.2f' % (line.PS_NO1 or 0)"/></td>
+                                </tr></t>
                             </tbody>
                         </table>
                     </div>
                 </t>
+            </t>
+        </t>
+        <t t-if="not docs">
+            <t t-call="web.external_layout">
+                <div class="page">
+                    <h3>Không có dữ liệu để in báo cáo.</h3>
+                </div>
             </t>
         </t>
     </template>
