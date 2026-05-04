@@ -123,26 +123,26 @@
             <!-- ONE2MANY -->
             <field name="ACC_SP_D">
                 <tree editable="bottom" toggle_visibility="true" class="o_list_view parent-one2many">
-<!--                    <field name="HEAD_NO"/>-->
-<!--                    <field name="MA_TK0_ID"/>-->
-                    <field name="MA_TK0_ID"/>
-                    <field name="MA_TK1_ID"/>
-                    <field name="HANG_HOA"/>
-                    <field name="SO_LUONG" widget="float"/>
-                    <field name="SO_LUONG2" widget="float"/>
-                    <field name="DON_GIA" widget="float"/>
-<!--                    <field name="KHACH_HANG"/>-->
-                    <field name="PS_NO1"/>
-<!--                    <field name="TIEN_NTE" widget="float"/>-->
-<!--                    <field name="VVIEC"/>-->
-<!--                    <field name="PT_THUE"/>-->
-<!--                    <field name="SERI_HD"/>-->
-<!--                    <field name="SO_HD"/>-->
-<!--                    <field name="NGAY_HD"/>-->
-                    <field name="SAN_PHAM"/>
-                    <field name="TSCD"/>
-<!--                    <field name="THUE_NK"/>-->
-<!--                    <field name="NHOM_VAT"/>-->
+<!--                    <field name="HEAD_NO" optional="show"/>-->
+<!--                    <field name="MA_TK0_ID" optional="show"/>-->
+                    <field name="MA_TK0_ID" optional="show"/>
+                    <field name="MA_TK1_ID" optional="show"/>
+                    <field name="HANG_HOA" optional="show"/>
+                    <field name="SO_LUONG" widget="float" optional="show"/>
+                    <field name="SO_LUONG2" widget="float" optional="show"/>
+                    <field name="DON_GIA" widget="float" optional="show"/>
+<!--                    <field name="KHACH_HANG" optional="show"/>-->
+                    <field name="PS_NO1" optional="show"/>
+<!--                    <field name="TIEN_NTE" widget="float" optional="show"/>-->
+<!--                    <field name="VVIEC" optional="show"/>-->
+<!--                    <field name="PT_THUE" optional="show"/>-->
+<!--                    <field name="SERI_HD" optional="show"/>-->
+<!--                    <field name="SO_HD" optional="show"/>-->
+<!--                    <field name="NGAY_HD" optional="show"/>-->
+                    <field name="SAN_PHAM" optional="show"/>
+                    <field name="TSCD" optional="show"/>
+<!--                    <field name="THUE_NK" optional="show"/>-->
+<!--                    <field name="NHOM_VAT" optional="show"/>-->
 
                     <!-- Các field cần đồng bộ -->
                     <field name="NGAY_CT" optional="hide"/>
