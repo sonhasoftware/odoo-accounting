@@ -42,8 +42,8 @@
                     </div>
 
                     <div class="form-row">
-                        <label for="CHUNG_TU">Chứng từ</label>
-                        <field name="CHUNG_TU"/>
+                        <label for="CHUNG_TU" invisible="1">Chứng từ</label>
+                        <field name="CHUNG_TU" invisible="1"/>
                         <label for="CTGS" string="YC Mua">YC Mua</label>
                         <field name="CTGS" string="YC Mua"/>
                     </div>
