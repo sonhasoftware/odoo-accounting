@@ -32,14 +32,19 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                <tr t-if="not o.ACC_SP_D">
+                                    <td colspan="7" class="text-center">Không có dữ liệu chi tiết</td>
+                                </tr>
+                                <t t-set="stt" t-value="0"/>
                                 <tr t-foreach="o.ACC_SP_D" t-as="line">
-                                    <td><span t-esc="line_index + 1"/></td>
+                                    <t t-set="stt" t-value="stt + 1"/>
+                                    <td><span t-esc="stt"/></td>
                                     <td><span t-esc="line.HANG_HOA.MA_TEN if line.HANG_HOA else ''"/></td>
                                     <td><span t-esc="line.HANG_HOA.MA if line.HANG_HOA else ''"/></td>
                                     <td><span t-esc="line.HANG_HOA.DVT if line.HANG_HOA else ''"/></td>
-                                    <td class="text-end"><span t-esc="line.SO_LUONG"/></td>
-                                    <td class="text-end"><span t-esc="line.DON_GIA"/></td>
-                                    <td class="text-end"><span t-esc="line.PS_NO1"/></td>
+                                    <td class="text-end"><span t-esc="line.SO_LUONG or 0"/></td>
+                                    <td class="text-end"><span t-esc="line.DON_GIA or 0"/></td>
+                                    <td class="text-end"><span t-esc="line.PS_NO1 or 0"/></td>
                                 </tr>
                             </tbody>
                         </table>
