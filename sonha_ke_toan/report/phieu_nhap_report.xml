@@ -64,13 +64,12 @@
     <record id="action_report_phieu_nhap" model="ir.actions.report">
         <field name="name">Phiếu nhập kho</field>
         <field name="model">nl.acc.ap.h</field>
-        <field name="report_type">qweb-pdf</field>
+        <field name="report_type">qweb-html</field>
         <field name="report_name">sonha_ke_toan.report_phieu_nhap_document</field>
         <field name="report_file">sonha_ke_toan.report_phieu_nhap_document</field>
         <field name="print_report_name">'Phieu_nhap_%s' % (object.CHUNG_TU or '')</field>
         <field name="binding_model_id" ref="model_nl_acc_ap_h"/>
         <field name="binding_type">report</field>
-        <field name="multi">False</field>
     </record>
 
     <record id="action_report_phieu_nhap_nk" model="ir.actions.report">
@@ -108,4 +107,21 @@
         <field name="binding_type">report</field>
         <field name="multi">False</field>
     </record>
+
+<!--    <template id="report_phieu_nhap_document">-->
+<!--        <t t-call="web.external_layout">-->
+<!--            <main>-->
+<!--                <div class="page">-->
+
+<!--                    <t>-->
+<!--                        <div>-->
+<!--                            <h2>Test dữ liệu</h2>-->
+<!--                            <div>12345678901</div>-->
+<!--                        </div>-->
+<!--                    </t>-->
+
+<!--                </div>-->
+<!--            </main>-->
+<!--        </t>-->
+<!--    </template>-->
 </odoo>
