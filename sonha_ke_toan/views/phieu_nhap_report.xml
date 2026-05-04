@@ -2,12 +2,12 @@
 <odoo>
     <template id="report_phieu_nhap_document">
         <t t-call="web.html_container">
-            <t t-foreach="docs" t-as="o">
+            <t t-if="docs" t-foreach="docs" t-as="o">
                 <t t-call="web.external_layout">
-                    <div class="page">
+                    <div class="page" style="color:#000 !important; background:#fff !important;">
                         <h2 style="text-align:center; text-transform: uppercase;">Phiếu nhập kho</h2>
                         <p style="text-align:center;">
-                            Ngày <span t-esc="o.NGAY_CT"/> - Số: <span t-esc="o.CHUNG_TU"/>
+                            Ngày <span t-esc="o.NGAY_CT or ''"/> - Số: <span t-esc="o.CHUNG_TU or ''"/>
                         </p>
                         <p>
                             <strong>Người giao hàng:</strong> <span t-esc="o.ONG_BA or ''"/>
@@ -19,37 +19,44 @@
                             <strong>Nội dung:</strong> <span t-esc="o.GHI_CHU or ''"/>
                         </p>
 
-                        <table class="table table-sm" style="width:100%; border-collapse: collapse;" border="1">
+                        <table class="table table-sm" style="width:100%; border-collapse: collapse; color:#000 !important;" border="1">
                             <thead>
                                 <tr>
-                                    <th>STT</th>
-                                    <th>Tên hàng hóa</th>
-                                    <th>Mã vật tư</th>
-                                    <th>Đơn vị</th>
-                                    <th>Số lượng</th>
-                                    <th>Đơn giá</th>
-                                    <th>Thành tiền</th>
+                                    <th style="color:#000 !important;">STT</th>
+                                    <th style="color:#000 !important;">Tên hàng hóa</th>
+                                    <th style="color:#000 !important;">Mã vật tư</th>
+                                    <th style="color:#000 !important;">Đơn vị</th>
+                                    <th style="color:#000 !important;">Số lượng</th>
+                                    <th style="color:#000 !important;">Đơn giá</th>
+                                    <th style="color:#000 !important;">Thành tiền</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr t-if="not o.ACC_SP_D">
-                                    <td colspan="7" class="text-center">Không có dữ liệu chi tiết</td>
+                                    <td colspan="7" style="text-align:center; color:#000 !important;">Không có dữ liệu chi tiết</td>
                                 </tr>
                                 <t t-set="stt" t-value="0"/>
-                                <tr t-foreach="o.ACC_SP_D" t-as="line">
+                                <t t-foreach="o.ACC_SP_D" t-as="line"><tr>
                                     <t t-set="stt" t-value="stt + 1"/>
                                     <td><span t-esc="stt"/></td>
                                     <td><span t-esc="line.HANG_HOA.MA_TEN if line.HANG_HOA else ''"/></td>
                                     <td><span t-esc="line.HANG_HOA.MA if line.HANG_HOA else ''"/></td>
                                     <td><span t-esc="line.HANG_HOA.DVT if line.HANG_HOA else ''"/></td>
-                                    <td class="text-end"><span t-esc="line.SO_LUONG or 0"/></td>
-                                    <td class="text-end"><span t-esc="line.DON_GIA or 0"/></td>
-                                    <td class="text-end"><span t-esc="line.PS_NO1 or 0"/></td>
-                                </tr>
+                                    <td style="text-align:right; color:#000 !important;"><span t-esc="'%.2f' % (line.SO_LUONG or 0)"/></td>
+                                    <td style="text-align:right; color:#000 !important;"><span t-esc="'%.2f' % (line.DON_GIA or 0)"/></td>
+                                    <td style="text-align:right; color:#000 !important;"><span t-esc="'%.2f' % (line.PS_NO1 or 0)"/></td>
+                                </tr></t>
                             </tbody>
                         </table>
                     </div>
                 </t>
+            </t>
+        </t>
+        <t t-if="not docs">
+            <t t-call="web.external_layout">
+                <div class="page" style="color:#000 !important; background:#fff !important;">
+                    <h3>Không có dữ liệu để in báo cáo.</h3>
+                </div>
             </t>
         </t>
     </template>
