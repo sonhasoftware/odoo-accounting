@@ -91,17 +91,17 @@
             <!-- ONE2MANY -->
             <field name="ACC_SP_D">
                 <tree editable="bottom" toggle_visibility="true" class="o_list_view parent-one2many">
-                    <field name="MA_TK0_ID"/>
-                    <field name="KHACH_HANG"/>
-                    <field name="PS_NO1"/>
-                    <field name="TIEN_NTE" widget="float"/>
-                    <field name="KHOAN_MUC"/>
+                    <field name="MA_TK0_ID" optional="show"/>
+                    <field name="KHACH_HANG" optional="show"/>
+                    <field name="PS_NO1" optional="show"/>
+                    <field name="TIEN_NTE" widget="float" optional="show"/>
+                    <field name="KHOAN_MUC" optional="show"/>
                     <field name="VVIEC" optional="hide"/>
-                    <field name="PT_THUE"/>
-                    <field name="SERI_HD"/>
-                    <field name="SO_HD"/>
-                    <field name="NGAY_HD"/>
-                    <field name="VAT"/>
+                    <field name="PT_THUE" optional="show"/>
+                    <field name="SERI_HD" optional="show"/>
+                    <field name="SO_HD" optional="show"/>
+                    <field name="NGAY_HD" optional="show"/>
+                    <field name="VAT" optional="show"/>
 
                     <!-- Các field cần đồng bộ -->
                     <field name="NGAY_CT" optional="hide"/>

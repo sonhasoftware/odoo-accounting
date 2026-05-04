@@ -129,17 +129,17 @@
             <!-- ONE2MANY -->
             <field name="ACC_SP_D">
                 <tree editable="bottom" toggle_visibility="true" class="o_list_view parent-one2many">
-                    <field name="MA_TK0_ID"/>
-                    <field name="MA_TK1_ID"/>
-                    <field name="SAN_PHAM" string="Bộ"/>
-                    <field name="SL_TP" string="SL bộ"/>
-                    <field name="HANG_HOA"/>
-                    <field name="SO_LUONG" widget="float"/>
-                    <field name="DON_GIA" widget="float"/>
-                    <field name="PS_NO1" widget="float"/>
-                    <field name="TIEN_NTE" widget="float"/>
-                    <field name="VAT" widget="float"/>
-                    <field name="VVIEC"/>
+                    <field name="MA_TK0_ID" optional="show"/>
+                    <field name="MA_TK1_ID" optional="show"/>
+                    <field name="SAN_PHAM" string="Bộ" optional="show"/>
+                    <field name="SL_TP" string="SL bộ" optional="show"/>
+                    <field name="HANG_HOA" optional="show"/>
+                    <field name="SO_LUONG" widget="float" optional="show"/>
+                    <field name="DON_GIA" widget="float" optional="show"/>
+                    <field name="PS_NO1" widget="float" optional="show"/>
+                    <field name="TIEN_NTE" widget="float" optional="show"/>
+                    <field name="VAT" widget="float" optional="show"/>
+                    <field name="VVIEC" optional="show"/>
 
                     <!-- Các field cần đồng bộ -->
                     <field name="NGAY_CT" optional="hide"/>
