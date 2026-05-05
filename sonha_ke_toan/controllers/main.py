@@ -88,24 +88,26 @@ class FieldConfirmController(http.Controller):
         p.setFont('DejaVu-Bold', 11)
         p.drawRightString(width - 20 * mm, height - 20 * mm, 'Mẫu số 01 - VT')
         p.setFont('DejaVu', 10)
-        p.drawRightString(width - 20 * mm, height - 28 * mm, '(Ban hành theo QĐ số 15/2006/QĐ-BTC)')
+        p.drawRightString(width - 20 * mm, height - 28 * mm, '(Ban hành theo QĐ số 15/2006/QĐ-BTC')
+        p.setFont('DejaVu', 10)
+        p.drawRightString(width - 20 * mm, height - 28 * mm, 'ngày 20/03/2006 của Bộ trưởng BTC)')
 
         p.setFont('DejaVu-Bold', 18)
         p.drawCentredString(width / 2, height - 45 * mm, 'PHIẾU NHẬP KHO')
-        p.setFont('DejaVu', 14)
+        p.setFont('DejaVu', 10)
         p.drawCentredString(width / 2, height - 54 * mm, self._fmt_vn_date(record.NGAY_CT or date.today()))
         p.drawCentredString(width / 2, height - 62 * mm, f"Số: {self._safe(record.CHUNG_TU, f'PN/{record.id}')}")
 
         y = height - 78 * mm
-        p.setFont('DejaVu', 13)
-        p.drawString(20 * mm, y, f"Họ và tên người giao hàng: {self._safe(record.KHACH_HANG.TEN, '')}")
+        p.setFont('DejaVu', 10)
+        p.drawString(12 * mm, y, f"Họ và tên người giao hàng: {self._safe(record.KHACH_HANG.TEN, '')}")
         y -= 10 * mm
-        p.drawString(20 * mm, y, f"Theo hóa đơn số: {self._safe(record.SO_HD, '')}")
+        p.drawString(12 * mm, y, f"Theo hóa đơn số: {self._safe(record.SO_HD, '')}")
         p.drawRightString(width - 20 * mm, y, self._fmt_vn_date(record.NGAY_HD or record.NGAY_CT))
         y -= 10 * mm
-        p.drawString(20 * mm, y, f"Nhập tại kho: {self._safe(record.KHO.TEN, '')}")
+        p.drawString(12 * mm, y, f"Nhập tại kho: {self._safe(record.KHO.TEN, '')}")
         y -= 10 * mm
-        p.drawString(20 * mm, y, f"Nội dung: {self._safe(record.GHI_CHU, 'Phiếu nhập mua hàng')}")
+        p.drawString(12 * mm, y, f"Nội dung: {self._safe(record.GHI_CHU, 'Phiếu nhập mua hàng')}")
 
         # Bảng chi tiết
         table_top = y - 8 * mm
