@@ -16,11 +16,15 @@ patch(ListRenderer.prototype, {
             if (!modelName) {
                 return;
             }
-            this.hiddenFields = await this.env.services.orm.call(
-                "column.visibility.rule",
-                "get_hidden_fields",
-                [modelName]
-            );
+            try {
+                this.hiddenFields = await this.env.services.orm.call(
+                    "column.visibility.rule",
+                    "get_hidden_fields",
+                    [modelName]
+                );
+            } catch (error) {
+                this.hiddenFields = [];
+            }
         });
         onMounted(() => this._applyColumnVisibility());
         onPatched(() => this._applyColumnVisibility());
