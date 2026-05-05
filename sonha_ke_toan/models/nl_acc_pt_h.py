@@ -527,3 +527,11 @@ class NlAccPtH(models.Model):
     def _onchange_vat(self):
         for line in self.ACC_SP_D:
             line._onchange_vat()
+
+    def action_report_phieu_thu(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/download/phieu_thu/{self.id}',
+            'target': 'new',
+        }
