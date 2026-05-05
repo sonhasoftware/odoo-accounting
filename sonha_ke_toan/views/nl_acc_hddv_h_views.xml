@@ -25,6 +25,9 @@
     <field name="model">nl.acc.hddv.h</field>
     <field name="arch" type="xml">
         <form string="Hóa đơn dịch vụ">
+            <header>
+                <button name="action_report_hddv" string="In" type="object" class="oe_highlight"/>
+            </header>
             <div class="two-column-form">
 
                 <!-- Cột trái -->
