@@ -10,6 +10,18 @@ from reportlab.lib.styles import ParagraphStyle
 from reportlab.lib.enums import TA_CENTER, TA_LEFT
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle, Paragraph
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+import os
+
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+
+font_path = os.path.join(current_dir, '..', 'static', 'fonts', 'DejaVuSans.ttf')
+font_bold_path = os.path.join(current_dir, '..', 'static', 'fonts', 'DejaVuSans-Bold.ttf')
+
+pdfmetrics.registerFont(TTFont('DejaVu', font_path))
+pdfmetrics.registerFont(TTFont('DejaVu-Bold', font_bold_path))
 
 
 class FieldConfirmController(http.Controller):
@@ -63,35 +75,35 @@ class FieldConfirmController(http.Controller):
         p.setStrokeColor(colors.HexColor('#1f77b4'))
         p.setLineWidth(1)
         p.rect(logo_x, logo_y, 16 * mm, 16 * mm, stroke=1, fill=0)
-        p.setFont('Helvetica-Bold', 11)
+        p.setFont('DejaVu-Bold', 11)
         p.setFillColor(colors.HexColor('#1f77b4'))
         p.drawCentredString(logo_x + 8 * mm, logo_y + 8 * mm - 4, 'LOGO')
         p.setFillColor(colors.black)
 
-        p.setFont('Times-Bold', 12)
+        p.setFont('DejaVu-Bold', 12)
         p.drawString(42 * mm, height - 20 * mm, self._safe(record.DVCS.name, 'CÔNG TY CỔ PHẦN [TÊN CÔNG TY]'))
-        p.setFont('Times-Roman', 10)
+        p.setFont('DejaVu', 10)
         p.drawString(42 * mm, height - 28 * mm, self._safe(record.DVCS.partner_id.contact_address, 'Địa chỉ: [ĐỊA CHỈ CÔNG TY]'))
 
-        p.setFont('Times-Bold', 11)
+        p.setFont('DejaVu-Bold', 11)
         p.drawRightString(width - 20 * mm, height - 20 * mm, 'Mẫu số 01 - VT')
-        p.setFont('Times-Roman', 10)
+        p.setFont('DejaVu', 10)
         p.drawRightString(width - 20 * mm, height - 28 * mm, '(Ban hành theo QĐ số 15/2006/QĐ-BTC)')
 
-        p.setFont('Times-Bold', 18)
+        p.setFont('DejaVu-Bold', 18)
         p.drawCentredString(width / 2, height - 45 * mm, 'PHIẾU NHẬP KHO')
-        p.setFont('Times-Italic', 14)
+        p.setFont('DejaVu', 14)
         p.drawCentredString(width / 2, height - 54 * mm, self._fmt_vn_date(record.NGAY_CT or date.today()))
         p.drawCentredString(width / 2, height - 62 * mm, f"Số: {self._safe(record.CHUNG_TU, f'PN/{record.id}')}")
 
         y = height - 78 * mm
-        p.setFont('Times-Roman', 13)
-        p.drawString(20 * mm, y, f"Họ và tên người giao hàng: {self._safe(record.KHACH_HANG.name, '')}")
+        p.setFont('DejaVu', 13)
+        p.drawString(20 * mm, y, f"Họ và tên người giao hàng: {self._safe(record.KHACH_HANG.TEN, '')}")
         y -= 10 * mm
         p.drawString(20 * mm, y, f"Theo hóa đơn số: {self._safe(record.SO_HD, '')}")
         p.drawRightString(width - 20 * mm, y, self._fmt_vn_date(record.NGAY_HD or record.NGAY_CT))
         y -= 10 * mm
-        p.drawString(20 * mm, y, f"Nhập tại kho: {self._safe(record.KHO.name, '')}")
+        p.drawString(20 * mm, y, f"Nhập tại kho: {self._safe(record.KHO.TEN, '')}")
         y -= 10 * mm
         p.drawString(20 * mm, y, f"Nội dung: {self._safe(record.GHI_CHU, 'Phiếu nhập mua hàng')}")
 
@@ -102,7 +114,7 @@ class FieldConfirmController(http.Controller):
             ['Stt', 'Tên, nhãn hiệu, quy cách\nphẩm chất vật tư, dụng cụ\nsản phẩm hàng hóa', 'Mã vật tư', 'Đơn vị\ntính', 'Số lượng\nTheo chứng từ', 'Số lượng\nThực nhập', 'Ghi chú']
         ]
         for idx, line in enumerate(lines, start=1):
-            hh_name = line.HANG_HOA.TEN_HANG if hasattr(line.HANG_HOA, 'TEN_HANG') else line.HANG_HOA.display_name
+            hh_name = line.HANG_HOA.TEN_HANG if hasattr(line.HANG_HOA, 'TEN_HANG') else line.HANG_HOA.TEN
             ma_hh = self._safe(getattr(line.HANG_HOA, 'MA_HANG', ''), '')
             dvt = self._safe(getattr(line.HANG_HOA, 'DVT', ''), '')
             data.append([
@@ -121,11 +133,11 @@ class FieldConfirmController(http.Controller):
         table = Table(data, colWidths=[10 * mm, 70 * mm, 30 * mm, 15 * mm, 24 * mm, 24 * mm, 35 * mm])
         table.setStyle(TableStyle([
             ('GRID', (0, 0), (-1, -1), 0.6, colors.black),
-            ('FONTNAME', (0, 0), (-1, 0), 'Times-Roman'),
+            ('FONTNAME', (0, 0), (-1, 0), 'DejaVu'),
             ('FONTSIZE', (0, 0), (-1, 0), 11),
             ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('FONTNAME', (0, 1), (-1, -1), 'Times-Roman'),
+            ('FONTNAME', (0, 1), (-1, -1), 'DejaVu'),
             ('FONTSIZE', (0, 1), (-1, -1), 10),
             ('ALIGN', (0, 1), (0, -1), 'CENTER'),
             ('ALIGN', (2, 1), (6, -1), 'CENTER'),
@@ -133,20 +145,20 @@ class FieldConfirmController(http.Controller):
         ]))
 
         tw, th = table.wrapOn(p, width - 40 * mm, height)
-        table.drawOn(p, 20 * mm, table_top - th)
+        table.drawOn(p, 5 * mm, table_top - th)
 
         sign_y = table_top - th - 28 * mm
-        p.setFont('Times-Italic', 14)
+        p.setFont('DejaVu', 14)
         p.drawRightString(width - 20 * mm, sign_y + 16 * mm, self._fmt_vn_date(record.NGAY_CT or date.today()))
 
-        p.setFont('Times-Bold', 14)
+        p.setFont('DejaVu-Bold', 14)
         roles = ['Người lập phiếu', 'Quản đốc', 'Thủ kho', 'Kế toán trưởng']
         x_positions = [35 * mm, 85 * mm, 135 * mm, 185 * mm]
         for x, role in zip(x_positions, roles):
             p.drawCentredString(x, sign_y, role)
-            p.setFont('Times-Italic', 12)
+            p.setFont('DejaVu', 12)
             p.drawCentredString(x, sign_y - 8 * mm, '(Ký, họ tên)')
-            p.setFont('Times-Bold', 14)
+            p.setFont('DejaVu-Bold', 14)
 
         p.showPage()
         p.save()
