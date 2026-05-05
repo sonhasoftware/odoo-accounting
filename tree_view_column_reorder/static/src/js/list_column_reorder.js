@@ -8,6 +8,8 @@ patch(ListRenderer.prototype, {
     setup() {
         super.setup();
         this._columnReorderHandlers = [];
+        this._columnWidthObserver = null;
+        this._columnWidthPersistTimeout = null;
         onMounted(() => this._setupColumnReorder());
         onPatched(() => this._setupColumnReorder());
     },
@@ -98,6 +100,14 @@ patch(ListRenderer.prototype, {
     },
 
     _cleanupColumnReorderHandlers() {
+        if (this._columnWidthObserver) {
+            this._columnWidthObserver.disconnect();
+            this._columnWidthObserver = null;
+        }
+        if (this._columnWidthPersistTimeout) {
+            clearTimeout(this._columnWidthPersistTimeout);
+            this._columnWidthPersistTimeout = null;
+        }
         for (const entry of this._columnReorderHandlers) {
             for (const [eventName, fn] of entry.listeners) {
                 entry.element.removeEventListener(eventName, fn);
@@ -112,7 +122,15 @@ patch(ListRenderer.prototype, {
             return;
         }
 
-        const persistWidths = () => this._persistCurrentColumnWidths(table);
+        const persistWidths = () => {
+            if (this._columnWidthPersistTimeout) {
+                clearTimeout(this._columnWidthPersistTimeout);
+            }
+            this._columnWidthPersistTimeout = setTimeout(() => {
+                this._persistCurrentColumnWidths(table);
+                this._columnWidthPersistTimeout = null;
+            }, 50);
+        };
 
         headers.forEach((header) => {
             header.addEventListener("mouseup", persistWidths);
@@ -127,6 +145,11 @@ patch(ListRenderer.prototype, {
                 ],
             });
         });
+
+        if ("ResizeObserver" in window) {
+            this._columnWidthObserver = new ResizeObserver(() => persistWidths());
+            headers.forEach((header) => this._columnWidthObserver.observe(header));
+        }
     },
 
     _applySavedColumnOrder(table) {
