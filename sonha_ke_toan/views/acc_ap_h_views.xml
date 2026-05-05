@@ -38,7 +38,7 @@
                         <label for="LOAIDL">Loại DL</label>
                         <field name="LOAIDL"/>
                         <label for="PT_THUE">% Thuế</label>
-                        <field name="PT_THUE"/>
+                        <field name="PT_THUE" groups="sonha_ke_toan.group_column_visibility_accounting"/>
                     </div>
 
                     <div class="form-row">
