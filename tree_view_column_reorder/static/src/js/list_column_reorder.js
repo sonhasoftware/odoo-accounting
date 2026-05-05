@@ -18,6 +18,12 @@ patch(ListRenderer.prototype, {
         return `tree_column_reorder:${resModel}:${viewId}`;
     },
 
+    _getColumnWidthStorageKey() {
+        const resModel = this.props.list?.resModel || "unknown_model";
+        const viewId = this.props.archInfo?.viewId || this.props.list?.viewId || "unknown_view";
+        return `tree_column_width:${resModel}:${viewId}`;
+    },
+
     _getColumnHeaders(table) {
         return [...table.querySelectorAll("thead th")].filter(
             (th) => th.dataset.name && !th.classList.contains("o_list_record_selector")
@@ -32,6 +38,8 @@ patch(ListRenderer.prototype, {
 
         this._cleanupColumnReorderHandlers();
         this._applySavedColumnOrder(table);
+        this._applySavedColumnWidths(table);
+        this._setupColumnWidthPersistence(table);
 
         const headers = this._getColumnHeaders(table);
         headers.forEach((header) => {
@@ -96,6 +104,29 @@ patch(ListRenderer.prototype, {
             }
         }
         this._columnReorderHandlers = [];
+    },
+
+    _setupColumnWidthPersistence(table) {
+        const headers = this._getColumnHeaders(table);
+        if (!headers.length) {
+            return;
+        }
+
+        const persistWidths = () => this._persistCurrentColumnWidths(table);
+
+        headers.forEach((header) => {
+            header.addEventListener("mouseup", persistWidths);
+            header.addEventListener("touchend", persistWidths);
+            header.addEventListener("dblclick", persistWidths);
+            this._columnReorderHandlers.push({
+                element: header,
+                listeners: [
+                    ["mouseup", persistWidths],
+                    ["touchend", persistWidths],
+                    ["dblclick", persistWidths],
+                ],
+            });
+        });
     },
 
     _applySavedColumnOrder(table) {
@@ -165,5 +196,51 @@ patch(ListRenderer.prototype, {
         const storageKey = this._getColumnReorderStorageKey();
         const order = this._getColumnHeaders(table).map((header) => header.dataset.name);
         localStorage.setItem(storageKey, JSON.stringify(order));
+    },
+
+    _applySavedColumnWidths(table) {
+        const storageKey = this._getColumnWidthStorageKey();
+        let savedWidths = {};
+        try {
+            savedWidths = JSON.parse(localStorage.getItem(storageKey) || "{}");
+        } catch {
+            savedWidths = {};
+        }
+        if (!savedWidths || typeof savedWidths !== "object") {
+            return;
+        }
+
+        const headers = [...table.querySelectorAll("thead th")];
+        headers.forEach((header, index) => {
+            const name = header.dataset.name;
+            const width = name ? savedWidths[name] : null;
+            if (!width) {
+                return;
+            }
+            const widthValue = `${width}px`;
+            table.querySelectorAll("tr").forEach((row) => {
+                const cell = row.children[index];
+                if (cell) {
+                    cell.style.width = widthValue;
+                    cell.style.minWidth = widthValue;
+                }
+            });
+        });
+    },
+
+    _persistCurrentColumnWidths(table) {
+        const storageKey = this._getColumnWidthStorageKey();
+        const widths = {};
+        this._getColumnHeaders(table).forEach((header) => {
+            const name = header.dataset.name;
+            if (!name) {
+                return;
+            }
+            const width = Math.round(header.getBoundingClientRect().width);
+            if (width > 0) {
+                widths[name] = width;
+            }
+        });
+        localStorage.setItem(storageKey, JSON.stringify(widths));
     },
 });
