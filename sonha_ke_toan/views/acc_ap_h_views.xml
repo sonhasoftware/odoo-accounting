@@ -26,7 +26,7 @@
     <field name="arch" type="xml">
         <form string="Phiếu nhập mua hàng">
             <header>
-                <button name="%(action_report_phieu_nhap)d" string="In" type="action" class="oe_highlight"/>
+                <button name="action_report_phieu_nhap" string="In" type="object" class="oe_highlight"/>
             </header>
             <div class="two-column-form">
 
