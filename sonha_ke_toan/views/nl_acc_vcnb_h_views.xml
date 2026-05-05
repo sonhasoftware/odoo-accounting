@@ -25,6 +25,9 @@
     <field name="model">nl.acc.vcnb.h</field>
     <field name="arch" type="xml">
         <form string="Phiếu xuất chuyển kho kiêm vc nội bộ">
+            <header>
+                <button name="action_report_phieu_xuat_vcnb" string="In" type="object" class="oe_highlight"/>
+            </header>
             <div class="two-column-form">
 
                 <!-- Cột trái -->
