@@ -131,7 +131,7 @@ class FieldConfirmController(http.Controller):
         if len(data) == 2:
             data.append(['1', '', '', '', '', '', ''])
 
-        table = Table(data, colWidths=[10 * mm, 70 * mm, 30 * mm, 15 * mm, 24 * mm, 24 * mm, 35 * mm])
+        table = Table(data, colWidths=[10 * mm, 67 * mm, 30 * mm, 15 * mm, 22 * mm, 22 * mm, 32 * mm])
         table.setStyle(TableStyle([
             ('GRID', (0, 0), (-1, -1), 0.6, colors.black),
             ('SPAN', (0, 0), (0, 1)),
@@ -141,19 +141,19 @@ class FieldConfirmController(http.Controller):
             ('SPAN', (4, 0), (5, 0)),
             ('SPAN', (6, 0), (6, 1)),
             ('FONTNAME', (0, 0), (-1, 1), 'DejaVu-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 1), 11),
+            ('FONTSIZE', (0, 0), (-1, 1), 8),
             ('ALIGN', (0, 0), (-1, 1), 'CENTER'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
             ('FONTNAME', (0, 2), (-1, -1), 'DejaVu'),
-            ('FONTSIZE', (0, 2), (-1, -1), 10),
+            ('FONTSIZE', (0, 2), (-1, -1), 8),
             ('ALIGN', (0, 2), (0, -1), 'CENTER'),
             ('ALIGN', (2, 2), (6, -1), 'CENTER'),
             ('LEFTPADDING', (1, 2), (1, -1), 3),
             ('LINEABOVE', (0, 2), (-1, 2), 0.6, colors.black),
         ]))
 
-        tw, th = table.wrapOn(p, width - 40 * mm, height)
-        table.drawOn(p, 5 * mm, table_top - th)
+        tw, th = table.wrapOn(p, width - 35 * mm, height)
+        table.drawOn(p, 6 * mm, table_top - th)
 
         sign_y = table_top - th - 28 * mm
         p.setFont('DejaVu', 14)
