@@ -509,3 +509,11 @@ class NLAccApCkH(models.Model):
     def _onchange_vat(self):
         for line in self.ACC_SP_D:
             line._onchange_vat()
+
+    def action_report_phieu_chuyen_kho(self):
+        self.ensure_one()
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f'/download/phieu_chuyen_kho/{self.id}',
+            'target': 'new',
+        }
