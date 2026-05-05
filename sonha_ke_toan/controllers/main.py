@@ -111,7 +111,8 @@ class FieldConfirmController(http.Controller):
         table_top = y - 8 * mm
         lines = record.ACC_SP_D
         data = [
-            ['Stt', 'Tên, nhãn hiệu, quy cách\nphẩm chất vật tư, dụng cụ\nsản phẩm hàng hóa', 'Mã vật tư', 'Đơn vị\ntính', 'Số lượng\nTheo chứng từ', 'Số lượng\nThực nhập', 'Ghi chú']
+            ['Stt', 'Tên, nhãn hiệu, quy cách,\nphẩm chất vật tư, dụng cụ\nsản phẩm hàng hóa', 'Mã vật tư', 'Đơn vị\ntính', 'Số lượng', '', 'Ghi chú'],
+            ['', '', '', '', 'Theo chứng\ntừ', 'Thực nhập', ''],
         ]
         for idx, line in enumerate(lines, start=1):
             hh_name = line.HANG_HOA.TEN_HANG if hasattr(line.HANG_HOA, 'TEN_HANG') else line.HANG_HOA.TEN
@@ -127,21 +128,28 @@ class FieldConfirmController(http.Controller):
                 ''
             ])
 
-        if len(data) == 1:
+        if len(data) == 2:
             data.append(['1', '', '', '', '', '', ''])
 
         table = Table(data, colWidths=[10 * mm, 70 * mm, 30 * mm, 15 * mm, 24 * mm, 24 * mm, 35 * mm])
         table.setStyle(TableStyle([
             ('GRID', (0, 0), (-1, -1), 0.6, colors.black),
-            ('FONTNAME', (0, 0), (-1, 0), 'DejaVu'),
-            ('FONTSIZE', (0, 0), (-1, 0), 11),
-            ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+            ('SPAN', (0, 0), (0, 1)),
+            ('SPAN', (1, 0), (1, 1)),
+            ('SPAN', (2, 0), (2, 1)),
+            ('SPAN', (3, 0), (3, 1)),
+            ('SPAN', (4, 0), (5, 0)),
+            ('SPAN', (6, 0), (6, 1)),
+            ('FONTNAME', (0, 0), (-1, 1), 'DejaVu-Bold'),
+            ('FONTSIZE', (0, 0), (-1, 1), 11),
+            ('ALIGN', (0, 0), (-1, 1), 'CENTER'),
             ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('FONTNAME', (0, 1), (-1, -1), 'DejaVu'),
-            ('FONTSIZE', (0, 1), (-1, -1), 10),
-            ('ALIGN', (0, 1), (0, -1), 'CENTER'),
-            ('ALIGN', (2, 1), (6, -1), 'CENTER'),
-            ('LEFTPADDING', (1, 1), (1, -1), 3),
+            ('FONTNAME', (0, 2), (-1, -1), 'DejaVu'),
+            ('FONTSIZE', (0, 2), (-1, -1), 10),
+            ('ALIGN', (0, 2), (0, -1), 'CENTER'),
+            ('ALIGN', (2, 2), (6, -1), 'CENTER'),
+            ('LEFTPADDING', (1, 2), (1, -1), 3),
+            ('LINEABOVE', (0, 2), (-1, 2), 0.6, colors.black),
         ]))
 
         tw, th = table.wrapOn(p, width - 40 * mm, height)
