@@ -192,6 +192,10 @@ class FieldConfirmController(http.Controller):
     def download_pdf_hdbh(self, record_id, **kwargs):
         return self._download_phieu_ke_toan_generic('nl.acc.hdbh.h', record_id)
 
+    @http.route('/download/phieu_chi/<int:record_id>', type='http', auth='user')
+    def download_pdf_phieu_chi(self, record_id, **kwargs):
+        return self._download_phieu_chi_generic('nl.acc.pc.h', record_id)
+
     def _download_phieu_chuyen_kho_generic(self, model_name, record_id):
         record = request.env[model_name].browse(record_id)
         if not record.exists():
@@ -269,6 +273,72 @@ class FieldConfirmController(http.Controller):
         p.showPage(); p.save()
         pdf = buffer.getvalue(); buffer.close()
         return request.make_response(pdf, headers=[('Content-Type', 'application/pdf'), ('Content-Disposition', f'attachment; filename=\"phieu_chuyen_kho_{record.id}.pdf\"')])
+
+    def _download_phieu_chi_generic(self, model_name, record_id):
+        record = request.env[model_name].browse(record_id)
+        if not record.exists():
+            return request.not_found()
+
+        buffer = io.BytesIO()
+        p = canvas.Canvas(buffer, pagesize=A4)
+        width, height = A4
+
+        p.setFont('DejaVu-Bold', 12)
+        p.drawString(20 * mm, height - 20 * mm, self._safe(record.DVCS.name, 'CÔNG TY CỔ PHẦN [TÊN CÔNG TY]'))
+        p.setFont('DejaVu', 10)
+        p.drawString(20 * mm, height - 28 * mm, self._safe(record.DVCS.partner_id.contact_address, ''))
+
+        p.setFont('DejaVu-Bold', 11)
+        p.drawRightString(width - 20 * mm, height - 20 * mm, 'Mẫu số 02 - TT')
+        p.setFont('DejaVu', 10)
+        p.drawRightString(width - 20 * mm, height - 28 * mm, '( Ban hành theo QĐ số 15/2006/QĐ-BTC')
+        p.drawRightString(width - 20 * mm, height - 34 * mm, 'ngày 20/03/2006 của Bộ trưởng BTC )')
+
+        p.setFont('DejaVu-Bold', 18)
+        p.drawCentredString(width / 2, height - 45 * mm, 'PHIẾU CHI')
+        p.setFont('DejaVu', 12)
+        p.drawCentredString(width / 2, height - 54 * mm, self._fmt_vn_date(record.NGAY_CT or date.today()))
+
+        p.setFont('DejaVu-Bold', 12)
+        p.drawRightString(width - 20 * mm, height - 54 * mm, f"Số: {self._safe(record.CHUNG_TU, f'PC/{record.id}')}")
+        p.setFont('DejaVu', 11)
+        p.drawRightString(width - 20 * mm, height - 62 * mm, f"Nợ: {self._safe(record.MA_TK0 if hasattr(record, 'MA_TK0') else '', '')}")
+        p.drawRightString(width - 20 * mm, height - 69 * mm, f"Có: {self._safe(record.MA_TK1 if hasattr(record, 'MA_TK1') else '', '')}")
+
+        y = height - 78 * mm
+        p.setFont('DejaVu', 13)
+        p.drawString(20 * mm, y, f"Họ tên người nhận tiền: {self._safe(record.ONG_BA, '')}")
+        y -= 10 * mm
+        p.drawString(20 * mm, y, f"Địa chỉ: {self._safe(record.DC_THUE or record.KHACH_HANG.DIA_CHI if record.KHACH_HANG else '', '')}")
+        y -= 10 * mm
+        p.drawString(20 * mm, y, f"Lý do chi: {self._safe(record.GHI_CHU, '')}")
+        y -= 14 * mm
+
+        total_amount = sum(record.ACC_SP_D.mapped('PS_NO1'))
+        p.drawString(20 * mm, y, f"Số tiền: {total_amount:,.0f} đồng")
+        y -= 10 * mm
+        p.drawString(20 * mm, y, "Viết bằng chữ:")
+        y -= 12 * mm
+        p.drawString(20 * mm, y, "Kèm theo:")
+        p.drawRightString(width - 20 * mm, y, "Chứng từ gốc.")
+
+        sign_y = y - 24 * mm
+        p.setFont('DejaVu', 14)
+        p.drawRightString(width - 20 * mm, sign_y + 16 * mm, self._fmt_vn_date(record.NGAY_CT or date.today()))
+        p.setFont('DejaVu-Bold', 13)
+        roles = ['Giám đốc', 'Kế toán trưởng', 'Người lập phiếu', 'Thủ quỹ', 'Người nhận tiền']
+        x_positions = [30 * mm, 65 * mm, 100 * mm, 135 * mm, 170 * mm]
+        for x, role in zip(x_positions, roles):
+            p.drawCentredString(x, sign_y, role)
+            p.setFont('DejaVu', 11)
+            p.drawCentredString(x, sign_y - 8 * mm, '(Ký, họ tên)')
+            p.setFont('DejaVu-Bold', 13)
+
+        p.showPage()
+        p.save()
+        pdf = buffer.getvalue()
+        buffer.close()
+        return request.make_response(pdf, headers=[('Content-Type', 'application/pdf'), ('Content-Disposition', f'attachment; filename=\"phieu_chi_{record.id}.pdf\"')])
 
     def _download_phieu_xuat_vcnb_generic(self, model_name, record_id):
         record = request.env[model_name].browse(record_id)
