@@ -172,6 +172,14 @@ class FieldConfirmController(http.Controller):
     def download_pdf_chuyen_kho(self, record_id, **kwargs):
         return self._download_phieu_chuyen_kho_generic('nl.acc.ap.ck.h', record_id)
 
+    @http.route('/download/phieu_ke_toan_hddv/<int:record_id>', type='http', auth='user')
+    def download_pdf_hddv(self, record_id, **kwargs):
+        return self._download_phieu_ke_toan_generic('nl.acc.hddv.h', record_id)
+
+    @http.route('/download/phieu_ke_toan_hdbh/<int:record_id>', type='http', auth='user')
+    def download_pdf_hdbh(self, record_id, **kwargs):
+        return self._download_phieu_ke_toan_generic('nl.acc.hdbh.h', record_id)
+
     def _download_phieu_chuyen_kho_generic(self, model_name, record_id):
         record = request.env[model_name].browse(record_id)
         if not record.exists():
@@ -249,3 +257,82 @@ class FieldConfirmController(http.Controller):
         p.showPage(); p.save()
         pdf = buffer.getvalue(); buffer.close()
         return request.make_response(pdf, headers=[('Content-Type', 'application/pdf'), ('Content-Disposition', f'attachment; filename=\"phieu_chuyen_kho_{record.id}.pdf\"')])
+
+
+    def _download_phieu_ke_toan_generic(self, model_name, record_id, title='PHIẾU KẾ TOÁN'):
+        record = request.env[model_name].browse(record_id)
+        if not record.exists():
+            return request.not_found()
+
+        buffer = io.BytesIO()
+        p = canvas.Canvas(buffer, pagesize=A4)
+        width, height = A4
+
+        p.setFont('DejaVu-Bold', 12)
+        p.drawString(35 * mm, height - 20 * mm, self._safe(record.DVCS.name, 'CÔNG TY CỔ PHẦN [TÊN CÔNG TY]'))
+        p.setFont('DejaVu', 10)
+        p.drawString(35 * mm, height - 28 * mm, self._safe(record.DVCS.partner_id.contact_address, 'Địa chỉ: [ĐỊA CHỈ CÔNG TY]'))
+
+        p.setFont('DejaVu-Bold', 18)
+        p.drawCentredString(width / 2, height - 45 * mm, title)
+        p.setFont('DejaVu', 12)
+        p.drawCentredString(width / 2, height - 54 * mm, self._fmt_vn_date(record.NGAY_CT or date.today()))
+        p.drawCentredString(width / 2, height - 62 * mm, f"Số chứng từ : {self._safe(record.CHUNG_TU, f'CT/{record.id}')}")
+
+        table_top = height - 70 * mm
+        lines = record.ACC_SP_D
+        data = [['STT', 'Diễn giải', 'Ghi nợ', 'Ghi có', 'Loại tiền', 'Tỷ giá', 'Ngoại tệ', 'Số tiền', 'Ghi chú']]
+
+        total = 0
+        for idx, line in enumerate(lines, start=1):
+            so_tien = line.PS_NO1 or 0
+            total += so_tien
+            data.append([
+                str(idx),
+                self._safe(line.GHI_CHU_CT or record.GHI_CHU, ''),
+                self._safe(line.MA_TK0, ''),
+                self._safe(line.MA_TK1, ''),
+                self._safe(record.TIEN_TE.MA, 'VNĐ'),
+                f"{record.TY_GIA or 1:.2f}",
+                f"{line.TIEN_NTE or 0:,.0f}",
+                f"{so_tien:,.0f}",
+                ''
+            ])
+
+        data.append(['', 'Tổng cộng', '', '', '', '', '', f"{total:,.0f}", ''])
+        table = Table(data, colWidths=[10*mm, 70*mm, 14*mm, 14*mm, 16*mm, 16*mm, 20*mm, 22*mm, 22*mm])
+        table.setStyle(TableStyle([
+            ('GRID', (0, 0), (-1, -1), 0.6, colors.black),
+            ('FONTNAME', (0, 0), (-1, 0), 'DejaVu-Bold'),
+            ('FONTNAME', (0, 1), (-1, -2), 'DejaVu'),
+            ('FONTNAME', (0, -1), (-1, -1), 'DejaVu-Bold'),
+            ('FONTSIZE', (0, 0), (-1, -1), 8),
+            ('ALIGN', (0, 0), (0, -1), 'CENTER'),
+            ('ALIGN', (2, 1), (-1, -1), 'CENTER'),
+            ('ALIGN', (7, 1), (7, -1), 'RIGHT'),
+            ('TEXTCOLOR', (1, -1), (7, -1), colors.red),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+        ]))
+
+        tw, th = table.wrapOn(p, width - 20 * mm, height)
+        table.drawOn(p, 10 * mm, table_top - th)
+
+        y = table_top - th - 12 * mm
+        p.setFont('DejaVu', 11)
+        p.drawString(15 * mm, y, f"Đối tượng liên quan: {self._safe(record.KHACH_HANG.TEN, '')}")
+        y -= 8 * mm
+        p.drawString(15 * mm, y, f"Địa chỉ: {self._safe(record.DC_THUE, '')}")
+
+        sign_y = y - 40 * mm
+        p.setFont('DejaVu', 12)
+        roles = ['Giám đốc', 'Kế toán trưởng', 'Người lập']
+        x_positions = [40 * mm, 105 * mm, 170 * mm]
+        for x, role in zip(x_positions, roles):
+            p.drawCentredString(x, sign_y, role)
+            p.setFont('DejaVu', 10)
+            p.drawCentredString(x, sign_y - 7 * mm, '(Ký, họ tên)')
+            p.setFont('DejaVu', 12)
+
+        p.showPage(); p.save()
+        pdf = buffer.getvalue(); buffer.close()
+        return request.make_response(pdf, headers=[('Content-Type', 'application/pdf'), ('Content-Disposition', f'attachment; filename="phieu_ke_toan_{record.id}.pdf"')])
