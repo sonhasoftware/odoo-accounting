@@ -59,9 +59,9 @@ class FieldConfirmController(http.Controller):
             return d
         return f"Ngày {d.day:02d} tháng {d.month:02d} năm {d.year}"
 
-    @http.route('/download/phieu_nhap/<int:record_id>', type='http', auth='user')
-    def download_pdf(self, record_id, **kwargs):
-        record = request.env['nl.acc.ap.h'].browse(record_id)
+
+    def _download_phieu_nhap_generic(self, model_name, record_id, default_note='Phiếu nhập mua hàng'):
+        record = request.env[model_name].browse(record_id)
         if not record.exists():
             return request.not_found()
 
@@ -69,7 +69,6 @@ class FieldConfirmController(http.Controller):
         p = canvas.Canvas(buffer, pagesize=A4)
         width, height = A4
 
-        # Logo tạm (user sẽ tự thay logo thật)
         logo_x = 20 * mm
         logo_y = height - 35 * mm
         p.setStrokeColor(colors.HexColor('#1f77b4'))
@@ -107,9 +106,8 @@ class FieldConfirmController(http.Controller):
         y -= 10 * mm
         p.drawString(12 * mm, y, f"Nhập tại kho: {self._safe(record.KHO.TEN, '')}")
         y -= 10 * mm
-        p.drawString(12 * mm, y, f"Nội dung: {self._safe(record.GHI_CHU, 'Phiếu nhập mua hàng')}")
+        p.drawString(12 * mm, y, f"Nội dung: {self._safe(record.GHI_CHU, default_note)}")
 
-        # Bảng chi tiết
         table_top = y - 8 * mm
         lines = record.ACC_SP_D
         data = [
@@ -120,39 +118,19 @@ class FieldConfirmController(http.Controller):
             hh_name = line.HANG_HOA.TEN_HANG if hasattr(line.HANG_HOA, 'TEN_HANG') else line.HANG_HOA.TEN
             ma_hh = self._safe(getattr(line.HANG_HOA, 'MA_HANG', ''), '')
             dvt = self._safe(getattr(line.HANG_HOA, 'DVT', ''), '')
-            data.append([
-                str(idx),
-                self._safe(hh_name, ''),
-                ma_hh,
-                dvt,
-                str(line.SO_LUONG or ''),
-                str(line.SO_LUONG2 or line.SO_LUONG or ''),
-                ''
-            ])
+            data.append([str(idx), self._safe(hh_name, ''), ma_hh, dvt, str(line.SO_LUONG or ''), str(line.SO_LUONG2 or line.SO_LUONG or ''), ''])
 
         if len(data) == 2:
             data.append(['1', '', '', '', '', '', ''])
 
         table = Table(data, colWidths=[10 * mm, 67 * mm, 30 * mm, 15 * mm, 22 * mm, 22 * mm, 32 * mm])
         table.setStyle(TableStyle([
-            ('GRID', (0, 0), (-1, -1), 0.6, colors.black),
-            ('SPAN', (0, 0), (0, 1)),
-            ('SPAN', (1, 0), (1, 1)),
-            ('SPAN', (2, 0), (2, 1)),
-            ('SPAN', (3, 0), (3, 1)),
-            ('SPAN', (4, 0), (5, 0)),
-            ('SPAN', (6, 0), (6, 1)),
-            ('FONTNAME', (0, 0), (-1, 1), 'DejaVu-Bold'),
-            ('FONTSIZE', (0, 0), (-1, 1), 8),
-            ('ALIGN', (0, 0), (-1, 1), 'CENTER'),
-            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
-            ('FONTNAME', (0, 2), (-1, -1), 'DejaVu'),
-            ('FONTSIZE', (0, 2), (-1, -1), 8),
-            ('ALIGN', (0, 2), (0, -1), 'CENTER'),
-            ('ALIGN', (2, 2), (6, -1), 'CENTER'),
-            ('LEFTPADDING', (1, 2), (1, -1), 3),
-            ('LINEABOVE', (0, 2), (-1, 2), 0.6, colors.black),
-        ]))
+            ('GRID', (0, 0), (-1, -1), 0.6, colors.black), ('SPAN', (0, 0), (0, 1)), ('SPAN', (1, 0), (1, 1)),
+            ('SPAN', (2, 0), (2, 1)), ('SPAN', (3, 0), (3, 1)), ('SPAN', (4, 0), (5, 0)), ('SPAN', (6, 0), (6, 1)),
+            ('FONTNAME', (0, 0), (-1, 1), 'DejaVu-Bold'), ('FONTSIZE', (0, 0), (-1, 1), 8), ('ALIGN', (0, 0), (-1, 1), 'CENTER'),
+            ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'), ('FONTNAME', (0, 2), (-1, -1), 'DejaVu'), ('FONTSIZE', (0, 2), (-1, -1), 8),
+            ('ALIGN', (0, 2), (0, -1), 'CENTER'), ('ALIGN', (2, 2), (6, -1), 'CENTER'), ('LEFTPADDING', (1, 2), (1, -1), 3),
+            ('LINEABOVE', (0, 2), (-1, 2), 0.6, colors.black),]))
 
         tw, th = table.wrapOn(p, width - 35 * mm, height)
         table.drawOn(p, 6 * mm, table_top - th)
@@ -170,16 +148,22 @@ class FieldConfirmController(http.Controller):
             p.drawCentredString(x, sign_y - 8 * mm, '(Ký, họ tên)')
             p.setFont('DejaVu-Bold', 14)
 
-        p.showPage()
-        p.save()
+        p.showPage(); p.save()
+        pdf = buffer.getvalue(); buffer.close()
+        return request.make_response(pdf, headers=[('Content-Type', 'application/pdf'),('Content-Disposition', f'attachment; filename="phieu_nhap_{record.id}.pdf"')])
 
-        pdf = buffer.getvalue()
-        buffer.close()
+    @http.route('/download/phieu_nhap/<int:record_id>', type='http', auth='user')
+    def download_pdf(self, record_id, **kwargs):
+        return self._download_phieu_nhap_generic('nl.acc.ap.h', record_id, 'Phiếu nhập mua hàng')
 
-        return request.make_response(
-            pdf,
-            headers=[
-                ('Content-Type', 'application/pdf'),
-                ('Content-Disposition', f'attachment; filename="phieu_nhap_{record.id}.pdf"')
-            ]
-        )
+    @http.route('/download/phieu_nhap_nk/<int:record_id>', type='http', auth='user')
+    def download_pdf_nk(self, record_id, **kwargs):
+        return self._download_phieu_nhap_generic('acc.ap.nk.h', record_id, 'Phiếu nhập mua hàng - Nhập khẩu')
+
+    @http.route('/download/phieu_nhap_tl/<int:record_id>', type='http', auth='user')
+    def download_pdf_tl(self, record_id, **kwargs):
+        return self._download_phieu_nhap_generic('nl.acc.ap.tl.h', record_id, 'Phiếu nhập hàng bán bị trả lại')
+
+    @http.route('/download/phieu_nhap_sx/<int:record_id>', type='http', auth='user')
+    def download_pdf_sx(self, record_id, **kwargs):
+        return self._download_phieu_nhap_generic('nl.acc.nk.sx.h', record_id, 'Phiếu nhập kho thành phẩm')
