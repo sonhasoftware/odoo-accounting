@@ -25,6 +25,9 @@
     <field name="model">nl.acc.pt.h</field>
     <field name="arch" type="xml">
         <form string="Phiếu thu">
+            <header>
+                <button name="action_report_phieu_thu" string="In" type="object" class="oe_highlight"/>
+            </header>
             <div class="two-column-form">
 
                 <!-- Cột trái -->
