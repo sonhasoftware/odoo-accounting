@@ -1,5 +1,3 @@
-from lxml import etree
-
 from odoo import api, fields, models
 
 
@@ -9,7 +7,7 @@ class SonhaColumnPermission(models.Model):
     _rec_name = 'display_name'
     _order = 'user_id, model_id, field_name'
 
-    user_id = fields.Many2one('res.users', string='Người dùng', required=True, ondelete='cascade')
+    user_id = fields.Many2one('res.users', string='Người dùng', required=False, ondelete='cascade')
     model_id = fields.Many2one('ir.model', string='Model', required=True, ondelete='cascade')
     model_name = fields.Char(related='model_id.model', string='Tên kỹ thuật model', store=True)
     field_name = fields.Char(string='Tên kỹ thuật cột', required=True)
@@ -56,60 +54,9 @@ class BaseColumnPermissionMixin(models.AbstractModel):
     _inherit = 'base'
 
     def _apply_column_permissions_to_arch(self, arch_text, view_type):
-        if view_type not in ('tree', 'form') or not arch_text or self.env.su:
-            return arch_text
-
-        target_models = {self._name}
-        if view_type == 'form':
-            arch_for_models = etree.fromstring(arch_text)
-            for node in arch_for_models.xpath('//field[@name]/tree'):
-                parent_field = node.getparent()
-                parent_field_name = parent_field.get('name') if parent_field is not None else False
-                field_def = self._fields.get(parent_field_name)
-                comodel_name = getattr(field_def, 'comodel_name', False)
-                if comodel_name:
-                    target_models.add(comodel_name)
-
-        hidden_columns = self.env['sonha.column.permission'].sudo().search([
-            ('user_id', '=', self.env.user.id),
-            ('model_name', 'in', list(target_models)),
-            ('is_visible', '=', False),
-            ('active', '=', True),
-        ])
-
-        if not hidden_columns:
-            return arch_text
-
-        hidden_fields_by_model = {}
-        for rec in hidden_columns:
-            hidden_fields_by_model.setdefault(rec.model_name, set()).add(rec.field_name)
-
-        arch = etree.fromstring(arch_text)
-        if view_type == 'tree':
-            hidden_field_names = hidden_fields_by_model.get(self._name, set())
-            for field_node in arch.xpath('//tree//field[@name]'):
-                if field_node.get('name') in hidden_field_names:
-                    field_node.set('optional', 'hide')
-        else:
-            main_hidden_field_names = hidden_fields_by_model.get(self._name, set())
-            if main_hidden_field_names:
-                for field_node in arch.xpath('//form//field[@name]'):
-                    if field_node.get('name') in main_hidden_field_names:
-                        field_node.set('invisible', '1')
-
-            for tree_node in arch.xpath('//field[@name]/tree'):
-                parent_field = tree_node.getparent()
-                parent_field_name = parent_field.get('name') if parent_field is not None else False
-                field_def = self._fields.get(parent_field_name)
-                comodel_name = getattr(field_def, 'comodel_name', False)
-                hidden_field_names = hidden_fields_by_model.get(comodel_name, set())
-                if not hidden_field_names:
-                    continue
-                for field_node in tree_node.xpath('.//field[@name]'):
-                    if field_node.get('name') in hidden_field_names:
-                        field_node.set('optional', 'hide')
-
-        return etree.tostring(arch, encoding='unicode')
+        # Yêu cầu nghiệp vụ: bỏ cơ chế ẩn/hiện cột theo từng người dùng.
+        # Giữ model cấu hình để không làm hỏng dữ liệu cũ, nhưng không áp dụng vào view.
+        return arch_text
 
     @api.model
     def get_view(self, view_id=None, view_type='form', **options):
