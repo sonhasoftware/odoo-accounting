@@ -7,7 +7,7 @@ class SonhaColumnPermission(models.Model):
     _rec_name = 'display_name'
     _order = 'user_id, model_id, field_name'
 
-    user_id = fields.Many2one('res.users', string='Người dùng', required=True, ondelete='cascade')
+    user_id = fields.Many2one('res.users', string='Người dùng', required=False, ondelete='cascade')
     model_id = fields.Many2one('ir.model', string='Model', required=True, ondelete='cascade')
     model_name = fields.Char(related='model_id.model', string='Tên kỹ thuật model', store=True)
     field_name = fields.Char(string='Tên kỹ thuật cột', required=True)
