@@ -1,3 +1,5 @@
+from lxml import etree
+
 from odoo import api, fields, models
 
 
@@ -54,9 +56,32 @@ class BaseColumnPermissionMixin(models.AbstractModel):
     _inherit = 'base'
 
     def _apply_column_permissions_to_arch(self, arch_text, view_type):
-        # Yêu cầu nghiệp vụ: bỏ cơ chế ẩn/hiện cột theo từng người dùng.
-        # Giữ model cấu hình để không làm hỏng dữ liệu cũ, nhưng không áp dụng vào view.
-        return arch_text
+        if not arch_text or view_type not in ('tree', 'form'):
+            return arch_text
+
+        hidden_permissions = self.env['sonha.column.permission'].sudo().search([
+            ('model_name', '=', self._name),
+            ('is_visible', '=', False),
+            ('active', '=', True),
+            '|',
+            ('user_id', '=', self.env.uid),
+            ('user_id', '=', False),
+        ])
+        hidden_fields = {permission.field_name for permission in hidden_permissions if permission.field_name}
+        if not hidden_fields:
+            return arch_text
+
+        arch = etree.fromstring(arch_text)
+        for field_name in hidden_fields:
+            for field_node in arch.xpath(f"//field[@name='{field_name}']"):
+                field_node.set('invisible', '1')
+                modifiers = field_node.get('modifiers')
+                if modifiers:
+                    if '"invisible"' not in modifiers:
+                        field_node.set('modifiers', modifiers[:-1] + ', "invisible": true}')
+                else:
+                    field_node.set('modifiers', '{"invisible": true}')
+        return etree.tostring(arch, encoding='unicode')
 
     @api.model
     def get_view(self, view_id=None, view_type='form', **options):
