@@ -55,16 +55,13 @@ class SonhaColumnPermission(models.Model):
 class BaseColumnPermissionMixin(models.AbstractModel):
     _inherit = 'base'
 
-    @api.model
-    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
-        result = super().fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
-
-        if view_type not in ('tree', 'form') or not result.get('arch') or self.env.su:
-            return result
+    def _apply_column_permissions_to_arch(self, arch_text, view_type):
+        if view_type not in ('tree', 'form') or not arch_text or self.env.su:
+            return arch_text
 
         target_models = {self._name}
         if view_type == 'form':
-            arch_for_models = etree.fromstring(result['arch'])
+            arch_for_models = etree.fromstring(arch_text)
             for node in arch_for_models.xpath('//field[@name]/tree'):
                 parent_field = node.getparent()
                 parent_field_name = parent_field.get('name') if parent_field is not None else False
@@ -81,27 +78,25 @@ class BaseColumnPermissionMixin(models.AbstractModel):
         ])
 
         if not hidden_columns:
-            return result
+            return arch_text
 
         hidden_fields_by_model = {}
         for rec in hidden_columns:
             hidden_fields_by_model.setdefault(rec.model_name, set()).add(rec.field_name)
 
-        arch = etree.fromstring(result['arch'])
+        arch = etree.fromstring(arch_text)
         if view_type == 'tree':
             hidden_field_names = hidden_fields_by_model.get(self._name, set())
             for field_node in arch.xpath('//tree//field[@name]'):
                 if field_node.get('name') in hidden_field_names:
                     field_node.set('optional', 'hide')
         else:
-            # Ẩn field của model chính ngay trên form (không chỉ optional ở tree)
             main_hidden_field_names = hidden_fields_by_model.get(self._name, set())
             if main_hidden_field_names:
                 for field_node in arch.xpath('//form//field[@name]'):
                     if field_node.get('name') in main_hidden_field_names:
                         field_node.set('invisible', '1')
 
-            # Ẩn field trong các one2many tree nằm trong form
             for tree_node in arch.xpath('//field[@name]/tree'):
                 parent_field = tree_node.getparent()
                 parent_field_name = parent_field.get('name') if parent_field is not None else False
@@ -114,5 +109,18 @@ class BaseColumnPermissionMixin(models.AbstractModel):
                     if field_node.get('name') in hidden_field_names:
                         field_node.set('optional', 'hide')
 
-        result['arch'] = etree.tostring(arch, encoding='unicode')
+        return etree.tostring(arch, encoding='unicode')
+
+    @api.model
+    def get_view(self, view_id=None, view_type='form', **options):
+        result = super().get_view(view_id=view_id, view_type=view_type, **options)
+        if result.get('arch'):
+            result['arch'] = self._apply_column_permissions_to_arch(result['arch'], view_type)
+        return result
+
+    @api.model
+    def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
+        result = super().fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
+        if result.get('arch'):
+            result['arch'] = self._apply_column_permissions_to_arch(result['arch'], view_type)
         return result
