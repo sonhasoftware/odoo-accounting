@@ -13,6 +13,7 @@
         'views/sonha_phan_quyen_nl_views.xml',
         'views/sonha_xac_nhan_views.xml',
         'views/sonha_bt_them_views.xml',
+        'views/sonha_column_permission_views.xml',
     ],
     'post_init_hook': 'post_init_hook',
     'installable': True,
