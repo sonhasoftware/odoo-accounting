@@ -59,12 +59,23 @@ class BaseColumnPermissionMixin(models.AbstractModel):
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         result = super().fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
 
-        if view_type != 'tree' or not result.get('arch') or self.env.su:
+        if view_type not in ('tree', 'form') or not result.get('arch') or self.env.su:
             return result
+
+        target_models = {self._name}
+        if view_type == 'form':
+            arch_for_models = etree.fromstring(result['arch'])
+            for node in arch_for_models.xpath('//field[@name]/tree'):
+                parent_field = node.getparent()
+                parent_field_name = parent_field.get('name') if parent_field is not None else False
+                field_def = self._fields.get(parent_field_name)
+                comodel_name = getattr(field_def, 'comodel_name', False)
+                if comodel_name:
+                    target_models.add(comodel_name)
 
         hidden_columns = self.env['sonha.column.permission'].sudo().search([
             ('user_id', '=', self.env.user.id),
-            ('model_name', '=', self._name),
+            ('model_name', 'in', list(target_models)),
             ('is_visible', '=', False),
             ('active', '=', True),
         ])
@@ -72,16 +83,30 @@ class BaseColumnPermissionMixin(models.AbstractModel):
         if not hidden_columns:
             return result
 
-        hidden_field_names = set(hidden_columns.mapped('field_name'))
-        if not hidden_field_names:
-            return result
+        hidden_fields_by_model = {}
+        for rec in hidden_columns:
+            hidden_fields_by_model.setdefault(rec.model_name, set()).add(rec.field_name)
 
         arch = etree.fromstring(result['arch'])
-        for field_node in arch.xpath('//tree//field[@name]'):
-            field_name = field_node.get('name')
-            if field_name in hidden_field_names:
-                field_node.set('optional', 'hide')
-                field_node.set('invisible', '1')
+        if view_type == 'tree':
+            hidden_field_names = hidden_fields_by_model.get(self._name, set())
+            for field_node in arch.xpath('//tree//field[@name]'):
+                if field_node.get('name') in hidden_field_names:
+                    field_node.set('optional', 'hide')
+                    field_node.set('invisible', '1')
+        else:
+            for tree_node in arch.xpath('//field[@name]/tree'):
+                parent_field = tree_node.getparent()
+                parent_field_name = parent_field.get('name') if parent_field is not None else False
+                field_def = self._fields.get(parent_field_name)
+                comodel_name = getattr(field_def, 'comodel_name', False)
+                hidden_field_names = hidden_fields_by_model.get(comodel_name, set())
+                if not hidden_field_names:
+                    continue
+                for field_node in tree_node.xpath('.//field[@name]'):
+                    if field_node.get('name') in hidden_field_names:
+                        field_node.set('optional', 'hide')
+                        field_node.set('invisible', '1')
 
         result['arch'] = etree.tostring(arch, encoding='unicode')
         return result
