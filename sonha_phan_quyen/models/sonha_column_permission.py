@@ -94,6 +94,14 @@ class BaseColumnPermissionMixin(models.AbstractModel):
                 if field_node.get('name') in hidden_field_names:
                     field_node.set('optional', 'hide')
         else:
+            # Ẩn field của model chính ngay trên form (không chỉ optional ở tree)
+            main_hidden_field_names = hidden_fields_by_model.get(self._name, set())
+            if main_hidden_field_names:
+                for field_node in arch.xpath('//form//field[@name]'):
+                    if field_node.get('name') in main_hidden_field_names:
+                        field_node.set('invisible', '1')
+
+            # Ẩn field trong các one2many tree nằm trong form
             for tree_node in arch.xpath('//field[@name]/tree'):
                 parent_field = tree_node.getparent()
                 parent_field_name = parent_field.get('name') if parent_field is not None else False
