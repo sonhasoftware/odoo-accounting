@@ -1,3 +1,5 @@
+import json
+
 from lxml import etree
 
 from odoo import api, fields, models
@@ -55,6 +57,18 @@ class SonhaColumnPermission(models.Model):
 class BaseColumnPermissionMixin(models.AbstractModel):
     _inherit = 'base'
 
+
+    @staticmethod
+    def _force_node_invisible(field_node):
+        field_node.set('invisible', '1')
+        modifiers = field_node.get('modifiers')
+        try:
+            modifiers_dict = json.loads(modifiers) if modifiers else {}
+        except Exception:
+            modifiers_dict = {}
+        modifiers_dict['invisible'] = True
+        field_node.set('modifiers', json.dumps(modifiers_dict))
+
     @api.model
     def fields_view_get(self, view_id=None, view_type='form', toolbar=False, submenu=False):
         result = super().fields_view_get(view_id=view_id, view_type=view_type, toolbar=toolbar, submenu=submenu)
@@ -92,8 +106,16 @@ class BaseColumnPermissionMixin(models.AbstractModel):
             hidden_field_names = hidden_fields_by_model.get(self._name, set())
             for field_node in arch.xpath('//tree//field[@name]'):
                 if field_node.get('name') in hidden_field_names:
-                    field_node.set('optional', 'hide')
+                    self._force_node_invisible(field_node)
         else:
+            # Ẩn field của model chính ngay trên form (không chỉ optional ở tree)
+            main_hidden_field_names = hidden_fields_by_model.get(self._name, set())
+            if main_hidden_field_names:
+                for field_node in arch.xpath('//form//field[@name]'):
+                    if field_node.get('name') in main_hidden_field_names:
+                        self._force_node_invisible(field_node)
+
+            # Ẩn field trong các one2many tree nằm trong form
             for tree_node in arch.xpath('//field[@name]/tree'):
                 parent_field = tree_node.getparent()
                 parent_field_name = parent_field.get('name') if parent_field is not None else False
@@ -104,7 +126,7 @@ class BaseColumnPermissionMixin(models.AbstractModel):
                     continue
                 for field_node in tree_node.xpath('.//field[@name]'):
                     if field_node.get('name') in hidden_field_names:
-                        field_node.set('optional', 'hide')
+                        self._force_node_invisible(field_node)
 
         result['arch'] = etree.tostring(arch, encoding='unicode')
         return result
