@@ -52,6 +52,7 @@
         <field name="res_model">sonha.column.permission</field>
         <field name="view_mode">tree,form</field>
         <field name="search_view_id" ref="view_sonha_column_permission_search"/>
+        <field name="context">{'active_test': False}</field>
     </record>
 
     <menuitem id="menu_sonha_column_permission"
