@@ -93,7 +93,6 @@ class BaseColumnPermissionMixin(models.AbstractModel):
             for field_node in arch.xpath('//tree//field[@name]'):
                 if field_node.get('name') in hidden_field_names:
                     field_node.set('optional', 'hide')
-                    field_node.set('invisible', '1')
         else:
             for tree_node in arch.xpath('//field[@name]/tree'):
                 parent_field = tree_node.getparent()
@@ -106,7 +105,6 @@ class BaseColumnPermissionMixin(models.AbstractModel):
                 for field_node in tree_node.xpath('.//field[@name]'):
                     if field_node.get('name') in hidden_field_names:
                         field_node.set('optional', 'hide')
-                        field_node.set('invisible', '1')
 
         result['arch'] = etree.tostring(arch, encoding='unicode')
         return result
