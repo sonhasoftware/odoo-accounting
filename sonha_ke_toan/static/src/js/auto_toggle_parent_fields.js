@@ -57,19 +57,35 @@ function syncParentFieldsVisibilityOnce() {
         labels.forEach(lbl => {
             const fname = lbl.getAttribute('for');
             if (!fname) return;
-            const fieldEl = group.querySelector(`[name="${fname}"]`) || group.querySelector(`[data-field="${fname}"]`);
-            const container = fieldEl ? fieldEl.closest('.form-row') || fieldEl.parentElement : lbl.parentElement;
-            if (!container) return;
+            const fieldEl =
+                group.querySelector(`.o_field_widget[name="${fname}"]`) ||
+                group.querySelector(`[name="${fname}"]`) ||
+                group.querySelector(`[data-field="${fname}"]`);
+            const blockTargets = [lbl, fieldEl].filter(Boolean);
+            const rowContainer = fieldEl ? fieldEl.closest('.form-row') || fieldEl.parentElement : lbl.parentElement;
 
             if (visibleFields.includes(fname)) {
-                // ẩn parent container nếu child đang visible
-                container.dataset._hiddenBySync = '1';
-                container.style.display = 'none';
+                // Ưu tiên ẩn đúng label + field để tránh ẩn cả dòng chứa nhiều field
+                if (blockTargets.length > 0) {
+                    blockTargets.forEach((el) => {
+                        el.dataset._hiddenBySync = '1';
+                        el.style.display = 'none';
+                    });
+                } else if (rowContainer) {
+                    rowContainer.dataset._hiddenBySync = '1';
+                    rowContainer.style.display = 'none';
+                }
             } else {
                 // chỉ khôi phục nếu trước đó script đã ẩn nó
-                if (container.dataset._hiddenBySync === '1') {
-                    container.style.removeProperty('display');
-                    delete container.dataset._hiddenBySync;
+                blockTargets.forEach((el) => {
+                    if (el.dataset._hiddenBySync === '1') {
+                        el.style.removeProperty('display');
+                        delete el.dataset._hiddenBySync;
+                    }
+                });
+                if (rowContainer && rowContainer.dataset._hiddenBySync === '1') {
+                    rowContainer.style.removeProperty('display');
+                    delete rowContainer.dataset._hiddenBySync;
                 }
             }
         });
