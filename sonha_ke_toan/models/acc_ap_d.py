@@ -417,3 +417,25 @@ class AccApD(models.Model):
 
         return records_to_sync
 
+
+
+    def write(self, vals):
+        tracked_fields = [fname for fname in vals if fname in self._fields]
+        before_map = {rec.id: rec.read(tracked_fields)[0] if tracked_fields else {} for rec in self}
+        res = super().write(vals)
+        if vals:
+            for rec in self:
+                new_values = rec.read(tracked_fields)[0] if tracked_fields else {}
+                self.env.cr.execute(
+                    """
+                    INSERT INTO sonha_log
+                        (model_name, res_id, action, user_id, old_values, new_values,
+                         create_uid, create_date, write_uid, write_date)
+                    VALUES (%s, %s, 'write', %s, %s, %s, %s, NOW(), %s, NOW())
+                    """,
+                    (self._name, rec.id, self.env.user.id,
+                     json.dumps(before_map.get(rec.id, {}), ensure_ascii=False, default=str),
+                     json.dumps(new_values, ensure_ascii=False, default=str),
+                     self.env.user.id, self.env.user.id)
+                )
+        return res
