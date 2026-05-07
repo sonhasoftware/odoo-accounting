@@ -12,6 +12,7 @@ from odoo.exceptions import ValidationError
 
 class AccApNkH(models.Model):
     _name = 'acc.ap.nk.h'
+    _inherit = ['sonha.log.mixin']
     _order = 'NGAY_CT DESC'
     _rec_name = 'CHUNG_TU'
 
