@@ -23,10 +23,25 @@ class SonhaLog(models.Model):
 class SonhaLogMixin(models.AbstractModel):
     _name = 'sonha.log.mixin'
     _description = 'Audit log for accounting module'
+
+    @api.model
+    def _sonha_should_log(self):
+        return (
+            not self._transient
+            and self._name != 'sonha.log'
+            and (self._name.startswith('acc.') or self._name.startswith('nl.acc.'))
+        )
+
+
+class SonhaLogHook(models.AbstractModel):
     _inherit = 'base'
 
     @api.model
     def _sonha_should_log(self):
+        # Reuse when models explicitly inherit sonha.log.mixin
+        mixin = self.env.get('sonha.log.mixin')
+        if mixin:
+            return mixin._sonha_should_log.__get__(self, type(self))()
         return (
             not self._transient
             and self._name != 'sonha.log'
