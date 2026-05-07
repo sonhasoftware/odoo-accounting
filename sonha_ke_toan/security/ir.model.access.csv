@@ -120,4 +120,3 @@ access_nl_acc_xhtl_d,nl.acc.ap.xhtl.d,model_nl_acc_ap_xhtl_d,,1,1,1,1
 access_nl_acc_pxvt_h,nl.acc.ap.pxvt.h,model_nl_acc_ap_pxvt_h,,1,1,1,1
 access_nl_acc_pxvt_d,nl.acc.ap.pxvt.d,model_nl_acc_ap_pxvt_d,,1,1,1,1
 
-access_sonha_log,sonha.log,model_sonha_log,,1,0,0,0
