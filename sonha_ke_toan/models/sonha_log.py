@@ -21,7 +21,6 @@ class SonhaLog(models.Model):
 
 
 class SonhaLogMixin(models.AbstractModel):
-    _name = 'sonha.log.mixin'
     _description = 'Audit log for accounting module'
     _inherit = 'base'
 
