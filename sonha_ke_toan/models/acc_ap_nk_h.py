@@ -368,6 +368,12 @@ class AccApNkH(models.Model):
     def write(self, vals):
         """Ghi dữ liệu acc.ap.h, sao lưu dữ liệu acc.ap.d sang bảng tổng hợp trước khi ghi."""
 
+        tracked_fields = [fname for fname in vals if fname in self._fields]
+        before_map = {
+            record.id: record.read(tracked_fields)[0] if tracked_fields else {}
+            for record in self
+        }
+
         for record in self:
             # Lấy D records từ vals hoặc D records hiện có
             if 'ACC_SP_D' in vals:
@@ -461,6 +467,21 @@ class AccApNkH(models.Model):
                         raise ValidationError(loi)
 
         res = super(AccApNkH, self).write(vals)
+
+        if vals:
+            for record in self:
+                new_values = record.read(tracked_fields)[0] if tracked_fields else {}
+                old_json = json.dumps(before_map.get(record.id, {}), ensure_ascii=False, default=str)
+                new_json = json.dumps(new_values, ensure_ascii=False, default=str)
+                self.env.cr.execute(
+                    """
+                    INSERT INTO sonha_log
+                        (model_name, res_id, action, user_id, old_values, new_values,
+                         create_uid, create_date, write_uid, write_date)
+                    VALUES (%s, %s, 'write', %s, %s, %s, %s, NOW(), %s, NOW())
+                    """,
+                    (self._name, record.id, self.env.user.id, old_json, new_json, self.env.user.id, self.env.user.id)
+                )
 
         for record in self:
             all_d_records = self.env['acc.ap.nk.d'].search([('ACC_AP_H', '=', record.id)])
