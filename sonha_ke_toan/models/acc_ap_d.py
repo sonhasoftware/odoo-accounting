@@ -11,6 +11,7 @@ _logger = logging.getLogger(__name__)
 
 class AccApD(models.Model):
     _name = 'nl.acc.ap.d'
+    _inherit = ['sonha.log.mixin']
 
     ACC_AP_H = fields.Many2one('nl.acc.ap.h', string="ID Header", store=True)
 
