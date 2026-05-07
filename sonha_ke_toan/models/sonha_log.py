@@ -26,10 +26,11 @@ class SonhaLogMixin(models.AbstractModel):
 
     @api.model
     def _sonha_should_log(self):
+        allowed_prefixes = ('acc.', 'nl.acc.', 'account.')
         return (
             not self._transient
             and self._name != 'sonha.log'
-            and (self._name.startswith('acc.') or self._name.startswith('nl.acc.'))
+            and self._name.startswith(allowed_prefixes)
         )
 
 
@@ -42,10 +43,11 @@ class SonhaLogHook(models.AbstractModel):
         mixin = self.env.get('sonha.log.mixin')
         if mixin:
             return mixin._sonha_should_log.__get__(self, type(self))()
+        allowed_prefixes = ('acc.', 'nl.acc.', 'account.')
         return (
             not self._transient
             and self._name != 'sonha.log'
-            and (self._name.startswith('acc.') or self._name.startswith('nl.acc.'))
+            and self._name.startswith(allowed_prefixes)
         )
 
     def write(self, vals):
