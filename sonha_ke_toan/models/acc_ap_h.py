@@ -375,6 +375,12 @@ class AccApH(models.Model):
     def write(self, vals):
         """Ghi dữ liệu acc.ap.h, sao lưu dữ liệu acc.ap.d sang bảng tổng hợp trước khi ghi."""
 
+        tracked_fields = [fname for fname in vals if fname in self._fields]
+        before_map = {
+            record.id: record.read(tracked_fields)[0] if tracked_fields else {}
+            for record in self
+        }
+
         for record in self:
             # Lấy D records từ vals hoặc D records hiện có
             if 'ACC_SP_D' in vals:
@@ -467,6 +473,17 @@ class AccApH(models.Model):
 
         res = super(AccApH, self).write(vals)
 
+        if vals:
+            for record in self:
+                new_values = record.read(tracked_fields)[0] if tracked_fields else {}
+                self.env['sonha.log'].sudo().create({
+                    'model_name': self._name,
+                    'res_id': record.id,
+                    'action': 'write',
+                    'user_id': self.env.user.id,
+                    'old_values': json.dumps(before_map.get(record.id, {}), ensure_ascii=False, default=str),
+                    'new_values': json.dumps(new_values, ensure_ascii=False, default=str),
+                })
 
         for record in self:
             all_d_records = self.env['nl.acc.ap.d'].search([('ACC_AP_H', '=', record.id)])
