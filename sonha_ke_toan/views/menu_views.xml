@@ -337,4 +337,9 @@
               parent="menu_xuat_hang"
               action="acc_nl_ap_h_pxvt_action"
               sequence="5"/>
+    <menuitem id="menu_sonha_accounting_log"
+              name="Nhật ký tạo sửa xóa"
+              parent="menu_sonha_accounting"
+              action="sonha_accounting_log_action"
+              sequence="99"/>
 </odoo>
