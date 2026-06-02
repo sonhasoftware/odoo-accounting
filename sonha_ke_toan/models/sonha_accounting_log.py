@@ -45,17 +45,36 @@ class SonhaAccountingLog(models.Model):
 class SonhaAccountingAuditBase(models.AbstractModel):
     _inherit = 'base'
 
+    _sonha_accounting_audit_module = 'sonha_ke_toan'
+    _sonha_accounting_audit_excluded_models = {
+        'sonha.accounting.log',
+        'nl.acc.tong.hop.log',
+        'save.data',
+    }
+
+    def _sonha_audit_model_belongs_to_module(self):
+        module_name = getattr(type(self), '_module', None) or getattr(self, '_module', None)
+        if module_name == self._sonha_accounting_audit_module:
+            return True
+
+        model_xmlid = 'model_%s' % self._name.replace('.', '_')
+        return bool(self.env['ir.model.data'].sudo().search_count([
+            ('module', '=', self._sonha_accounting_audit_module),
+            ('model', '=', 'ir.model'),
+            ('name', '=', model_xmlid),
+        ]))
+
     def _sonha_audit_enabled(self):
         if self.env.context.get('sonha_skip_accounting_log'):
             return False
-        if self._name == 'sonha.accounting.log':
+        if self._name in self._sonha_accounting_audit_excluded_models:
             return False
         if not getattr(self, '_auto', False):
             return False
         is_transient = getattr(self, 'is_transient', None)
         if is_transient and is_transient():
             return False
-        return True
+        return self._sonha_audit_model_belongs_to_module()
 
     def _sonha_audit_value(self, record, field_name):
         field = record._fields.get(field_name)
