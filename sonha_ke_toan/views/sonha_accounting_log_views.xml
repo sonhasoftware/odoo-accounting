@@ -12,6 +12,9 @@
                 <field name="table_name"/>
                 <field name="record_id"/>
                 <field name="record_display_name"/>
+                <field name="changed_fields"/>
+                <field name="old_value_summary"/>
+                <field name="new_value_summary"/>
             </tree>
         </field>
     </record>
@@ -35,11 +38,26 @@
                             <field name="record_display_name"/>
                         </group>
                     </group>
+                    <group string="Tóm tắt thay đổi">
+                        <field name="changed_fields" placeholder="Các field được sửa"/>
+                        <field name="old_value_summary" placeholder="Giá trị cũ theo từng field"/>
+                        <field name="new_value_summary" placeholder="Giá trị mới theo từng field"/>
+                    </group>
                     <notebook>
-                        <page string="Dữ liệu cũ">
+                        <page string="Chi tiết thay đổi">
+                            <field name="line_ids" nolabel="1">
+                                <tree create="0" edit="0" delete="0">
+                                    <field name="field_label"/>
+                                    <field name="field_name"/>
+                                    <field name="old_value"/>
+                                    <field name="new_value"/>
+                                </tree>
+                            </field>
+                        </page>
+                        <page string="Dữ liệu cũ (JSON)">
                             <field name="old_values" nolabel="1"/>
                         </page>
-                        <page string="Dữ liệu mới">
+                        <page string="Dữ liệu mới (JSON)">
                             <field name="new_values" nolabel="1"/>
                         </page>
                     </notebook>
@@ -58,6 +76,7 @@
                 <field name="model_name"/>
                 <field name="table_name"/>
                 <field name="record_id"/>
+                <field name="changed_fields"/>
                 <filter string="Tạo" name="action_create" domain="[('action', '=', 'create')]"/>
                 <filter string="Sửa" name="action_write" domain="[('action', '=', 'write')]"/>
                 <filter string="Xóa" name="action_unlink" domain="[('action', '=', 'unlink')]"/>
