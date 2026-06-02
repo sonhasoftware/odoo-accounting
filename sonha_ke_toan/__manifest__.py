@@ -68,6 +68,7 @@
         'views/res_company_view.xml',
         'wizard/thong_bao_wizard_views.xml',
         'wizard/popup_change_field_view.xml',
+        'views/sonha_accounting_log_views.xml',
         'views/menu_views.xml',
     ],
     'assets': {
