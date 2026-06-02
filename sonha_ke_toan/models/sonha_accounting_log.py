@@ -38,8 +38,34 @@ class SonhaAccountingLog(models.Model):
     table_name = fields.Char(string='Bảng', required=True, index=True)
     record_id = fields.Integer(string='ID bản ghi', required=True, index=True)
     record_display_name = fields.Char(string='Bản ghi')
+    changed_fields = fields.Text(string='Sửa dữ liệu gì')
+    old_value_summary = fields.Text(string='Giá trị cũ')
+    new_value_summary = fields.Text(string='Giá trị mới')
     old_values = fields.Text(string='Dữ liệu cũ')
     new_values = fields.Text(string='Dữ liệu mới')
+    line_ids = fields.One2many(
+        'sonha.accounting.log.line',
+        'log_id',
+        string='Chi tiết thay đổi',
+    )
+
+
+class SonhaAccountingLogLine(models.Model):
+    _name = 'sonha.accounting.log.line'
+    _description = 'Chi tiết thay đổi dữ liệu kế toán'
+    _order = 'log_id desc, id'
+
+    log_id = fields.Many2one(
+        'sonha.accounting.log',
+        string='Nhật ký',
+        required=True,
+        ondelete='cascade',
+        index=True,
+    )
+    field_name = fields.Char(string='Field', required=True, index=True)
+    field_label = fields.Char(string='Sửa dữ liệu gì', required=True)
+    old_value = fields.Text(string='Giá trị cũ')
+    new_value = fields.Text(string='Giá trị mới')
 
 
 class SonhaAccountingAuditBase(models.AbstractModel):
@@ -48,6 +74,7 @@ class SonhaAccountingAuditBase(models.AbstractModel):
     _sonha_accounting_audit_module = 'sonha_ke_toan'
     _sonha_accounting_audit_excluded_models = {
         'sonha.accounting.log',
+        'sonha.accounting.log.line',
         'nl.acc.tong.hop.log',
         'save.data',
     }
@@ -92,6 +119,37 @@ class SonhaAccountingAuditBase(models.AbstractModel):
             return fields.Datetime.to_string(value) if value else False
         return value
 
+    def _sonha_audit_display_value(self, record, field_name):
+        field = record._fields.get(field_name)
+        if not field:
+            return ''
+
+        value = record[field_name]
+        if field.type == 'many2one':
+            return value.display_name if value else ''
+        if field.type in ('one2many', 'many2many'):
+            return ', '.join(value.mapped('display_name')) if value else ''
+        if field.type == 'date':
+            return fields.Date.to_string(value) if value else ''
+        if field.type == 'datetime':
+            return fields.Datetime.to_string(value) if value else ''
+        if field.type == 'selection':
+            selection = field.selection
+            if callable(selection):
+                selection = selection(record)
+            elif isinstance(selection, str) and hasattr(record, selection):
+                selection = getattr(record, selection)()
+            return dict(selection or []).get(value, value) if value else ''
+        if field.type == 'reference':
+            return value.display_name if hasattr(value, 'display_name') else (value or '')
+        if isinstance(value, (dict, list, tuple)):
+            return self._sonha_audit_json(value)
+        return '' if value is False or value is None else str(value)
+
+    def _sonha_audit_field_label(self, field_name):
+        field = self._fields.get(field_name)
+        return field.string if field and field.string else field_name
+
     def _sonha_audit_json(self, data):
         return json.dumps(data, ensure_ascii=False, default=str)
 
@@ -109,13 +167,58 @@ class SonhaAccountingAuditBase(models.AbstractModel):
             }
         return old_values
 
-    def _sonha_audit_log(self, action, records, vals_by_id=None, old_values_by_id=None, names_by_id=None):
+    def _sonha_audit_display_values(self, records, field_names):
+        display_values = {}
+        for record in records:
+            display_values[record.id] = {
+                field_name: self._sonha_audit_display_value(record, field_name)
+                for field_name in field_names
+                if field_name in record._fields
+            }
+        return display_values
+
+    def _sonha_audit_detail_lines(self, records, field_names, old_display_by_id=None, new_display_by_id=None):
+        line_values_by_id = {}
+        old_display_by_id = old_display_by_id or {}
+        new_display_by_id = new_display_by_id or {}
+        for record in records:
+            lines = []
+            for field_name in field_names:
+                if field_name not in record._fields:
+                    continue
+                old_value = (old_display_by_id.get(record.id) or {}).get(field_name, '')
+                new_value = (new_display_by_id.get(record.id) or {}).get(field_name, '')
+                if old_value == new_value:
+                    continue
+                lines.append((0, 0, {
+                    'field_name': field_name,
+                    'field_label': self._sonha_audit_field_label(field_name),
+                    'old_value': old_value,
+                    'new_value': new_value,
+                }))
+            line_values_by_id[record.id] = lines
+        return line_values_by_id
+
+    def _sonha_audit_summary(self, line_values):
+        changed_fields = []
+        old_values = []
+        new_values = []
+        for _command, _unused, values in line_values:
+            field_label = values.get('field_label') or values.get('field_name')
+            changed_fields.append('%s (%s)' % (field_label, values.get('field_name')))
+            old_values.append('%s: %s' % (field_label, values.get('old_value') or ''))
+            new_values.append('%s: %s' % (field_label, values.get('new_value') or ''))
+        return '\n'.join(changed_fields), '\n'.join(old_values), '\n'.join(new_values)
+
+    def _sonha_audit_log(self, action, records, vals_by_id=None, old_values_by_id=None, names_by_id=None, line_values_by_id=None):
         if not records or not records._sonha_audit_enabled():
             return
 
         action_datetime = fields.Datetime.now()
         log_values = []
         for record in records:
+            line_values = (line_values_by_id or {}).get(record.id, [])
+            changed_fields, old_value_summary, new_value_summary = self._sonha_audit_summary(line_values)
             log_values.append({
                 'user_id': self.env.uid,
                 'action': action,
@@ -126,8 +229,12 @@ class SonhaAccountingAuditBase(models.AbstractModel):
                 'record_display_name': (
                     names_by_id or {}
                 ).get(record.id) or self._sonha_audit_record_name(record),
+                'changed_fields': changed_fields,
+                'old_value_summary': old_value_summary,
+                'new_value_summary': new_value_summary,
                 'old_values': self._sonha_audit_json((old_values_by_id or {}).get(record.id, {})),
                 'new_values': self._sonha_audit_json((vals_by_id or {}).get(record.id, {})),
+                'line_ids': line_values,
             })
 
         if log_values:
@@ -140,14 +247,26 @@ class SonhaAccountingAuditBase(models.AbstractModel):
         records = super().create(vals_list)
         if records._sonha_audit_enabled():
             vals_by_id = {}
+            field_names_by_id = {}
             for record, vals in zip(records, vals_list):
                 vals_by_id[record.id] = vals
-            records._sonha_audit_log('create', records, vals_by_id=vals_by_id)
+                field_names_by_id[record.id] = [field_name for field_name in vals if field_name in record._fields]
+            line_values_by_id = {}
+            for record in records:
+                field_names = field_names_by_id.get(record.id, [])
+                line_values_by_id.update(records._sonha_audit_detail_lines(
+                    record,
+                    field_names,
+                    new_display_by_id=records._sonha_audit_display_values(record, field_names),
+                ))
+            records._sonha_audit_log('create', records, vals_by_id=vals_by_id, line_values_by_id=line_values_by_id)
         return records
 
     def write(self, vals):
         audit_enabled = self._sonha_audit_enabled()
+        field_names = [field_name for field_name in vals if field_name in self._fields]
         old_values_by_id = self._sonha_audit_old_values(vals) if audit_enabled else {}
+        old_display_by_id = self._sonha_audit_display_values(self, field_names) if audit_enabled else {}
         names_by_id = {
             record.id: self._sonha_audit_record_name(record)
             for record in self
@@ -157,12 +276,20 @@ class SonhaAccountingAuditBase(models.AbstractModel):
 
         if audit_enabled:
             vals_by_id = {record.id: vals for record in self}
+            new_display_by_id = self._sonha_audit_display_values(self, field_names)
+            line_values_by_id = self._sonha_audit_detail_lines(
+                self,
+                field_names,
+                old_display_by_id=old_display_by_id,
+                new_display_by_id=new_display_by_id,
+            )
             self._sonha_audit_log(
                 'write',
                 self,
                 vals_by_id=vals_by_id,
                 old_values_by_id=old_values_by_id,
                 names_by_id=names_by_id,
+                line_values_by_id=line_values_by_id,
             )
         return result
 
@@ -170,14 +297,21 @@ class SonhaAccountingAuditBase(models.AbstractModel):
         audit_enabled = self._sonha_audit_enabled()
         old_values_by_id = {}
         names_by_id = {}
+        line_values_by_id = {}
         if audit_enabled:
             field_names = [field_name for field_name in self._fields if field_name != 'id']
+            old_display_by_id = self._sonha_audit_display_values(self, field_names)
             for record in self:
                 old_values_by_id[record.id] = {
                     field_name: self._sonha_audit_value(record, field_name)
                     for field_name in field_names
                 }
                 names_by_id[record.id] = self._sonha_audit_record_name(record)
+            line_values_by_id = self._sonha_audit_detail_lines(
+                self,
+                field_names,
+                old_display_by_id=old_display_by_id,
+            )
 
         records = self
         result = super().unlink()
@@ -188,5 +322,6 @@ class SonhaAccountingAuditBase(models.AbstractModel):
                 records,
                 old_values_by_id=old_values_by_id,
                 names_by_id=names_by_id,
+                line_values_by_id=line_values_by_id,
             )
         return result
