@@ -148,3 +148,65 @@ div[name="ACC_SP_D"] .arrow {
     table-layout: auto;
 }
 
+
+/*
+ * Report-only fly-out menu
+ * --------------------------------------------------------------------------
+ * Scope the Chrome-like fly-out behavior to the Accounting > Báo cáo menu so
+ * other backend menus keep Odoo's default dropdown behavior.
+ */
+.o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu,
+.o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu {
+    overflow: visible !important;
+}
+
+.o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu .dropdown,
+.o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu .o-dropdown,
+.o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu .dropdown,
+.o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu .o-dropdown {
+    position: relative;
+}
+
+.o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu .dropdown > .dropdown-menu,
+.o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu .o-dropdown > .dropdown-menu,
+.o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu .o-dropdown > .o-dropdown--menu,
+.o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu .dropdown > .dropdown-menu,
+.o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu .o-dropdown > .dropdown-menu,
+.o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu .o-dropdown > .o-dropdown--menu {
+    top: 0;
+    left: calc(100% - 2px);
+    margin-top: 0;
+    margin-left: 0;
+    min-width: 240px;
+    max-height: min(80vh, 720px);
+    overflow-y: auto;
+}
+
+.o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu .dropdown:hover > .dropdown-menu,
+.o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu .dropdown:focus-within > .dropdown-menu,
+.o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu .o-dropdown:hover > .dropdown-menu,
+.o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu .o-dropdown:focus-within > .dropdown-menu,
+.o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu .o-dropdown:hover > .o-dropdown--menu,
+.o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu .o-dropdown:focus-within > .o-dropdown--menu,
+.o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu .dropdown:hover > .dropdown-menu,
+.o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu .dropdown:focus-within > .dropdown-menu,
+.o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu .o-dropdown:hover > .dropdown-menu,
+.o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu .o-dropdown:focus-within > .dropdown-menu,
+.o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu .o-dropdown:hover > .o-dropdown--menu,
+.o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu .o-dropdown:focus-within > .o-dropdown--menu {
+    display: block;
+}
+
+.o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-toggle,
+.o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu .dropdown-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+.o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-toggle::after,
+.o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu .dropdown-toggle::after {
+    transform: rotate(-90deg);
+    margin-left: auto;
+}
