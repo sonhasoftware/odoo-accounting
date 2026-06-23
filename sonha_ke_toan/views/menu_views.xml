@@ -213,14 +213,24 @@
     <menuitem id="menu_bao_cao"
               name="Báo cáo"
               parent="menu_sonha_accounting"
-              action="bao_cao_action"
               sequence="11"/>
 
-<!--    <menuitem id="menu_bao_cao_dt"-->
-<!--              name="Báo cáo chi tiết"-->
-<!--              parent="menu_sonha_accounting"-->
-<!--              action="bao_cao_dt_action"-->
-<!--              sequence="12"/>-->
+    <menuitem id="menu_danh_muc_bao_cao"
+              name="Danh mục báo cáo"
+              parent="menu_bao_cao"
+              sequence="1"/>
+
+    <menuitem id="menu_bao_cao_tong_hop"
+              name="Báo cáo tổng hợp"
+              parent="menu_danh_muc_bao_cao"
+              action="bao_cao_action"
+              sequence="1"/>
+
+    <menuitem id="menu_bao_cao_chi_tiet"
+              name="Báo cáo chi tiết"
+              parent="menu_danh_muc_bao_cao"
+              action="bao_cao_dt_action"
+              sequence="2"/>
 
     <menuitem id="menu_phieu_tscd"
               name="Phiếu TSCĐ"
