@@ -2,16 +2,19 @@
 
 import { ListRenderer } from "@web/views/list/list_renderer";
 import { patch } from "@web/core/utils/patch";
-import { onMounted, onPatched } from "@odoo/owl";
+import { onMounted, onPatched, onWillUnmount } from "@odoo/owl";
 
 patch(ListRenderer.prototype, {
     setup() {
         super.setup();
         this._columnReorderHandlers = [];
         this._columnWidthPersistTimeout = null;
+        this._columnWidthPersistTable = null;
+        this._columnWidthPendingWidths = null;
         this._columnWidthResizeState = null;
         onMounted(() => this._setupColumnReorder());
         onPatched(() => this._setupColumnReorder());
+        onWillUnmount(() => this._cleanupColumnReorderHandlers());
     },
 
     _getColumnReorderStorageKey() {
@@ -100,16 +103,34 @@ patch(ListRenderer.prototype, {
     },
 
     _cleanupColumnReorderHandlers() {
-        if (this._columnWidthPersistTimeout) {
-            clearTimeout(this._columnWidthPersistTimeout);
-            this._columnWidthPersistTimeout = null;
-        }
+        this._flushPendingColumnWidthPersistence();
         for (const entry of this._columnReorderHandlers) {
             for (const [eventName, fn] of entry.listeners) {
                 entry.element.removeEventListener(eventName, fn);
             }
         }
         this._columnReorderHandlers = [];
+    },
+
+    _flushPendingColumnWidthPersistence() {
+        if (this._columnWidthPersistTimeout) {
+            clearTimeout(this._columnWidthPersistTimeout);
+            this._columnWidthPersistTimeout = null;
+        }
+
+        const resizeState = this._columnWidthResizeState;
+        if (resizeState?.table && this._hasColumnWidthChanged(resizeState.table, resizeState.widths)) {
+            this._persistCurrentColumnWidths(resizeState.table);
+        }
+        this._columnWidthResizeState = null;
+
+        if (this._columnWidthPersistTable?.isConnected) {
+            this._persistCurrentColumnWidths(this._columnWidthPersistTable);
+        } else if (this._columnWidthPendingWidths) {
+            this._persistColumnWidths(this._columnWidthPendingWidths);
+        }
+        this._columnWidthPersistTable = null;
+        this._columnWidthPendingWidths = null;
     },
 
     _setupColumnWidthPersistence(table) {
@@ -122,9 +143,10 @@ patch(ListRenderer.prototype, {
             if (this._columnWidthPersistTimeout) {
                 clearTimeout(this._columnWidthPersistTimeout);
             }
+            this._columnWidthPersistTable = table;
+            this._columnWidthPendingWidths = this._getCurrentColumnWidths(table);
             this._columnWidthPersistTimeout = setTimeout(() => {
-                this._persistCurrentColumnWidths(table);
-                this._columnWidthPersistTimeout = null;
+                this._flushPendingColumnWidthPersistence();
             }, 50);
         };
 
@@ -310,18 +332,17 @@ patch(ListRenderer.prototype, {
     },
 
     _persistCurrentColumnWidths(table) {
+        this._persistColumnWidths(this._getCurrentColumnWidths(table));
+    },
+
+    _persistColumnWidths(widths) {
         const storageKey = this._getColumnWidthStorageKey();
-        const widths = {};
-        this._getColumnHeaders(table).forEach((header) => {
-            const name = header.dataset.name;
-            if (!name) {
-                return;
-            }
-            const width = Math.round(header.getBoundingClientRect().width);
-            if (width > 0) {
-                widths[name] = width;
+        const validWidths = {};
+        Object.entries(widths || {}).forEach(([name, width]) => {
+            if (name && width > 0) {
+                validWidths[name] = width;
             }
         });
-        localStorage.setItem(storageKey, JSON.stringify(widths));
+        localStorage.setItem(storageKey, JSON.stringify(validWidths));
     },
 });
