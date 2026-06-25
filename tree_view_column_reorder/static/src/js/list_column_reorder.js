@@ -14,7 +14,7 @@ patch(ListRenderer.prototype, {
         this._columnWidthResizeState = null;
         onMounted(() => this._setupColumnReorder());
         onPatched(() => this._setupColumnReorder());
-        onWillUnmount(() => this._cleanupColumnReorderHandlers());
+        onWillUnmount(() => this._cleanupColumnReorderHandlers({ flushWidths: true }));
     },
 
     _getColumnReorderStorageKey() {
@@ -41,7 +41,7 @@ patch(ListRenderer.prototype, {
             return;
         }
 
-        this._cleanupColumnReorderHandlers();
+        this._cleanupColumnReorderHandlers({ flushWidths: false });
         this._applySavedColumnOrder(table);
         this._applySavedColumnWidths(table);
         this._setupColumnWidthPersistence(table);
@@ -102,8 +102,10 @@ patch(ListRenderer.prototype, {
         table.querySelectorAll(".o_col_reorder_over").forEach((el) => el.classList.remove("o_col_reorder_over"));
     },
 
-    _cleanupColumnReorderHandlers() {
-        this._flushPendingColumnWidthPersistence();
+    _cleanupColumnReorderHandlers({ flushWidths = false } = {}) {
+        if (flushWidths) {
+            this._flushPendingColumnWidthPersistence();
+        }
         for (const entry of this._columnReorderHandlers) {
             for (const [eventName, fn] of entry.listeners) {
                 entry.element.removeEventListener(eventName, fn);
@@ -321,6 +323,11 @@ patch(ListRenderer.prototype, {
                 return;
             }
             const widthValue = `${width}px`;
+            const col = table.querySelector(`colgroup col:nth-child(${index + 1})`);
+            if (col) {
+                col.style.width = widthValue;
+                col.style.minWidth = widthValue;
+            }
             table.querySelectorAll("tr").forEach((row) => {
                 const cell = row.children[index];
                 if (cell) {
