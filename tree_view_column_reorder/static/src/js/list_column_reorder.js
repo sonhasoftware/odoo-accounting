@@ -8,8 +8,8 @@ patch(ListRenderer.prototype, {
     setup() {
         super.setup();
         this._columnReorderHandlers = [];
-        this._columnWidthObserver = null;
         this._columnWidthPersistTimeout = null;
+        this._columnWidthResizeState = null;
         onMounted(() => this._setupColumnReorder());
         onPatched(() => this._setupColumnReorder());
     },
@@ -100,10 +100,6 @@ patch(ListRenderer.prototype, {
     },
 
     _cleanupColumnReorderHandlers() {
-        if (this._columnWidthObserver) {
-            this._columnWidthObserver.disconnect();
-            this._columnWidthObserver = null;
-        }
         if (this._columnWidthPersistTimeout) {
             clearTimeout(this._columnWidthPersistTimeout);
             this._columnWidthPersistTimeout = null;
@@ -133,23 +129,85 @@ patch(ListRenderer.prototype, {
         };
 
         headers.forEach((header) => {
-            header.addEventListener("mouseup", persistWidths);
-            header.addEventListener("touchend", persistWidths);
-            header.addEventListener("dblclick", persistWidths);
+            const onResizeStart = (ev) => {
+                if (!this._isColumnResizeEvent(ev, header)) {
+                    return;
+                }
+
+                this._columnWidthResizeState = {
+                    table,
+                    widths: this._getCurrentColumnWidths(table),
+                };
+
+                const onResizeEnd = () => {
+                    document.removeEventListener("mouseup", onResizeEnd, true);
+                    document.removeEventListener("touchend", onResizeEnd, true);
+                    document.removeEventListener("touchcancel", onResizeEnd, true);
+
+                    const resizeState = this._columnWidthResizeState;
+                    this._columnWidthResizeState = null;
+                    if (resizeState?.table && this._hasColumnWidthChanged(resizeState.table, resizeState.widths)) {
+                        persistWidths();
+                    }
+                };
+
+                document.addEventListener("mouseup", onResizeEnd, true);
+                document.addEventListener("touchend", onResizeEnd, true);
+                document.addEventListener("touchcancel", onResizeEnd, true);
+            };
+
+            const onAutoResize = (ev) => {
+                if (this._isColumnResizeEvent(ev, header)) {
+                    persistWidths();
+                }
+            };
+
+            header.addEventListener("mousedown", onResizeStart);
+            header.addEventListener("touchstart", onResizeStart);
+            header.addEventListener("dblclick", onAutoResize);
             this._columnReorderHandlers.push({
                 element: header,
                 listeners: [
-                    ["mouseup", persistWidths],
-                    ["touchend", persistWidths],
-                    ["dblclick", persistWidths],
+                    ["mousedown", onResizeStart],
+                    ["touchstart", onResizeStart],
+                    ["dblclick", onAutoResize],
                 ],
             });
         });
 
-        if ("ResizeObserver" in window) {
-            this._columnWidthObserver = new ResizeObserver(() => persistWidths());
-            headers.forEach((header) => this._columnWidthObserver.observe(header));
+    },
+
+    _isColumnResizeEvent(ev, header) {
+        const resizeHandle = ev.target?.closest?.(".o_resize, .o_column_resize, .o_list_column_resize");
+        if (resizeHandle && header.contains(resizeHandle)) {
+            return true;
         }
+
+        const pointer = ev.touches?.[0] || ev;
+        if (typeof pointer.clientX !== "number") {
+            return false;
+        }
+
+        const rect = header.getBoundingClientRect();
+        const resizeHotZone = 8;
+        return Math.abs(pointer.clientX - rect.right) <= resizeHotZone;
+    },
+
+    _getCurrentColumnWidths(table) {
+        const widths = {};
+        this._getColumnHeaders(table).forEach((header) => {
+            const name = header.dataset.name;
+            if (!name) {
+                return;
+            }
+            widths[name] = Math.round(header.getBoundingClientRect().width);
+        });
+        return widths;
+    },
+
+    _hasColumnWidthChanged(table, previousWidths) {
+        const currentWidths = this._getCurrentColumnWidths(table);
+        return Object.entries(currentWidths).some(([name, width]) => Math.abs(width - (previousWidths[name] || 0)) > 1);
     },
 
     _applySavedColumnOrder(table) {
