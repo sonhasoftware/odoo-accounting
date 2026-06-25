@@ -29,8 +29,16 @@ patch(ListRenderer.prototype, {
         return `tree_column_width:${resModel}:${viewId}`;
     },
 
+    _getColumnHeaderRow(table) {
+        return table.querySelector("thead tr");
+    },
+
     _getColumnHeaders(table) {
-        return [...table.querySelectorAll("thead th")].filter(
+        const headerRow = this._getColumnHeaderRow(table);
+        if (!headerRow) {
+            return [];
+        }
+        return [...headerRow.children].filter(
             (th) => th.dataset.name && !th.classList.contains("o_list_record_selector")
         );
     },
@@ -246,7 +254,7 @@ patch(ListRenderer.prototype, {
     },
 
     _ensureColumnReorderBaseOrder(table) {
-        const currentOrder = [...table.querySelectorAll("thead th")].map(
+        const currentOrder = [...(this._getColumnHeaderRow(table)?.children || [])].map(
             (header, index) => header.dataset.name || `__column_${index}`
         );
         const currentNamedColumns = currentOrder.filter((name) => !name.startsWith("__column_"));
@@ -261,7 +269,7 @@ patch(ListRenderer.prototype, {
     },
 
     _getBaseColumnOrder(table) {
-        return this._columnReorderBaseOrder || [...table.querySelectorAll("thead th")].map(
+        return this._columnReorderBaseOrder || [...(this._getColumnHeaderRow(table)?.children || [])].map(
             (header, index) => header.dataset.name || `__column_${index}`
         );
     },
@@ -347,7 +355,8 @@ patch(ListRenderer.prototype, {
             return;
         }
 
-        const headers = [...table.querySelectorAll("thead th")];
+        const headerRow = this._getColumnHeaderRow(table);
+        const headers = headerRow ? [...headerRow.children] : [];
         const sourceIndex = headers.findIndex((th) => th.dataset.name === sourceName);
         const targetIndex = headers.findIndex((th) => th.dataset.name === targetName);
 
@@ -370,7 +379,7 @@ patch(ListRenderer.prototype, {
             }
         });
 
-        const currentOrder = [...table.querySelectorAll("thead th")].map(
+        const currentOrder = [...(this._getColumnHeaderRow(table)?.children || [])].map(
             (header, index) => header.dataset.name || `__column_${index}`
         );
         table.querySelectorAll("tr").forEach((row) => {
@@ -400,8 +409,9 @@ patch(ListRenderer.prototype, {
             return;
         }
 
-        const headers = [...table.querySelectorAll("thead th")];
-        headers.forEach((header, index) => {
+        const headers = this._getColumnHeaders(table);
+        headers.forEach((header) => {
+            const index = [...header.parentElement.children].indexOf(header);
             const name = header.dataset.name;
             const width = name ? savedWidths[name] : null;
             if (!width) {
