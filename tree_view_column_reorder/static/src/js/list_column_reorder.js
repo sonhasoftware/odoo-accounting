@@ -11,22 +11,48 @@ patch(ListRenderer.prototype, {
         this._columnWidthPersistTimeout = null;
         this._columnWidthPersistTable = null;
         this._columnWidthPendingWidths = null;
+        this._columnWidthPendingStorageKey = null;
         this._columnWidthResizeState = null;
         onMounted(() => this._setupColumnReorder());
         onPatched(() => this._setupColumnReorder());
         onWillUnmount(() => this._cleanupColumnReorderHandlers({ flushWidths: true }));
     },
 
-    _getColumnReorderStorageKey() {
+    _getColumnStorageKey(type, table = null) {
         const resModel = this.props.list?.resModel || "unknown_model";
-        const viewId = this.props.archInfo?.viewId || this.props.list?.viewId || "unknown_view";
-        return `tree_column_reorder:${resModel}:${viewId}`;
+        const viewId = this.props.archInfo?.viewId || this.props.list?.viewId;
+        if (viewId) {
+            return `tree_column_${type}:${resModel}:${viewId}`;
+        }
+
+        const columnSignature = table ? this._getColumnStorageSignature(table) : "unknown_view";
+        return `tree_column_${type}:${resModel}:${columnSignature}`;
     },
 
-    _getColumnWidthStorageKey() {
+    _getColumnReorderStorageKey(table = null) {
+        return this._getColumnStorageKey("reorder", table);
+    },
+
+    _getColumnWidthStorageKey(table = null) {
+        return this._getColumnStorageKey("width", table);
+    },
+
+    _getLegacyColumnStorageKey(type) {
         const resModel = this.props.list?.resModel || "unknown_model";
-        const viewId = this.props.archInfo?.viewId || this.props.list?.viewId || "unknown_view";
-        return `tree_column_width:${resModel}:${viewId}`;
+        return `tree_column_${type}:${resModel}:unknown_view`;
+    },
+
+    _getStoredColumnValue(storageKey, legacyStorageKey, fallbackValue) {
+        const storedValue = localStorage.getItem(storageKey);
+        if (storedValue !== null || storageKey === legacyStorageKey) {
+            return storedValue || fallbackValue;
+        }
+        return localStorage.getItem(legacyStorageKey) || fallbackValue;
+    },
+
+    _getColumnStorageSignature(table) {
+        const names = this._getColumnHeaders(table).map((header) => header.dataset.name).filter(Boolean);
+        return names.length ? names.join("|") : "unknown_view";
     },
 
     _getColumnHeaderRow(table) {
@@ -138,10 +164,11 @@ patch(ListRenderer.prototype, {
         if (this._columnWidthPersistTable?.isConnected) {
             this._persistCurrentColumnWidths(this._columnWidthPersistTable);
         } else if (this._columnWidthPendingWidths) {
-            this._persistColumnWidths(this._columnWidthPendingWidths);
+            this._persistColumnWidths(this._columnWidthPendingWidths, null, this._columnWidthPendingStorageKey);
         }
         this._columnWidthPersistTable = null;
         this._columnWidthPendingWidths = null;
+        this._columnWidthPendingStorageKey = null;
     },
 
     _setupColumnWidthPersistence(table) {
@@ -156,6 +183,7 @@ patch(ListRenderer.prototype, {
             }
             this._columnWidthPersistTable = table;
             this._columnWidthPendingWidths = this._getCurrentColumnWidths(table);
+            this._columnWidthPendingStorageKey = this._getColumnWidthStorageKey(table);
             this._columnWidthPersistTimeout = setTimeout(() => {
                 this._flushPendingColumnWidthPersistence();
             }, 100);
@@ -301,10 +329,12 @@ patch(ListRenderer.prototype, {
     },
 
     _applySavedColumnOrder(table) {
-        const storageKey = this._getColumnReorderStorageKey();
+        const storageKey = this._getColumnReorderStorageKey(table);
         let savedOrder = [];
         try {
-            savedOrder = JSON.parse(localStorage.getItem(storageKey) || "[]");
+            savedOrder = JSON.parse(
+                this._getStoredColumnValue(storageKey, this._getLegacyColumnStorageKey("reorder"), "[]")
+            );
         } catch {
             savedOrder = [];
         }
@@ -392,16 +422,18 @@ patch(ListRenderer.prototype, {
     },
 
     _persistCurrentColumnOrder(table) {
-        const storageKey = this._getColumnReorderStorageKey();
+        const storageKey = this._getColumnReorderStorageKey(table);
         const order = this._getColumnHeaders(table).map((header) => header.dataset.name);
         localStorage.setItem(storageKey, JSON.stringify(order));
     },
 
     _applySavedColumnWidths(table) {
-        const storageKey = this._getColumnWidthStorageKey();
+        const storageKey = this._getColumnWidthStorageKey(table);
         let savedWidths = {};
         try {
-            savedWidths = JSON.parse(localStorage.getItem(storageKey) || "{}");
+            savedWidths = JSON.parse(
+                this._getStoredColumnValue(storageKey, this._getLegacyColumnStorageKey("width"), "{}")
+            );
         } catch {
             savedWidths = {};
         }
@@ -434,17 +466,19 @@ patch(ListRenderer.prototype, {
     },
 
     _persistCurrentColumnWidths(table) {
-        this._persistColumnWidths(this._getCurrentColumnWidths(table));
+        this._persistColumnWidths(this._getCurrentColumnWidths(table), table);
     },
 
-    _persistColumnWidths(widths) {
-        const storageKey = this._getColumnWidthStorageKey();
+    _persistColumnWidths(widths, table = null, storageKey = null) {
+        storageKey = storageKey || this._getColumnWidthStorageKey(table);
         const validWidths = {};
         Object.entries(widths || {}).forEach(([name, width]) => {
             if (name && width > 0) {
                 validWidths[name] = width;
             }
         });
-        localStorage.setItem(storageKey, JSON.stringify(validWidths));
+        if (Object.keys(validWidths).length) {
+            localStorage.setItem(storageKey, JSON.stringify(validWidths));
+        }
     },
 });
