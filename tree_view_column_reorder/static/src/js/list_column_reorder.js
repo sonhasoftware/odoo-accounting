@@ -42,6 +42,7 @@ patch(ListRenderer.prototype, {
         }
 
         this._cleanupColumnReorderHandlers({ flushWidths: false });
+        this._ensureColumnReorderBaseOrder(table);
         this._applySavedColumnOrder(table);
         this._applySavedColumnWidths(table);
         this._setupColumnWidthPersistence(table);
@@ -244,6 +245,53 @@ patch(ListRenderer.prototype, {
         return Object.entries(currentWidths).some(([name, width]) => Math.abs(width - (previousWidths[name] || 0)) > 1);
     },
 
+    _ensureColumnReorderBaseOrder(table) {
+        const currentOrder = [...table.querySelectorAll("thead th")].map(
+            (header, index) => header.dataset.name || `__column_${index}`
+        );
+        const currentNamedColumns = currentOrder.filter((name) => !name.startsWith("__column_"));
+        const baseNamedColumns = (this._columnReorderBaseOrder || []).filter((name) => !name.startsWith("__column_"));
+        const hasSameColumns =
+            currentNamedColumns.length === baseNamedColumns.length &&
+            currentNamedColumns.every((name) => baseNamedColumns.includes(name));
+
+        if (!hasSameColumns) {
+            this._columnReorderBaseOrder = currentOrder;
+        }
+    },
+
+    _getBaseColumnOrder(table) {
+        return this._columnReorderBaseOrder || [...table.querySelectorAll("thead th")].map(
+            (header, index) => header.dataset.name || `__column_${index}`
+        );
+    },
+
+    _getDesiredColumnOrder(table, savedOrder) {
+        const baseOrder = this._getBaseColumnOrder(table);
+        const savedNames = new Set(savedOrder);
+        const orderedNames = savedOrder.filter((name) => baseOrder.includes(name));
+        const remainingColumns = baseOrder.filter((name) => !savedNames.has(name));
+        return [...remainingColumns.filter((name) => name.startsWith("__column_")), ...orderedNames, ...remainingColumns.filter((name) => !name.startsWith("__column_"))];
+    },
+
+    _reorderCells(row, currentOrder, desiredOrder) {
+        const cellsByName = new Map();
+        [...row.children].forEach((cell, index) => {
+            const name = currentOrder[index];
+            if (name && !cellsByName.has(name)) {
+                cellsByName.set(name, cell);
+            }
+        });
+
+        desiredOrder.forEach((name) => {
+            const cell = cellsByName.get(name);
+            if (cell) {
+                row.appendChild(cell);
+            }
+        });
+        row.dataset.columnReorderOrder = JSON.stringify(desiredOrder);
+    },
+
     _applySavedColumnOrder(table) {
         const storageKey = this._getColumnReorderStorageKey();
         let savedOrder = [];
@@ -264,14 +312,34 @@ patch(ListRenderer.prototype, {
             return;
         }
 
-        for (let index = 0; index < savedOrder.length; index++) {
-            const targetName = savedOrder[index];
-            const currentHeaders = this._getColumnHeaders(table);
-            const sourceName = currentHeaders[index]?.dataset.name;
-            if (sourceName && sourceName !== targetName) {
-                this._moveColumnByName(table, targetName, sourceName, false);
-            }
+        const desiredOrder = this._getDesiredColumnOrder(table, savedOrder);
+        const headerRows = table.querySelectorAll("thead tr");
+        headerRows.forEach((row) => {
+            const currentOrder = [...row.children].map((cell, index) => cell.dataset.name || `__column_${index}`);
+            this._reorderCells(row, currentOrder, desiredOrder);
+        });
+
+        const colgroupCols = table.querySelectorAll("colgroup col");
+        if (colgroupCols.length) {
+            const currentOrder = [...colgroupCols].map((col, index) => col.dataset.columnReorderName || `__column_${index}`);
+            colgroupCols.forEach((col, index) => {
+                col.dataset.columnReorderName = currentOrder[index];
+            });
+            this._reorderCells(colgroupCols[0].parentElement, currentOrder, desiredOrder);
         }
+
+        table.querySelectorAll("tbody tr, tfoot tr").forEach((row) => {
+            let currentOrder = null;
+            try {
+                currentOrder = JSON.parse(row.dataset.columnReorderOrder || "null");
+            } catch {
+                currentOrder = null;
+            }
+            if (!currentOrder || currentOrder.length !== row.children.length) {
+                currentOrder = this._getBaseColumnOrder(table);
+            }
+            this._reorderCells(row, currentOrder, desiredOrder);
+        });
     },
 
     _moveColumnByName(table, sourceName, targetName, persist = true) {
@@ -300,6 +368,13 @@ patch(ListRenderer.prototype, {
             } else {
                 targetCell.before(sourceCell);
             }
+        });
+
+        const currentOrder = [...table.querySelectorAll("thead th")].map(
+            (header, index) => header.dataset.name || `__column_${index}`
+        );
+        table.querySelectorAll("tr").forEach((row) => {
+            row.dataset.columnReorderOrder = JSON.stringify(currentOrder);
         });
 
         if (persist) {
