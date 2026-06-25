@@ -107,8 +107,8 @@ patch(ListRenderer.prototype, {
             this._flushPendingColumnWidthPersistence();
         }
         for (const entry of this._columnReorderHandlers) {
-            for (const [eventName, fn] of entry.listeners) {
-                entry.element.removeEventListener(eventName, fn);
+            for (const [eventName, fn, options] of entry.listeners) {
+                entry.element.removeEventListener(eventName, fn, options);
             }
         }
         this._columnReorderHandlers = [];
@@ -149,7 +149,7 @@ patch(ListRenderer.prototype, {
             this._columnWidthPendingWidths = this._getCurrentColumnWidths(table);
             this._columnWidthPersistTimeout = setTimeout(() => {
                 this._flushPendingColumnWidthPersistence();
-            }, 50);
+            }, 100);
         };
 
         headers.forEach((header) => {
@@ -167,17 +167,25 @@ patch(ListRenderer.prototype, {
                     document.removeEventListener("mouseup", onResizeEnd, true);
                     document.removeEventListener("touchend", onResizeEnd, true);
                     document.removeEventListener("touchcancel", onResizeEnd, true);
+                    document.removeEventListener("pointerup", onResizeEnd, true);
+                    document.removeEventListener("pointercancel", onResizeEnd, true);
 
                     const resizeState = this._columnWidthResizeState;
-                    this._columnWidthResizeState = null;
-                    if (resizeState?.table && this._hasColumnWidthChanged(resizeState.table, resizeState.widths)) {
-                        persistWidths();
-                    }
+                    setTimeout(() => {
+                        if (this._columnWidthResizeState === resizeState) {
+                            this._columnWidthResizeState = null;
+                        }
+                        if (resizeState?.table && this._hasColumnWidthChanged(resizeState.table, resizeState.widths)) {
+                            persistWidths();
+                        }
+                    }, 0);
                 };
 
                 document.addEventListener("mouseup", onResizeEnd, true);
                 document.addEventListener("touchend", onResizeEnd, true);
                 document.addEventListener("touchcancel", onResizeEnd, true);
+                document.addEventListener("pointerup", onResizeEnd, true);
+                document.addEventListener("pointercancel", onResizeEnd, true);
             };
 
             const onAutoResize = (ev) => {
@@ -186,15 +194,17 @@ patch(ListRenderer.prototype, {
                 }
             };
 
-            header.addEventListener("mousedown", onResizeStart);
-            header.addEventListener("touchstart", onResizeStart);
-            header.addEventListener("dblclick", onAutoResize);
+            header.addEventListener("mousedown", onResizeStart, true);
+            header.addEventListener("touchstart", onResizeStart, true);
+            header.addEventListener("pointerdown", onResizeStart, true);
+            header.addEventListener("dblclick", onAutoResize, true);
             this._columnReorderHandlers.push({
                 element: header,
                 listeners: [
-                    ["mousedown", onResizeStart],
-                    ["touchstart", onResizeStart],
-                    ["dblclick", onAutoResize],
+                    ["mousedown", onResizeStart, true],
+                    ["touchstart", onResizeStart, true],
+                    ["pointerdown", onResizeStart, true],
+                    ["dblclick", onAutoResize, true],
                 ],
             });
         });
