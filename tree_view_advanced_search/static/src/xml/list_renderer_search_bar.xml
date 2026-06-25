@@ -2,11 +2,11 @@
 <templates>
     <t t-name="ListRendererSearch" t-inherit="web.ListRenderer" t-inherit-mode="extension">
         <xpath expr="//div[hasclass('o_list_renderer')]//table[@t-ref='table']/thead/tr" position="after">
-            <tr>
+            <tr class="o_column_reorder_search_row">
                 <th/>
                 <t t-foreach="state.columns" t-as="column" t-key="column.id">
                     <t t-set="field_data" t-value="this.env.model.config.fields[column.name]"/>
-                    <th t-if="column.type === 'field' and field_data?.sortable">
+                    <th t-if="column.type === 'field' and field_data?.sortable" t-att-data-name="column.name">
                         <t t-if="column.field.supportedTypes">
                             <t t-if="column.widget !== 'badge' and !column.field.supportedTypes.includes('date') and !column.field.supportedTypes.includes('datetime')">
                                 <div class="search-input" t-att-id="column.name + 'Container'">
@@ -36,7 +36,7 @@
                             </Dropdown>
                         </t>
                     </th>
-                    <th t-else="">
+                    <th t-else="" t-att-data-name="column.name">
                         <div/>
                     </th>
                 </t>
@@ -46,11 +46,11 @@
     </t>
     <t t-inherit="purchase.PurchaseListView" t-inherit-mode="extension">
         <xpath expr="//div[hasclass('o_list_renderer')]//table[@t-ref='table']/thead/tr" position="after">
-            <tr>
+            <tr class="o_column_reorder_search_row">
                 <th/>
                 <t t-foreach="state.columns" t-as="column" t-key="column.id">
                     <t t-set="field_data" t-value="this.env.model.config.fields[column.name]"/>
-                    <th t-if="column.type === 'field' and field_data?.sortable">
+                    <th t-if="column.type === 'field' and field_data?.sortable" t-att-data-name="column.name">
                         <t t-if="column.field.supportedTypes">
                             <t t-if="column.widget !== 'badge' and !column.field.supportedTypes.includes('date') and !column.field.supportedTypes.includes('datetime')">
                                 <div class="search-input" t-att-id="column.name + 'Container'">
@@ -77,7 +77,7 @@
                             </Dropdown>
                         </t>
                     </th>
-                    <th t-else="">
+                    <th t-else="" t-att-data-name="column.name">
                         <div/>
                     </th>
                 </t>
@@ -87,11 +87,11 @@
     </t>
     <t t-inherit="account.ListRenderer" t-inherit-mode="extension">
         <xpath expr="//div[hasclass('o_list_renderer')]//table[@t-ref='table']/thead/tr" position="after">
-            <tr>
+            <tr class="o_column_reorder_search_row">
                 <th/>
                 <t t-foreach="state.columns" t-as="column" t-key="column.id">
                     <t t-set="field_data" t-value="this.env.model.config.fields[column.name]"/>
-                    <th t-if="column.type === 'field' and field_data?.sortable">
+                    <th t-if="column.type === 'field' and field_data?.sortable" t-att-data-name="column.name">
                         <t t-if="column.field.supportedTypes">
                             <t t-if="column.widget !== 'badge' and !column.field.supportedTypes.includes('date') and !column.field.supportedTypes.includes('datetime')">
                                 <div class="search-input" t-att-id="column.name + 'Container'">
@@ -118,7 +118,7 @@
                             </Dropdown>
                         </t>
                     </th>
-                    <th t-else="">
+                    <th t-else="" t-att-data-name="column.name">
                         <div/>
                     </th>
                 </t>
