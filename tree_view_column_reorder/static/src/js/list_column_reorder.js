@@ -75,7 +75,7 @@ patch(ListRenderer.prototype, {
             return;
         }
 
-        this._cleanupColumnReorderHandlers({ flushWidths: false });
+        this._cleanupColumnReorderHandlers({ flushWidths: true });
         this._ensureColumnReorderBaseOrder(table);
         this._applySavedColumnOrder(table);
         this._applySavedColumnWidths(table);
@@ -161,9 +161,7 @@ patch(ListRenderer.prototype, {
         }
         this._columnWidthResizeState = null;
 
-        if (this._columnWidthPersistTable?.isConnected) {
-            this._persistCurrentColumnWidths(this._columnWidthPersistTable);
-        } else if (this._columnWidthPendingWidths) {
+        if (this._columnWidthPendingWidths) {
             this._persistColumnWidths(this._columnWidthPendingWidths, null, this._columnWidthPendingStorageKey);
         }
         this._columnWidthPersistTable = null;
@@ -181,9 +179,12 @@ patch(ListRenderer.prototype, {
             if (this._columnWidthPersistTimeout) {
                 clearTimeout(this._columnWidthPersistTimeout);
             }
+            const widths = this._getCurrentColumnWidths(table);
+            const storageKey = this._getColumnWidthStorageKey(table);
+            this._persistColumnWidths(widths, table, storageKey);
             this._columnWidthPersistTable = table;
-            this._columnWidthPendingWidths = this._getCurrentColumnWidths(table);
-            this._columnWidthPendingStorageKey = this._getColumnWidthStorageKey(table);
+            this._columnWidthPendingWidths = widths;
+            this._columnWidthPendingStorageKey = storageKey;
             this._columnWidthPersistTimeout = setTimeout(() => {
                 this._flushPendingColumnWidthPersistence();
             }, 100);
