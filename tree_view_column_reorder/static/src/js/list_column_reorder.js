@@ -156,7 +156,11 @@ patch(ListRenderer.prototype, {
         }
 
         const resizeState = this._columnWidthResizeState;
-        if (resizeState?.table && this._hasColumnWidthChanged(resizeState.table, resizeState.widths)) {
+        if (
+            resizeState?.table &&
+            this._isTableUsableForWidthPersistence(resizeState.table) &&
+            this._hasColumnWidthChanged(resizeState.table, resizeState.widths)
+        ) {
             this._persistCurrentColumnWidths(resizeState.table);
         }
         this._columnWidthResizeState = null;
@@ -213,7 +217,11 @@ patch(ListRenderer.prototype, {
                         if (this._columnWidthResizeState === resizeState) {
                             this._columnWidthResizeState = null;
                         }
-                        if (resizeState?.table && this._hasColumnWidthChanged(resizeState.table, resizeState.widths)) {
+                        if (
+                            resizeState?.table &&
+                            this._isTableUsableForWidthPersistence(resizeState.table) &&
+                            this._hasColumnWidthChanged(resizeState.table, resizeState.widths)
+                        ) {
                             persistWidths();
                         }
                     }, 0);
@@ -263,6 +271,10 @@ patch(ListRenderer.prototype, {
         const rect = header.getBoundingClientRect();
         const resizeHotZone = 8;
         return Math.abs(pointer.clientX - rect.right) <= resizeHotZone;
+    },
+
+    _isTableUsableForWidthPersistence(table) {
+        return Boolean(table?.isConnected && table.offsetParent !== null);
     },
 
     _getCurrentColumnWidths(table) {
@@ -478,8 +490,16 @@ patch(ListRenderer.prototype, {
                 validWidths[name] = width;
             }
         });
-        if (Object.keys(validWidths).length) {
-            localStorage.setItem(storageKey, JSON.stringify(validWidths));
+        if (!Object.keys(validWidths).length) {
+            return;
         }
+
+        let savedWidths = {};
+        try {
+            savedWidths = JSON.parse(localStorage.getItem(storageKey) || "{}");
+        } catch {
+            savedWidths = {};
+        }
+        localStorage.setItem(storageKey, JSON.stringify({ ...savedWidths, ...validWidths }));
     },
 });
