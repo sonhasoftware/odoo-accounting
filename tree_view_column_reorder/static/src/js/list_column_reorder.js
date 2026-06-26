@@ -34,7 +34,25 @@ patch(ListRenderer.prototype, {
     },
 
     _getColumnWidthStorageKey(table = null) {
-        return this._getColumnStorageKey("width", table);
+        const baseKey = this._getColumnStorageKey("width", table);
+        const screenKey = this._getColumnWidthScreenStorageKey();
+        return screenKey ? `${baseKey}:${screenKey}` : baseKey;
+    },
+
+    _getColumnWidthScreenStorageKey() {
+        const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
+        const actionId = this.env?.config?.actionId || hashParams.get("action");
+        const menuId = this.env?.config?.menuId || hashParams.get("menu_id");
+        const viewType = this.env?.config?.viewType || hashParams.get("view_type");
+        const activeId = hashParams.get("id");
+        const parts = [
+            actionId ? `action=${actionId}` : "",
+            menuId ? `menu=${menuId}` : "",
+            viewType ? `view=${viewType}` : "",
+            activeId ? `id=${activeId}` : "",
+        ].filter(Boolean);
+
+        return parts.length ? parts.join("|") : "";
     },
 
     _getLegacyColumnStorageKey(type) {
