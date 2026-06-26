@@ -161,9 +161,7 @@ patch(ListRenderer.prototype, {
         }
         this._columnWidthResizeState = null;
 
-        if (this._columnWidthPersistTable?.isConnected) {
-            this._persistCurrentColumnWidths(this._columnWidthPersistTable);
-        } else if (this._columnWidthPendingWidths) {
+        if (this._columnWidthPendingWidths) {
             this._persistColumnWidths(this._columnWidthPendingWidths, null, this._columnWidthPendingStorageKey);
         }
         this._columnWidthPersistTable = null;
