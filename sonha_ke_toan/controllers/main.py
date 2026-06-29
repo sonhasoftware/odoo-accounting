@@ -834,14 +834,46 @@ class DynamicPhieuInController(http.Controller):
 
         acroform = reader.trailer.get('/Root') and reader.trailer['/Root'].get('/AcroForm')
         if acroform:
+            # Preserve the document-level AcroForm dictionary. Without this, some
+            # PDF viewers keep the old appearance stream or drop the form metadata,
+            # so the downloaded file looks blank even though /V was written.
+            writer._root_object.update({
+                pypdf.generic.NameObject('/AcroForm'): writer._add_object(acroform),
+            })
             writer.set_need_appearances_writer(True)
             form_values = self._pdf_form_values(reader, values)
             for page in writer.pages:
-                writer.update_page_form_field_values(page, form_values)
+                try:
+                    writer.update_page_form_field_values(page, form_values, auto_regenerate=True)
+                except TypeError:
+                    writer.update_page_form_field_values(page, form_values)
+            self._set_pdf_field_values(writer, form_values, pypdf)
 
         output = io.BytesIO()
         writer.write(output)
         return output.getvalue()
+
+
+    def _set_pdf_field_values(self, writer, form_values, pypdf):
+        acroform = writer._root_object.get('/AcroForm')
+        fields = acroform.get('/Fields') if acroform else None
+        if not fields:
+            return
+
+        def update_field(field_ref):
+            field = field_ref.get_object()
+            field_name = field.get('/T')
+            if field_name in form_values:
+                value = str(form_values.get(field_name) or '')
+                field.update({
+                    pypdf.generic.NameObject('/V'): pypdf.generic.TextStringObject(value),
+                    pypdf.generic.NameObject('/DV'): pypdf.generic.TextStringObject(value),
+                })
+            for child in field.get('/Kids') or []:
+                update_field(child)
+
+        for field_ref in fields:
+            update_field(field_ref)
 
     def _pdf_form_values(self, reader, values):
         fields = reader.get_fields() or {}
