@@ -653,6 +653,7 @@ import base64
 import re
 import zipfile
 import importlib.util
+import unicodedata
 from html import escape
 from urllib.parse import unquote
 
@@ -722,7 +723,13 @@ class DynamicPhieuInController(http.Controller):
                 value = record[name]
             except Exception:
                 continue
-            values[name] = self._format_value(value)
+            formatted = self._format_value(value)
+            values[name] = formatted
+            # Người dùng thường đặt tên ô trong template PDF theo nhãn tiếng Việt
+            # thay vì technical field name. Lưu thêm nhãn field để có thể tự map
+            # khi fill AcroForm (VD: "Ngày hạch toán", "Số chứng từ").
+            if getattr(field, 'string', None):
+                values[field.string] = formatted
         return values
 
     def _format_value(self, value):
@@ -754,9 +761,10 @@ class DynamicPhieuInController(http.Controller):
         return dst.getvalue()
 
     def _render_pdf(self, content, values):
-        # PDF templates are binary files. Plain text placeholder replacement corrupts
-        # them, so keep the output as PDF. If pypdf is available in the Odoo
-        # runtime, fill AcroForm fields whose names match record field names.
+        # PDF là file nhị phân nên không thể replace text trực tiếp như docx/xlsx.
+        # Với template PDF có AcroForm, fill toàn bộ field trong form bằng dữ
+        # liệu bản ghi. Field trong PDF có thể được đặt theo technical field name
+        # (vd: ma_kh) hoặc nhãn hiển thị tiếng Việt (vd: Mã khách hàng).
         if not importlib.util.find_spec('pypdf'):
             return content
         import pypdf
@@ -766,14 +774,35 @@ class DynamicPhieuInController(http.Controller):
         for page in reader.pages:
             writer.add_page(page)
 
-        if reader.trailer.get('/Root') and reader.trailer['/Root'].get('/AcroForm'):
+        acroform = reader.trailer.get('/Root') and reader.trailer['/Root'].get('/AcroForm')
+        if acroform:
             writer.set_need_appearances_writer(True)
+            form_values = self._pdf_form_values(reader, values)
             for page in writer.pages:
-                writer.update_page_form_field_values(page, values)
+                writer.update_page_form_field_values(page, form_values)
 
         output = io.BytesIO()
         writer.write(output)
         return output.getvalue()
+
+    def _pdf_form_values(self, reader, values):
+        fields = reader.get_fields() or {}
+        if not fields:
+            return values
+        normalized_values = {self._normalize_key(key): value for key, value in values.items()}
+        form_values = {}
+        for field_name in fields:
+            value = values.get(field_name)
+            if value is None:
+                value = normalized_values.get(self._normalize_key(field_name), '')
+            form_values[field_name] = value
+        return form_values
+
+    def _normalize_key(self, value):
+        value = unicodedata.normalize('NFKD', str(value or ''))
+        value = ''.join(char for char in value if not unicodedata.combining(char))
+        value = re.sub(r'[^a-zA-Z0-9]+', '', value)
+        return value.lower()
 
     def _render_xlsx(self, content, values):
         if not openpyxl:
