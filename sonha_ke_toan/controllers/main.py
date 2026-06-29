@@ -648,3 +648,116 @@ class FieldConfirmController(http.Controller):
         p.showPage(); p.save()
         pdf = buffer.getvalue(); buffer.close()
         return request.make_response(pdf, headers=[('Content-Type', 'application/pdf'), ('Content-Disposition', f'attachment; filename="phieu_ke_toan_{record.id}.pdf"')])
+
+import base64
+import re
+import zipfile
+from html import escape
+from urllib.parse import unquote
+
+try:
+    import openpyxl
+except ImportError:
+    openpyxl = None
+
+
+class DynamicPhieuInController(http.Controller):
+    """Download user-uploaded print templates after filling record data."""
+
+    _placeholder_re = re.compile(r"(\{\{\s*([A-Za-z0-9_\.]+)\s*\}\}|\$\{\s*([A-Za-z0-9_\.]+)\s*\})")
+
+    @http.route('/download/dynamic_phieu_in/<int:phieu_id>', type='http', auth='user')
+    def download_dynamic_phieu_in(self, phieu_id, model=None, record_id=None, **kwargs):
+        phieu = request.env['danh.muc.phieu.in'].sudo().browse(phieu_id)
+        if not phieu.exists() or not phieu.temp:
+            return request.not_found()
+
+        model_name = unquote(model or '')
+        record = request.env[model_name].browse(int(record_id or 0)).exists()
+        if not record:
+            return request.not_found()
+        record.check_access_rights('read')
+        record.check_access_rule('read')
+
+        filename = phieu.temp_filename or (phieu.ten or 'phieu_in')
+        content = base64.b64decode(phieu.temp)
+        rendered = self._render_template(content, filename, record)
+        mimetype = self._guess_mimetype(filename)
+        return request.make_response(rendered, headers=[
+            ('Content-Type', mimetype),
+            ('Content-Disposition', 'attachment; filename="%s"' % filename),
+        ])
+
+    def _render_template(self, content, filename, record):
+        ext = (filename.rsplit('.', 1)[-1] if '.' in filename else '').lower()
+        values = self._record_values(record)
+        if ext == 'docx':
+            return self._render_docx(content, values)
+        if ext == 'xlsx':
+            return self._render_xlsx(content, values)
+        # Text-like fallback: useful for csv/html/xml/txt templates.
+        try:
+            return self._replace_placeholders(content.decode('utf-8'), values).encode('utf-8')
+        except UnicodeDecodeError:
+            return content
+
+    def _record_values(self, record):
+        values = {'id': record.id, 'display_name': record.display_name or ''}
+        for name, field in record._fields.items():
+            if field.type in ('one2many', 'many2many', 'binary'):
+                continue
+            try:
+                value = record[name]
+            except Exception:
+                continue
+            values[name] = self._format_value(value)
+        return values
+
+    def _format_value(self, value):
+        if not value:
+            return ''
+        if hasattr(value, '_name'):
+            return value.display_name or ''
+        if isinstance(value, (date,)):
+            return value.strftime('%d/%m/%Y')
+        return str(value)
+
+    def _replace_placeholders(self, text, values, xml=False):
+        def repl(match):
+            key = match.group(2) or match.group(3)
+            value = values.get(key, '')
+            return escape(value) if xml else value
+        return self._placeholder_re.sub(repl, text)
+
+    def _render_docx(self, content, values):
+        src = io.BytesIO(content)
+        dst = io.BytesIO()
+        with zipfile.ZipFile(src, 'r') as zin, zipfile.ZipFile(dst, 'w', zipfile.ZIP_DEFLATED) as zout:
+            for item in zin.infolist():
+                data = zin.read(item.filename)
+                if item.filename.startswith('word/') and item.filename.endswith('.xml'):
+                    text = data.decode('utf-8')
+                    data = self._replace_placeholders(text, values, xml=True).encode('utf-8')
+                zout.writestr(item, data)
+        return dst.getvalue()
+
+    def _render_xlsx(self, content, values):
+        if not openpyxl:
+            return content
+        workbook = openpyxl.load_workbook(io.BytesIO(content))
+        for sheet in workbook.worksheets:
+            for row in sheet.iter_rows():
+                for cell in row:
+                    if isinstance(cell.value, str):
+                        cell.value = self._replace_placeholders(cell.value, values)
+        output = io.BytesIO()
+        workbook.save(output)
+        return output.getvalue()
+
+    def _guess_mimetype(self, filename):
+        ext = (filename.rsplit('.', 1)[-1] if '.' in filename else '').lower()
+        return {
+            'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+            'xlsx': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            'pdf': 'application/pdf',
+        }.get(ext, 'application/octet-stream')

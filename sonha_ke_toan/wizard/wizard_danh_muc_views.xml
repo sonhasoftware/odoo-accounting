@@ -6,7 +6,7 @@
         <field name="arch" type="xml">
             <form string="Chọn phiếu in">
                 <sheet>
-                    <field name="phieu_in"/>
+                    <field name="phieu_in" options="{'no_create': True}"/>
                 </sheet>
                 <footer>
                     <button string="In" type="object" name="action_print" class="oe_highlight"/>
