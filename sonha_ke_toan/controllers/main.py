@@ -1,4 +1,4 @@
-from odoo import http
+from odoo import http, _
 from odoo.http import request, content_disposition
 import io
 from datetime import date
@@ -653,6 +653,9 @@ import base64
 import re
 import zipfile
 import importlib.util
+import shutil
+import subprocess
+import tempfile
 import unicodedata
 from copy import copy
 from html import escape
@@ -682,14 +685,14 @@ class DynamicPhieuInController(http.Controller):
         record.check_access_rights('read')
         record.check_access_rule('read')
 
-        filename = self._download_filename(phieu)
+        template_filename = self._download_filename(phieu)
         content = base64.b64decode(phieu.temp)
-        rendered = self._render_template(content, filename, record)
-        mimetype = self._guess_mimetype(filename, rendered)
+        rendered, download_filename = self._render_template(content, template_filename, record)
+        mimetype = self._guess_mimetype(download_filename, rendered)
         return request.make_response(rendered, headers=[
             ('Content-Type', mimetype),
             ('Content-Length', str(len(rendered))),
-            ('Content-Disposition', content_disposition(filename)),
+            ('Content-Disposition', content_disposition(download_filename)),
         ])
 
     def _download_filename(self, phieu):
@@ -704,16 +707,23 @@ class DynamicPhieuInController(http.Controller):
         ext = (filename.rsplit('.', 1)[-1] if '.' in filename else '').lower()
         values = self._record_values(record)
         if ext == 'pdf' or content.startswith(b'%PDF-'):
-            return self._render_pdf(content, values)
+            return self._render_pdf(content, values), self._with_extension(filename, 'pdf')
         if ext == 'docx':
-            return self._render_docx(content, values)
+            rendered_docx = self._render_docx(content, values)
+            rendered_pdf = self._convert_docx_to_pdf(rendered_docx, filename)
+            return rendered_pdf, self._with_extension(filename, 'pdf')
         if ext == 'xlsx':
-            return self._render_xlsx(content, values)
+            return self._render_xlsx(content, values), filename
         # Text-like fallback: useful for csv/html/xml/txt templates.
         try:
-            return self._replace_placeholders(content.decode('utf-8'), values).encode('utf-8')
+            rendered = self._replace_placeholders(content.decode('utf-8'), values).encode('utf-8')
+            return rendered, filename
         except UnicodeDecodeError:
-            return content
+            return content, filename
+
+    def _with_extension(self, filename, extension):
+        base = (filename or 'phieu_in').rsplit('.', 1)[0]
+        return '%s.%s' % (base, extension)
 
     def _record_values(self, record):
         values = {'id': record.id, 'display_name': record.display_name or ''}
@@ -814,9 +824,103 @@ class DynamicPhieuInController(http.Controller):
                 data = zin.read(item.filename)
                 if item.filename.startswith('word/') and item.filename.endswith('.xml'):
                     text = data.decode('utf-8')
+                    text = self._fill_docx_lines(text, values.get('_lines') or [])
                     data = self._replace_placeholders(text, values, xml=True).encode('utf-8')
                 zout.writestr(item, data)
         return dst.getvalue()
+
+
+    def _fill_docx_lines(self, xml_text, lines):
+        if not lines:
+            return xml_text
+
+        def row_repl(match):
+            row_xml = match.group(0)
+            placeholder_keys = []
+            for _, key, alt_key in self._placeholder_re.findall(row_xml):
+                placeholder_keys.append(key or alt_key)
+            if not self._is_docx_line_row(placeholder_keys):
+                return row_xml
+
+            rendered_rows = []
+            for index, line in enumerate(lines, start=1):
+                row_values = dict(line)
+                row_values.update({
+                    '_lines.%s' % key: value
+                    for key, value in line.items()
+                })
+                row_values.update({
+                    'STT': str(index),
+                    'stt': str(index),
+                    'SoThuTu': str(index),
+                    'Số thứ tự': str(index),
+                })
+                rendered_rows.append(self._replace_placeholders(row_xml, row_values, xml=True))
+            return ''.join(rendered_rows)
+
+        return re.sub(r'<w:tr[\s\S]*?</w:tr>', row_repl, xml_text)
+
+    def _is_docx_line_row(self, keys):
+        if not keys:
+            return False
+        line_keys = {
+            'TEN_SAN_PHAM', 'Tên sản phẩm', 'MA_SAN_PHAM', 'Mã sản phẩm',
+            'SO_LUONG', 'Số lượng', 'DON_GIA', 'Đơn giá', 'THANH_TIEN',
+            'Thành tiền', 'DVT', 'Đơn vị tính', 'GHI_CHU', 'Ghi chú',
+        }
+        normalized_line_keys = {self._normalize_key(key) for key in line_keys}
+        for key in keys:
+            if key.startswith('_lines.'):
+                return True
+            if self._normalize_key(key) in normalized_line_keys:
+                return True
+        return False
+
+    def _convert_docx_to_pdf(self, content, filename):
+        converter = shutil.which('libreoffice') or shutil.which('soffice')
+        if not converter:
+            raise RuntimeError(_(
+                'Không tìm thấy LibreOffice/soffice trên server để chuyển file Word sang PDF.'
+            ))
+
+        safe_filename = self._safe_template_filename(filename, 'template.docx')
+        if not safe_filename.lower().endswith('.docx'):
+            safe_filename = self._with_extension(safe_filename, 'docx')
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            source_path = os.path.join(tmpdir, safe_filename)
+            with open(source_path, 'wb') as source_file:
+                source_file.write(content)
+
+            command = [
+                converter,
+                '--headless',
+                '--convert-to',
+                'pdf',
+                '--outdir',
+                tmpdir,
+                source_path,
+            ]
+            completed = subprocess.run(
+                command,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                timeout=120,
+                check=False,
+            )
+            pdf_path = os.path.splitext(source_path)[0] + '.pdf'
+            if completed.returncode or not os.path.exists(pdf_path):
+                message = (completed.stderr or completed.stdout or b'').decode(
+                    'utf-8', errors='ignore'
+                ).strip()
+                raise RuntimeError(_('Không thể chuyển file Word sang PDF. %s') % message)
+
+            with open(pdf_path, 'rb') as pdf_file:
+                return pdf_file.read()
+
+    def _safe_template_filename(self, filename, default):
+        filename = os.path.basename(filename or default)
+        return filename or default
 
     def _render_pdf(self, content, values):
         # PDF là file nhị phân nên không thể replace text trực tiếp như docx/xlsx.
