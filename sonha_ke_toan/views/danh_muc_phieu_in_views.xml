@@ -6,8 +6,10 @@
         <field name="arch" type="xml">
             <tree string="Danh mục phiếu in" editable="bottom">
                 <field name="ten"/>
-                <field name="temp"/>
+                <field name="temp" filename="temp_filename"/>
+                <field name="temp_filename" invisible="1"/>
                 <field name="menu"/>
+                <field name="model_id"/>
             </tree>
         </field>
     </record>
