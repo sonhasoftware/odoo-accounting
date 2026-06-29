@@ -1,5 +1,5 @@
 from odoo import http
-from odoo.http import request
+from odoo.http import request, content_disposition
 import io
 from datetime import date
 
@@ -652,6 +652,7 @@ class FieldConfirmController(http.Controller):
 import base64
 import re
 import zipfile
+import importlib.util
 from html import escape
 from urllib.parse import unquote
 
@@ -679,18 +680,29 @@ class DynamicPhieuInController(http.Controller):
         record.check_access_rights('read')
         record.check_access_rule('read')
 
-        filename = phieu.temp_filename or (phieu.ten or 'phieu_in')
+        filename = self._download_filename(phieu)
         content = base64.b64decode(phieu.temp)
         rendered = self._render_template(content, filename, record)
-        mimetype = self._guess_mimetype(filename)
+        mimetype = self._guess_mimetype(filename, rendered)
         return request.make_response(rendered, headers=[
             ('Content-Type', mimetype),
-            ('Content-Disposition', 'attachment; filename="%s"' % filename),
+            ('Content-Length', str(len(rendered))),
+            ('Content-Disposition', content_disposition(filename)),
         ])
+
+    def _download_filename(self, phieu):
+        filename = phieu.temp_filename or phieu.ten or 'phieu_in'
+        if phieu.temp and not filename.lower().endswith('.pdf'):
+            content_head = base64.b64decode(phieu.temp)[:5]
+            if content_head == b'%PDF-':
+                filename = '%s.pdf' % filename.rsplit('.', 1)[0]
+        return filename
 
     def _render_template(self, content, filename, record):
         ext = (filename.rsplit('.', 1)[-1] if '.' in filename else '').lower()
         values = self._record_values(record)
+        if ext == 'pdf' or content.startswith(b'%PDF-'):
+            return self._render_pdf(content, values)
         if ext == 'docx':
             return self._render_docx(content, values)
         if ext == 'xlsx':
@@ -741,6 +753,28 @@ class DynamicPhieuInController(http.Controller):
                 zout.writestr(item, data)
         return dst.getvalue()
 
+    def _render_pdf(self, content, values):
+        # PDF templates are binary files. Plain text placeholder replacement corrupts
+        # them, so keep the output as PDF. If pypdf is available in the Odoo
+        # runtime, fill AcroForm fields whose names match record field names.
+        if not importlib.util.find_spec('pypdf'):
+            return content
+        import pypdf
+
+        reader = pypdf.PdfReader(io.BytesIO(content))
+        writer = pypdf.PdfWriter()
+        for page in reader.pages:
+            writer.add_page(page)
+
+        if reader.trailer.get('/Root') and reader.trailer['/Root'].get('/AcroForm'):
+            writer.set_need_appearances_writer(True)
+            for page in writer.pages:
+                writer.update_page_form_field_values(page, values)
+
+        output = io.BytesIO()
+        writer.write(output)
+        return output.getvalue()
+
     def _render_xlsx(self, content, values):
         if not openpyxl:
             return content
@@ -754,7 +788,9 @@ class DynamicPhieuInController(http.Controller):
         workbook.save(output)
         return output.getvalue()
 
-    def _guess_mimetype(self, filename):
+    def _guess_mimetype(self, filename, content=None):
+        if content and content.startswith(b'%PDF-'):
+            return 'application/pdf'
         ext = (filename.rsplit('.', 1)[-1] if '.' in filename else '').lower()
         return {
             'docx': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
