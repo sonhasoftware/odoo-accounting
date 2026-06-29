@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+        <record id="view_danh_muc_phieu_in_tree" model="ir.ui.view">
+        <field name="name">danh.muc.phieu.in.tree</field>
+        <field name="model">danh.muc.phieu.in</field>
+        <field name="arch" type="xml">
+            <tree string="Danh mục phiếu in" editable="bottom">
+                <field name="ten"/>
+                <field name="temp"/>
+                <field name="menu"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="danh_muc_phieu_in_action" model="ir.actions.act_window">
+        <field name="name">Danh mục phiếu in</field>
+        <field name="res_model">danh.muc.phieu.in</field>
+        <field name="view_mode">tree</field>
+    </record>
+</odoo>

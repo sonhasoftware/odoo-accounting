@@ -159,6 +159,12 @@
               action="acc_nguon_action"
               sequence="24"/>
 
+    <menuitem id="menu_danh_muc_phieu_in"
+              name="Danh mục phiếu in"
+              parent="menu_danh_muc_accounting"
+              action="danh_muc_phieu_in_action"
+              sequence="25"/>
+
 <!--    <menuitem id="menu_acc_bao_cao"-->
 <!--              name="Danh mục báo cáo"-->
 <!--              parent="menu_danh_muc_accounting"-->

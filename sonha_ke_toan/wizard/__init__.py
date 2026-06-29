@@ -7,3 +7,4 @@ from . import popup_kc_lai_lo
 from . import popup_change_field
 from . import popup_bao_cao
 from . import popup_bao_cao_dt
+from . import wizard_danh_muc

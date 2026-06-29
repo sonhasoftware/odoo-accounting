@@ -121,3 +121,13 @@ access_nl_acc_pxvt_h,nl.acc.ap.pxvt.h,model_nl_acc_ap_pxvt_h,,1,1,1,1
 access_nl_acc_pxvt_d,nl.acc.ap.pxvt.d,model_nl_acc_ap_pxvt_d,,1,1,1,1
 access_sonha_accounting_log,sonha.accounting.log,model_sonha_accounting_log,,1,0,0,0
 access_sonha_accounting_log_line,sonha.accounting.log.line,model_sonha_accounting_log_line,,1,0,0,0
+
+
+
+
+
+access_danh_muc_phieu_in,danh.muc.phieu.in,model_danh_muc_phieu_in,,1,1,1,1
+
+
+
+access_wizard_danh_muc,wizard.danh.muc,model_wizard_danh_muc,,1,1,1,1
