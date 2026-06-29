@@ -654,6 +654,7 @@ import re
 import zipfile
 import importlib.util
 import unicodedata
+from copy import copy
 from html import escape
 from urllib.parse import unquote
 
@@ -716,8 +717,12 @@ class DynamicPhieuInController(http.Controller):
 
     def _record_values(self, record):
         values = {'id': record.id, 'display_name': record.display_name or ''}
+        line_values = []
         for name, field in record._fields.items():
-            if field.type in ('one2many', 'many2many', 'binary'):
+            if field.type == 'one2many':
+                line_values.extend(self._line_values(record[name]))
+                continue
+            if field.type in ('many2many', 'binary'):
                 continue
             try:
                 value = record[name]
@@ -730,7 +735,53 @@ class DynamicPhieuInController(http.Controller):
             # khi fill AcroForm (VD: "Ngày hạch toán", "Số chứng từ").
             if getattr(field, 'string', None):
                 values[field.string] = formatted
+
+        values.update(self._date_parts(values))
+        values['_lines'] = line_values
+        if line_values:
+            first_line = line_values[0]
+            for key, value in first_line.items():
+                values.setdefault(key, value)
         return values
+
+
+    def _line_values(self, lines):
+        result = []
+        for line in lines:
+            item = {}
+            for name, field in line._fields.items():
+                if field.type in ('one2many', 'many2many', 'binary'):
+                    continue
+                try:
+                    value = line[name]
+                except Exception:
+                    continue
+                formatted = self._format_value(value)
+                item[name] = formatted
+                if getattr(field, 'string', None):
+                    item[field.string] = formatted
+            product = item.get('HANG_HOA') or item.get('Hàng hóa') or item.get('SAN_PHAM') or item.get('Thành phẩm') or ''
+            item.setdefault('TEN_SAN_PHAM', product)
+            item.setdefault('Tên sản phẩm', product)
+            item.setdefault('MA_SAN_PHAM', item.get('MA_HANG') or item.get('Mã hàng') or item.get('MA_VT') or item.get('Mã vật tư') or '')
+            item.setdefault('SO_LUONG', item.get('SO_LUONG') or item.get('SL') or item.get('Số lượng') or '')
+            item.setdefault('DON_GIA', item.get('DON_GIA') or item.get('Đơn giá') or '')
+            item.setdefault('THANH_TIEN', item.get('PS_NO1') or item.get('PS_CO1') or item.get('Thành tiền') or '')
+            result.append(item)
+        return result
+
+    def _date_parts(self, values):
+        date_value = values.get('NGAY_CT') or values.get('Ngày CT') or values.get('NGAY_HD') or values.get('Ngày HĐ')
+        if not date_value:
+            return {}
+        parts = date_value.split('/')
+        if len(parts) != 3:
+            return {}
+        return {
+            'NGAY': parts[0], 'THANG': parts[1], 'NAM': parts[2],
+            'ngay': parts[0], 'thang': parts[1], 'nam': parts[2],
+            'Ngày': parts[0], 'Tháng': parts[1], 'Năm': parts[2],
+        }
 
     def _format_value(self, value):
         if not value:
@@ -746,7 +797,14 @@ class DynamicPhieuInController(http.Controller):
             key = match.group(2) or match.group(3)
             value = values.get(key, '')
             return escape(value) if xml else value
-        return self._placeholder_re.sub(repl, text)
+        text = self._placeholder_re.sub(repl, text)
+        date_value = values.get('NGAY_CT') or values.get('Ngày CT') or values.get('NGAY_HD') or values.get('Ngày HĐ')
+        if date_value:
+            parts = date_value.split('/')
+            if len(parts) == 3:
+                text = re.sub(r'ngày\s+\d{1,2}\s+tháng\s+\d{1,2}\s+năm\s+\d{4}',
+                              'ngày %s tháng %s năm %s' % (parts[0], parts[1], parts[2]), text, flags=re.IGNORECASE)
+        return text
 
     def _render_docx(self, content, values):
         src = io.BytesIO(content)
@@ -813,9 +871,68 @@ class DynamicPhieuInController(http.Controller):
                 for cell in row:
                     if isinstance(cell.value, str):
                         cell.value = self._replace_placeholders(cell.value, values)
+            self._fill_xlsx_lines(sheet, values.get('_lines') or [])
         output = io.BytesIO()
         workbook.save(output)
         return output.getvalue()
+
+    def _fill_xlsx_lines(self, sheet, lines):
+        if not lines:
+            return
+        header_row = None
+        column_map = {}
+        for row in sheet.iter_rows():
+            normalized = [self._normalize_key(cell.value) for cell in row]
+            if any('sanpham' in value or 'hanghoa' in value for value in normalized):
+                header_row = row[0].row
+                for cell in row:
+                    key = self._line_key_from_header(cell.value)
+                    if key:
+                        column_map[cell.column] = key
+                break
+        if not header_row or not column_map:
+            return
+        start_row = header_row + 1
+        if len(lines) > 1:
+            sheet.insert_rows(start_row + 1, len(lines) - 1)
+            for col in range(1, sheet.max_column + 1):
+                template_cell = sheet.cell(start_row, col)
+                for offset in range(1, len(lines)):
+                    target = sheet.cell(start_row + offset, col)
+                    if template_cell.has_style:
+                        target._style = copy(template_cell._style)
+                    target.number_format = template_cell.number_format
+                    target.alignment = copy(template_cell.alignment)
+                    target.font = copy(template_cell.font)
+                    target.fill = copy(template_cell.fill)
+                    target.border = copy(template_cell.border)
+        for index, line in enumerate(lines, start=1):
+            row_number = start_row + index - 1
+            for col, key in column_map.items():
+                value = index if key == '_stt' else line.get(key, '')
+                sheet.cell(row_number, col).value = value
+
+    def _line_key_from_header(self, header):
+        normalized = self._normalize_key(header)
+        if not normalized:
+            return None
+        if normalized in ('stt', 'sott') or 'stt' in normalized:
+            return '_stt'
+        if 'sanpham' in normalized or 'hanghoa' in normalized or 'tennhanhieu' in normalized:
+            return 'TEN_SAN_PHAM'
+        if 'maso' in normalized or 'mavattu' in normalized or 'mahang' in normalized:
+            return 'MA_SAN_PHAM'
+        if 'donvitinh' in normalized or normalized == 'dvt':
+            return 'DVT'
+        if 'soluong' in normalized or normalized.startswith('sl'):
+            return 'SO_LUONG'
+        if 'dongia' in normalized:
+            return 'DON_GIA'
+        if 'thanhtien' in normalized:
+            return 'THANH_TIEN'
+        if 'ghichu' in normalized:
+            return 'GHI_CHU'
+        return None
 
     def _guess_mimetype(self, filename, content=None):
         if content and content.startswith(b'%PDF-'):
