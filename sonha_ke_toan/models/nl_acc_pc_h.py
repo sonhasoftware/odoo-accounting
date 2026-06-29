@@ -529,8 +529,13 @@ class NlAccPcH(models.Model):
 
     def action_report_phieu_chi(self):
         self.ensure_one()
-        return {
-            'type': 'ir.actions.act_url',
-            'url': f'/download/phieu_chi/{self.id}',
+        action = self.env.ref('sonha_ke_toan.wizard_danh_muc_action').read()[0]
+        action.update({
             'target': 'new',
-        }
+            'context': {
+                'active_model': self._name,
+                'active_id': self.id,
+                'active_ids': self.ids,
+            },
+        })
+        return action

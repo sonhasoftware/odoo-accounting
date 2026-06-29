@@ -75,11 +75,17 @@ class NlAccHdbhH(models.Model):
     LOAIDL = fields.Many2one('acc.loaidl', string="Loại DL", store=True)
 
     def action_report_hdbh(self):
-        return {
-            'type': 'ir.actions.act_url',
-            'url': f'/download/phieu_ke_toan_hdbh/{self.id}',
-            'target': 'self',
-        }
+        self.ensure_one()
+        action = self.env.ref('sonha_ke_toan.wizard_danh_muc_action').read()[0]
+        action.update({
+            'target': 'new',
+            'context': {
+                'active_model': self._name,
+                'active_id': self.id,
+                'active_ids': self.ids,
+            },
+        })
+        return action
 
     @api.onchange('ACC_SP_D', 'ACC_SP_D.PS_NO1', 'ACC_SP_D.VAT', 'ACC_SP_D.SO_LUONG', 'ACC_SP_D.SL_TP')
     def _get_total_vat_sl_tien(self):

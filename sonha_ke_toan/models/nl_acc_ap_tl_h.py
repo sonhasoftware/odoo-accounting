@@ -76,11 +76,18 @@ class NlAccApTlH(models.Model):
 
     
     def action_report_phieu_nhap(self):
-        return {
-            'type': 'ir.actions.act_url',
-            'url': f'/download/phieu_nhap_tl/{self.id}',
-            'target': 'self',
-        }
+        self.ensure_one()
+        action = self.env.ref('sonha_ke_toan.wizard_danh_muc_action').read()[0]
+        action.update({
+            'target': 'new',
+            'context': {
+                'active_model': self._name,
+                'active_id': self.id,
+                'active_ids': self.ids,
+            },
+        })
+        return action
+
     @api.onchange('ACC_SP_D', 'ACC_SP_D.PS_NO1', 'ACC_SP_D.VAT', 'ACC_SP_D.SO_LUONG', 'ACC_SP_D.SL_TP')
     def _get_total_vat_sl_tien(self):
         for r in self:
