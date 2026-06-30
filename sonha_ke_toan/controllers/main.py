@@ -679,7 +679,15 @@ class DynamicPhieuInController(http.Controller):
             return request.not_found()
 
         model_name = unquote(model or '')
-        record = request.env[model_name].browse(int(record_id or 0)).exists()
+        if not model_name or model_name not in request.env.registry:
+            return request.not_found()
+
+        try:
+            record_id = int(record_id or 0)
+        except (TypeError, ValueError):
+            return request.not_found()
+
+        record = request.env[model_name].browse(record_id).exists()
         if not record:
             return request.not_found()
         record.check_access_rights('read')
@@ -756,8 +764,8 @@ class DynamicPhieuInController(http.Controller):
         return values
 
     def _add_phieu_nhap_aliases(self, record, values, line_values):
-        company = record.DVCS or record.env.company
-        partner = company.partner_id
+        company = self._get_record_company(record)
+        partner = company.partner_id if company else record.env.company.partner_id
         date_parts = self._date_parts(values)
         values.update({
             'ten_cong_ty': values.get('DVCS') or company.display_name or '',
@@ -787,6 +795,14 @@ class DynamicPhieuInController(http.Controller):
                 'ghi_chu': line.get('GHI_CHU') or line.get('Ghi chú') or '',
             })
 
+
+    def _get_record_company(self, record):
+        if 'DVCS' in record._fields and record.DVCS:
+            return record.DVCS
+        company = getattr(record, 'company_id', False)
+        if company:
+            return company
+        return record.env.company
 
     def _line_values(self, lines):
         result = []
