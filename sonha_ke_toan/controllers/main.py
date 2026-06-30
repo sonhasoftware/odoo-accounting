@@ -670,7 +670,7 @@ except ImportError:
 class DynamicPhieuInController(http.Controller):
     """Download user-uploaded print templates after filling record data."""
 
-    _placeholder_re = re.compile(r"(\{\{\s*([A-Za-z0-9_\.]+)\s*\}\}|\$\{\s*([A-Za-z0-9_\.]+)\s*\})")
+    _placeholder_re = re.compile(r"(\{\{\s*([A-Za-z0-9_\.]+)\s*\}\}|\$\{\s*([A-Za-z0-9_\.]+)\s*\}|\[\s*([A-Za-z0-9_\.]+)\s*\])")
 
     @http.route('/download/dynamic_phieu_in/<int:phieu_id>', type='http', auth='user')
     def download_dynamic_phieu_in(self, phieu_id, model=None, record_id=None, **kwargs):
@@ -747,12 +747,45 @@ class DynamicPhieuInController(http.Controller):
                 values[field.string] = formatted
 
         values.update(self._date_parts(values))
+        self._add_phieu_nhap_aliases(record, values, line_values)
         values['_lines'] = line_values
         if line_values:
             first_line = line_values[0]
             for key, value in first_line.items():
                 values.setdefault(key, value)
         return values
+
+    def _add_phieu_nhap_aliases(self, record, values, line_values):
+        company = record.DVCS or record.env.company
+        partner = company.partner_id
+        date_parts = self._date_parts(values)
+        values.update({
+            'ten_cong_ty': values.get('DVCS') or company.display_name or '',
+            'dia_chi_cong_ty': partner.contact_address or '',
+            'ngay': date_parts.get('ngay', ''),
+            'thang': date_parts.get('thang', ''),
+            'nam': date_parts.get('nam', ''),
+            'so_phieu_nhap': values.get('CHUNG_TU') or values.get('Chứng từ') or '',
+            'ho_ten_nguoi_giao_hang': values.get('ONG_BA') or values.get('Ông bà') or values.get('KHACH_HANG') or values.get('Khách hàng') or '',
+            'so_hoa_don': values.get('SO_HD') or values.get('Số HĐ') or '',
+            'ngay_hoa_don': values.get('NGAY_HD') or values.get('Ngày HĐ') or '',
+            'ten_kho_nhap': values.get('KHO') or values.get('Kho') or '',
+            'noi_dung_nhap': values.get('GHI_CHU') or values.get('Ghi chú') or '',
+            'ngay_ky': values.get('NGAY_CT') or values.get('Ngày CT') or '',
+            'thang_ky': date_parts.get('thang', ''),
+            'nam_ky': date_parts.get('nam', ''),
+        })
+
+        for index, line in enumerate(line_values, start=1):
+            line.update({
+                'stt': str(index),
+                'ten_vat_tu': line.get('TEN_SAN_PHAM') or line.get('HANG_HOA') or line.get('Hàng hóa') or '',
+                'ma_vat_tu': line.get('MA_SAN_PHAM') or line.get('MA_HANG') or line.get('Mã hàng') or '',
+                'don_vi_tinh': line.get('DVT') or line.get('Đơn vị tính') or '',
+                'sl_theo_chung_tu': line.get('SO_LUONG') or line.get('Số lượng') or '',
+                'sl_thuc_nhap': line.get('SO_LUONG2') or line.get('SO_LUONG') or line.get('Số lượng') or '',
+                'ghi_chu': line.get('GHI_CHU') or line.get('Ghi chú') or '',
+            })
 
 
     def _line_values(self, lines):
@@ -770,10 +803,18 @@ class DynamicPhieuInController(http.Controller):
                 item[name] = formatted
                 if getattr(field, 'string', None):
                     item[field.string] = formatted
+            product_record = getattr(line, 'HANG_HOA', False) or getattr(line, 'SAN_PHAM', False)
             product = item.get('HANG_HOA') or item.get('Hàng hóa') or item.get('SAN_PHAM') or item.get('Thành phẩm') or ''
+            product_code = ''
+            product_uom = ''
+            if product_record:
+                product = (getattr(product_record, 'TEN_HANG', False) or getattr(product_record, 'TEN', False) or product_record.display_name or product)
+                product_code = (getattr(product_record, 'MA_HANG', False) or getattr(product_record, 'MA', False) or '')
+                product_uom = (getattr(product_record, 'DVT', False) or getattr(product_record, 'DON_VI_TINH', False) or '')
             item.setdefault('TEN_SAN_PHAM', product)
             item.setdefault('Tên sản phẩm', product)
-            item.setdefault('MA_SAN_PHAM', item.get('MA_HANG') or item.get('Mã hàng') or item.get('MA_VT') or item.get('Mã vật tư') or '')
+            item.setdefault('MA_SAN_PHAM', product_code or item.get('MA_HANG') or item.get('Mã hàng') or item.get('MA_VT') or item.get('Mã vật tư') or '')
+            item.setdefault('DVT', product_uom or item.get('DVT') or item.get('Đơn vị tính') or '')
             item.setdefault('SO_LUONG', item.get('SO_LUONG') or item.get('SL') or item.get('Số lượng') or '')
             item.setdefault('DON_GIA', item.get('DON_GIA') or item.get('Đơn giá') or '')
             item.setdefault('THANH_TIEN', item.get('PS_NO1') or item.get('PS_CO1') or item.get('Thành tiền') or '')
@@ -804,7 +845,7 @@ class DynamicPhieuInController(http.Controller):
 
     def _replace_placeholders(self, text, values, xml=False):
         def repl(match):
-            key = match.group(2) or match.group(3)
+            key = self._placeholder_key(match.groups())
             value = values.get(key, '')
             return escape(value) if xml else value
         text = self._placeholder_re.sub(repl, text)
@@ -815,6 +856,12 @@ class DynamicPhieuInController(http.Controller):
                 text = re.sub(r'ngày\s+\d{1,2}\s+tháng\s+\d{1,2}\s+năm\s+\d{4}',
                               'ngày %s tháng %s năm %s' % (parts[0], parts[1], parts[2]), text, flags=re.IGNORECASE)
         return text
+
+    def _placeholder_key(self, groups):
+        for key in groups[1:]:
+            if key:
+                return key
+        return ''
 
     def _render_docx(self, content, values):
         src = io.BytesIO(content)
@@ -837,8 +884,8 @@ class DynamicPhieuInController(http.Controller):
         def row_repl(match):
             row_xml = match.group(0)
             placeholder_keys = []
-            for _, key, alt_key in self._placeholder_re.findall(row_xml):
-                placeholder_keys.append(key or alt_key)
+            for match in self._placeholder_re.findall(row_xml):
+                placeholder_keys.append(self._placeholder_key(match))
             if not self._is_docx_line_row(placeholder_keys):
                 return row_xml
 
@@ -867,6 +914,8 @@ class DynamicPhieuInController(http.Controller):
             'TEN_SAN_PHAM', 'Tên sản phẩm', 'MA_SAN_PHAM', 'Mã sản phẩm',
             'SO_LUONG', 'Số lượng', 'DON_GIA', 'Đơn giá', 'THANH_TIEN',
             'Thành tiền', 'DVT', 'Đơn vị tính', 'GHI_CHU', 'Ghi chú',
+            'ten_vat_tu', 'ma_vat_tu', 'don_vi_tinh', 'sl_theo_chung_tu',
+            'sl_thuc_nhap', 'ghi_chu', 'stt',
         }
         normalized_line_keys = {self._normalize_key(key) for key in line_keys}
         for key in keys:
