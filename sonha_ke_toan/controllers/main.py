@@ -674,6 +674,9 @@ class DynamicPhieuInController(http.Controller):
 
     @http.route('/download/dynamic_phieu_in/<int:phieu_id>', type='http', auth='user')
     def download_dynamic_phieu_in(self, phieu_id, model=None, record_id=None, **kwargs):
+        model = self._get_request_param(model, kwargs, 'model', 'active_model')
+        record_id = self._get_request_param(record_id, kwargs, 'record_id', 'active_id', 'id')
+
         phieu = request.env['danh.muc.phieu.in'].sudo().browse(phieu_id)
         if not phieu.exists() or not phieu.temp:
             return request.not_found()
@@ -702,6 +705,15 @@ class DynamicPhieuInController(http.Controller):
             ('Content-Length', str(len(rendered))),
             ('Content-Disposition', content_disposition(download_filename)),
         ])
+
+    def _get_request_param(self, value, kwargs, *names):
+        if value not in (None, ''):
+            return value
+        for name in names:
+            for candidate in (name, name.upper(), name.capitalize()):
+                if kwargs.get(candidate) not in (None, ''):
+                    return kwargs[candidate]
+        return value
 
     def _download_filename(self, phieu):
         filename = phieu.temp_filename or phieu.ten or 'phieu_in'
@@ -862,7 +874,7 @@ class DynamicPhieuInController(http.Controller):
     def _replace_placeholders(self, text, values, xml=False):
         def repl(match):
             key = self._placeholder_key(match.groups())
-            value = values.get(key, '')
+            value = self._value_by_key(values, key, '')
             return escape(value) if xml else value
         text = self._placeholder_re.sub(repl, text)
         date_value = values.get('NGAY_CT') or values.get('Ngày CT') or values.get('NGAY_HD') or values.get('Ngày HĐ')
@@ -878,6 +890,19 @@ class DynamicPhieuInController(http.Controller):
             if key:
                 return key
         return ''
+
+    def _value_by_key(self, values, key, default=''):
+        if key in values:
+            return values[key]
+        lower_key = str(key or '').lower()
+        for value_key, value in values.items():
+            if str(value_key).lower() == lower_key:
+                return value
+        normalized_key = self._normalize_key(key)
+        for value_key, value in values.items():
+            if self._normalize_key(value_key) == normalized_key:
+                return value
+        return default
 
     def _render_docx(self, content, values):
         src = io.BytesIO(content)
@@ -1051,7 +1076,7 @@ class DynamicPhieuInController(http.Controller):
         normalized_values = {self._normalize_key(key): value for key, value in values.items()}
         form_values = {}
         for field_name in fields:
-            value = values.get(field_name)
+            value = self._value_by_key(values, field_name, None)
             if value is None:
                 value = normalized_values.get(self._normalize_key(field_name), '')
             form_values[field_name] = value
