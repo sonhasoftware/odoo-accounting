@@ -187,6 +187,10 @@ patch(ListRenderer.prototype, {
         if (flushWidths) {
             this._flushPendingColumnWidthPersistence();
         }
+        if (this._columnWidthResizeObserver) {
+            this._columnWidthResizeObserver.disconnect();
+            this._columnWidthResizeObserver = null;
+        }
         for (const entry of this._columnReorderHandlers) {
             for (const [eventName, fn, options] of entry.listeners) {
                 entry.element.removeEventListener(eventName, fn, options);
@@ -248,7 +252,15 @@ patch(ListRenderer.prototype, {
             }, 100);
         };
 
+        if (this._columnWidthResizeObserver) {
+            this._columnWidthResizeObserver.disconnect();
+        }
+        if (window.ResizeObserver) {
+            this._columnWidthResizeObserver = new ResizeObserver(() => persistWidths());
+        }
         headers.forEach((header) => {
+            this._columnWidthResizeObserver?.observe(header);
+
             const onResizeStart = (ev) => {
                 if (!this._isColumnResizeEvent(ev, header)) {
                     return;
