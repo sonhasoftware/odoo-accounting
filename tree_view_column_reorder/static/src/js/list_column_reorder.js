@@ -13,9 +13,15 @@ patch(ListRenderer.prototype, {
         this._columnWidthPendingWidths = null;
         this._columnWidthPendingStorageKey = null;
         this._columnWidthResizeState = null;
+        this._columnWidthResizeObserver = null;
+        this._columnWidthBeforeUnload = () => this._flushPendingColumnWidthPersistence();
+        window.addEventListener("beforeunload", this._columnWidthBeforeUnload);
         onMounted(() => this._setupColumnReorder());
         onPatched(() => this._setupColumnReorder());
-        onWillUnmount(() => this._cleanupColumnReorderHandlers({ flushWidths: true }));
+        onWillUnmount(() => {
+            this._cleanupColumnReorderHandlers({ flushWidths: true });
+            window.removeEventListener("beforeunload", this._columnWidthBeforeUnload);
+        });
     },
 
     _getColumnStorageKey(type, table = null) {
@@ -34,6 +40,12 @@ patch(ListRenderer.prototype, {
     },
 
     _getColumnWidthStorageKey(table = null) {
+        const baseKey = this._getColumnStorageKey("width_cache", table);
+        const screenKey = this._getColumnWidthScreenStorageKey();
+        return screenKey ? `${baseKey}:${screenKey}` : baseKey;
+    },
+
+    _getLegacyColumnWidthStorageKey(table = null) {
         const baseKey = this._getColumnStorageKey("width", table);
         const screenKey = this._getColumnWidthScreenStorageKey();
         return screenKey ? `${baseKey}:${screenKey}` : baseKey;
@@ -43,13 +55,11 @@ patch(ListRenderer.prototype, {
         const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
         const actionId = this.env?.config?.actionId || hashParams.get("action");
         const menuId = this.env?.config?.menuId || hashParams.get("menu_id");
-        const viewType = this.env?.config?.viewType || hashParams.get("view_type");
-        const activeId = hashParams.get("id");
+        const viewType = this.env?.config?.viewType || hashParams.get("view_type") || "list";
         const parts = [
             actionId ? `action=${actionId}` : "",
             menuId ? `menu=${menuId}` : "",
             viewType ? `view=${viewType}` : "",
-            activeId ? `id=${activeId}` : "",
         ].filter(Boolean);
 
         return parts.length ? parts.join("|") : "";
@@ -159,6 +169,10 @@ patch(ListRenderer.prototype, {
         if (flushWidths) {
             this._flushPendingColumnWidthPersistence();
         }
+        if (this._columnWidthResizeObserver) {
+            this._columnWidthResizeObserver.disconnect();
+            this._columnWidthResizeObserver = null;
+        }
         for (const entry of this._columnReorderHandlers) {
             for (const [eventName, fn, options] of entry.listeners) {
                 entry.element.removeEventListener(eventName, fn, options);
@@ -212,7 +226,15 @@ patch(ListRenderer.prototype, {
             }, 100);
         };
 
+        if (this._columnWidthResizeObserver) {
+            this._columnWidthResizeObserver.disconnect();
+        }
+        if (window.ResizeObserver) {
+            this._columnWidthResizeObserver = new ResizeObserver(() => persistWidths());
+        }
         headers.forEach((header) => {
+            this._columnWidthResizeObserver?.observe(header);
+
             const onResizeStart = (ev) => {
                 if (!this._isColumnResizeEvent(ev, header)) {
                     return;
@@ -463,7 +485,10 @@ patch(ListRenderer.prototype, {
         let savedWidths = {};
         try {
             savedWidths = JSON.parse(
-                this._getStoredColumnValue(storageKey, this._getLegacyColumnStorageKey("width"), "{}")
+                localStorage.getItem(storageKey) ||
+                    localStorage.getItem(this._getLegacyColumnWidthStorageKey(table)) ||
+                    localStorage.getItem(this._getLegacyColumnStorageKey("width")) ||
+                    "{}"
             );
         } catch {
             savedWidths = {};
