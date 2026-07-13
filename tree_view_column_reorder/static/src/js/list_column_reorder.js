@@ -577,7 +577,13 @@ patch(ListRenderer.prototype, {
         localStorage.setItem(storageKey, nextWidths);
 
         if (baseStorageKey !== storageKey) {
-            localStorage.setItem(baseStorageKey, nextWidths);
+            let savedBaseWidths = {};
+            try {
+                savedBaseWidths = JSON.parse(localStorage.getItem(baseStorageKey) || "{}");
+            } catch {
+                savedBaseWidths = {};
+            }
+            localStorage.setItem(baseStorageKey, JSON.stringify({ ...savedBaseWidths, ...validWidths }));
         }
     },
 });
