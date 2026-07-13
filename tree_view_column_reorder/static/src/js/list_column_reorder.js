@@ -60,13 +60,36 @@ patch(ListRenderer.prototype, {
     },
 
     _getColumnWidthCacheStorageKeys(table = null) {
+        const legacyBaseKey = this._getLegacyColumnWidthBaseStorageKey(table);
+        const legacyScreenKey = this._getLegacyColumnWidthStorageKey(table);
+        const unknownViewBaseKey = this._getColumnStorageKey("width_cache");
+        const unknownViewScreenKey = this._getColumnWidthScreenStorageKey()
+            ? `${unknownViewBaseKey}:${this._getColumnWidthScreenStorageKey()}`
+            : unknownViewBaseKey;
+
         return [
             this._getColumnWidthStorageKey(table),
             this._getColumnWidthBaseStorageKey(table),
-            this._getLegacyColumnWidthStorageKey(table),
-            this._getLegacyColumnWidthBaseStorageKey(table),
+            unknownViewScreenKey,
+            unknownViewBaseKey,
+            legacyScreenKey,
+            legacyBaseKey,
             this._getLegacyColumnStorageKey("width"),
+            ...this._getMatchingColumnWidthStorageKeys(),
         ].filter((key, index, keys) => key && keys.indexOf(key) === index);
+    },
+
+    _getMatchingColumnWidthStorageKeys() {
+        const resModel = this.props.list?.resModel || "unknown_model";
+        const prefixes = [`tree_column_width_cache:${resModel}:`, `tree_column_width:${resModel}:`];
+        const matchingKeys = [];
+        for (let index = 0; index < localStorage.length; index++) {
+            const key = localStorage.key(index);
+            if (key && prefixes.some((prefix) => key.startsWith(prefix))) {
+                matchingKeys.push(key);
+            }
+        }
+        return matchingKeys;
     },
 
     _getColumnWidthScreenStorageKey() {
