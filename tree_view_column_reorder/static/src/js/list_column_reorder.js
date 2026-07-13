@@ -91,14 +91,14 @@ patch(ListRenderer.prototype, {
     _getStoredColumnValue(storageKey, legacyStorageKey, fallbackValue) {
         const storedValue = localStorage.getItem(storageKey);
         if (storedValue !== null || storageKey === legacyStorageKey) {
-            return storedValue || fallbackValue;
+            return storedValue ?? fallbackValue;
         }
-        return localStorage.getItem(legacyStorageKey) || fallbackValue;
+        return localStorage.getItem(legacyStorageKey) ?? fallbackValue;
     },
 
     _getColumnStorageSignature(table) {
         const names = this._getColumnHeaders(table).map((header) => header.dataset.name).filter(Boolean);
-        return names.length ? names.join("|") : "unknown_view";
+        return names.length ? [...names].sort().join("|") : "unknown_view";
     },
 
     _getColumnHeaderRow(table) {
