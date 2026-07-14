@@ -8,6 +8,10 @@
     "author": "Local Custom",
     "license": "LGPL-3",
     "depends": ["web"],
+    "data": [
+        "security/ir.model.access.csv",
+        "security/tree_view_column_preference_security.xml",
+    ],
     "assets": {
         "web.assets_backend": [
             "tree_view_column_reorder/static/src/js/list_column_reorder.js",
