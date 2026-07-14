@@ -3,10 +3,14 @@
 import { ListRenderer } from "@web/views/list/list_renderer";
 import { patch } from "@web/core/utils/patch";
 import { onMounted, onPatched, onWillUnmount } from "@odoo/owl";
+import { useService } from "@web/core/utils/hooks";
 
 patch(ListRenderer.prototype, {
     setup() {
         super.setup();
+        this.orm = useService("orm");
+        this._columnPreferenceCache = new Map();
+        this._columnPreferenceLoading = new Set();
         this._columnReorderHandlers = [];
         this._columnWidthPersistTimeout = null;
         this._columnWidthPersistTable = null;
@@ -14,6 +18,7 @@ patch(ListRenderer.prototype, {
         this._columnWidthPendingStorageKey = null;
         this._columnWidthPendingBaseStorageKey = null;
         this._columnWidthResizeState = null;
+        this._columnPreferencePersistTimeouts = new Map();
         this._columnWidthBeforeUnload = () => this._flushPendingColumnWidthPersistence();
         window.addEventListener("beforeunload", this._columnWidthBeforeUnload);
         onMounted(() => this._setupColumnReorder());
@@ -112,11 +117,63 @@ patch(ListRenderer.prototype, {
     },
 
     _getStoredColumnValue(storageKey, legacyStorageKey, fallbackValue) {
+        const cachedValue = this._columnPreferenceCache.get(storageKey);
+        if (cachedValue !== undefined) {
+            return cachedValue ?? fallbackValue;
+        }
         const storedValue = localStorage.getItem(storageKey);
         if (storedValue !== null || storageKey === legacyStorageKey) {
             return storedValue ?? fallbackValue;
         }
+        const legacyValue = this._columnPreferenceCache.get(legacyStorageKey);
+        if (legacyValue !== undefined) {
+            return legacyValue ?? fallbackValue;
+        }
         return localStorage.getItem(legacyStorageKey) ?? fallbackValue;
+    },
+
+    _loadColumnPreferences(keys, table = null) {
+        const missingKeys = keys.filter(
+            (key) => key && !this._columnPreferenceCache.has(key) && !this._columnPreferenceLoading.has(key)
+        );
+        if (!missingKeys.length) {
+            return;
+        }
+        missingKeys.forEach((key) => this._columnPreferenceLoading.add(key));
+        this.orm
+            .call("tree.view.column.preference", "get_values", [missingKeys])
+            .then((values) => {
+                Object.entries(values || {}).forEach(([key, value]) => {
+                    this._columnPreferenceCache.set(key, value);
+                    localStorage.setItem(key, value);
+                });
+                if (table?.isConnected && Object.keys(values || {}).length) {
+                    this._applySavedColumnOrder(table);
+                    this._applySavedColumnWidths(table);
+                }
+            })
+            .catch(() => {})
+            .finally(() => {
+                missingKeys.forEach((key) => this._columnPreferenceLoading.delete(key));
+            });
+    },
+
+    _persistColumnPreference(key, value) {
+        if (!key) {
+            return;
+        }
+        this._columnPreferenceCache.set(key, value);
+        localStorage.setItem(key, value);
+        if (this._columnPreferencePersistTimeouts.has(key)) {
+            clearTimeout(this._columnPreferencePersistTimeouts.get(key));
+        }
+        this._columnPreferencePersistTimeouts.set(
+            key,
+            setTimeout(() => {
+                this._columnPreferencePersistTimeouts.delete(key);
+                this.orm.call("tree.view.column.preference", "set_value", [key, value]).catch(() => {});
+            }, 250)
+        );
     },
 
     _getColumnStorageSignature(table) {
@@ -146,6 +203,11 @@ patch(ListRenderer.prototype, {
 
         this._cleanupColumnReorderHandlers({ flushWidths: true });
         this._ensureColumnReorderBaseOrder(table);
+        this._loadColumnPreferences([
+            this._getColumnReorderStorageKey(table),
+            this._getLegacyColumnStorageKey("reorder"),
+            ...this._getColumnWidthCacheStorageKeys(table),
+        ], table);
         this._applySavedColumnOrder(table);
         this._applySavedColumnWidths(table);
         this._setupColumnWidthPersistence(table);
@@ -527,7 +589,7 @@ patch(ListRenderer.prototype, {
     _persistCurrentColumnOrder(table) {
         const storageKey = this._getColumnReorderStorageKey(table);
         const order = this._getColumnHeaders(table).map((header) => header.dataset.name);
-        localStorage.setItem(storageKey, JSON.stringify(order));
+        this._persistColumnPreference(storageKey, JSON.stringify(order));
     },
 
     _applySavedColumnWidths(table) {
@@ -536,7 +598,7 @@ patch(ListRenderer.prototype, {
         try {
             savedWidths = JSON.parse(
                 this._getColumnWidthCacheStorageKeys(table)
-                    .map((key) => localStorage.getItem(key))
+                    .map((key) => this._columnPreferenceCache.get(key) || localStorage.getItem(key))
                     .find((value) => value) || "{}"
             );
         } catch {
@@ -597,7 +659,7 @@ patch(ListRenderer.prototype, {
             savedWidths = {};
         }
         const nextWidths = JSON.stringify({ ...savedWidths, ...validWidths });
-        localStorage.setItem(storageKey, nextWidths);
+        this._persistColumnPreference(storageKey, nextWidths);
 
         if (baseStorageKey !== storageKey) {
             let savedBaseWidths = {};
@@ -606,7 +668,7 @@ patch(ListRenderer.prototype, {
             } catch {
                 savedBaseWidths = {};
             }
-            localStorage.setItem(baseStorageKey, JSON.stringify({ ...savedBaseWidths, ...validWidths }));
+            this._persistColumnPreference(baseStorageKey, JSON.stringify({ ...savedBaseWidths, ...validWidths }));
         }
     },
 });
