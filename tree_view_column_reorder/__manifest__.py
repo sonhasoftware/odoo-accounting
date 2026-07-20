@@ -7,10 +7,9 @@
     "description": "Allow administrators to configure shared list column order and widths per view.",
     "author": "Local Custom",
     "license": "LGPL-3",
-    "depends": ["web"],
+    "depends": ["web", "bus"],
     "data": [
         "security/ir.model.access.csv",
-        "security/tree_view_column_preference_security.xml",
     ],
     "assets": {
         "web.assets_backend": [
