@@ -1,4 +1,8 @@
 .o_list_table {
+    &.o_column_customization_disabled .o_resize {
+        display: none;
+    }
+
     thead th.o_col_reorder_draggable {
         cursor: move;
         user-select: none;
