@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <record id="tree_view_column_preference_user_rule" model="ir.rule">
+        <field name="name">Tree view column preferences: own records only</field>
+        <field name="model_id" ref="model_tree_view_column_preference"/>
+        <field name="domain_force">[('user_id', '=', user.id)]</field>
+        <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+    </record>
+</odoo>
