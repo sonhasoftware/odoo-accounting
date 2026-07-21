@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 {
     "name": "Tree View Column Reorder",
-    "version": "17.0.3.0.0",
+    "version": "17.0.1.0.0",
     "category": "Extra Tools",
     "summary": "Drag and drop to reorder columns in all tree/list views",
     "description": "Allow administrators to configure shared list column order, widths and labels per view.",
