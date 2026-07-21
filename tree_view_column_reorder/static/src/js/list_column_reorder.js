@@ -1,14 +1,17 @@
 /** @odoo-module */
 
 import { ListRenderer } from "@web/views/list/list_renderer";
+import { _t } from "@web/core/l10n/translation";
 import { useBus, useService } from "@web/core/utils/hooks";
 import { patch } from "@web/core/utils/patch";
 import { onMounted, onPatched, onWillUnmount } from "@odoo/owl";
+import { ColumnLabelDialog } from "./column_label_dialog";
 
 patch(ListRenderer.prototype, {
     setup() {
         super.setup();
         this.columnLayoutService = useService("tree_view_column_layout");
+        this.dialogService = useService("dialog");
         this._columnReorderHandlers = [];
         this._columnResizePersistenceHandlers = [];
         useBus(this.columnLayoutService.bus, "updated", this._onSharedColumnLayoutUpdated);
@@ -42,7 +45,39 @@ patch(ListRenderer.prototype, {
     },
 
     getActiveColumns(list) {
-        return this._sortColumnsBySharedOrder(super.getActiveColumns(list));
+        const columns = this._withColumnLayoutMetadata(super.getActiveColumns(list));
+        return this._sortColumnsBySharedOrder(this._applySharedColumnLabels(columns));
+    },
+
+    _withColumnLayoutMetadata(columns) {
+        const occurrences = new Map();
+        const keysByColumnId = new Map();
+        for (const column of this.allColumns || columns) {
+            if (column.type !== "field") {
+                continue;
+            }
+            const occurrence = occurrences.get(column.name) || 0;
+            keysByColumnId.set(column.id, `${column.name}#${occurrence}`);
+            occurrences.set(column.name, occurrence + 1);
+        }
+        return columns.map((column) => {
+            if (column.type !== "field") {
+                return column;
+            }
+            return {
+                ...column,
+                layoutKey: keysByColumnId.get(column.id) || `${column.name}#0`,
+                defaultLabel: column.label,
+            };
+        });
+    },
+
+    _applySharedColumnLabels(columns) {
+        const labels = this._getColumnLayout()?.labels || {};
+        return columns.map((column) => {
+            const label = column.layoutKey ? labels[column.layoutKey] : null;
+            return typeof label === "string" && label ? { ...column, label } : column;
+        });
     },
 
     _sortColumnsBySharedOrder(columns) {
@@ -51,16 +86,23 @@ patch(ListRenderer.prototype, {
             return columns;
         }
 
-        const savedRank = new Map(savedOrder.map((name, index) => [name, index]));
+        const savedRank = new Map(savedOrder.map((key, index) => [key, index]));
         const indexes = [];
         const orderedColumns = [];
         columns.forEach((column, index) => {
-            if (column.type === "field" && savedRank.has(column.name)) {
+            if (
+                column.type === "field" &&
+                (savedRank.has(column.layoutKey) || savedRank.has(column.name))
+            ) {
                 indexes.push(index);
                 orderedColumns.push(column);
             }
         });
-        orderedColumns.sort((left, right) => savedRank.get(left.name) - savedRank.get(right.name));
+        const getRank = (column) =>
+            savedRank.has(column.layoutKey)
+                ? savedRank.get(column.layoutKey)
+                : savedRank.get(column.name);
+        orderedColumns.sort((left, right) => getRank(left) - getRank(right));
         if (orderedColumns.length < 2) {
             return columns;
         }
@@ -90,8 +132,15 @@ patch(ListRenderer.prototype, {
             header.classList.add("o_col_reorder_draggable");
 
             const onDragStart = (ev) => {
+                if (ev.target.closest(".o_column_label_edit")) {
+                    ev.preventDefault();
+                    return;
+                }
                 ev.dataTransfer.effectAllowed = "move";
-                ev.dataTransfer.setData("text/plain", header.dataset.name || "");
+                ev.dataTransfer.setData(
+                    "text/plain",
+                    header.dataset.layoutKey || header.dataset.name || ""
+                );
                 header.classList.add("o_col_reorder_dragging");
             };
             const onDragEnd = () => {
@@ -105,10 +154,10 @@ patch(ListRenderer.prototype, {
             const onDragLeave = () => header.classList.remove("o_col_reorder_over");
             const onDrop = (ev) => {
                 ev.preventDefault();
-                const sourceName = ev.dataTransfer.getData("text/plain");
-                const targetName = header.dataset.name;
+                const sourceKey = ev.dataTransfer.getData("text/plain");
+                const targetKey = header.dataset.layoutKey || header.dataset.name;
                 this._clearDragIndicators(table);
-                this._reorderColumnsByName(sourceName, targetName);
+                this._reorderColumnsByKey(sourceKey, targetKey);
             };
 
             const listeners = [
@@ -155,9 +204,9 @@ patch(ListRenderer.prototype, {
         }
 
         const header = ev.target.closest("th[data-name]");
-        const fieldName = header?.dataset.name;
+        const columnKey = header?.dataset.layoutKey || header?.dataset.name;
         super.onStartResize(ev);
-        if (!header || !fieldName) {
+        if (!header || !columnKey) {
             return;
         }
 
@@ -171,7 +220,7 @@ patch(ListRenderer.prototype, {
             if (width > 0) {
                 this.columnLayoutService.saveWidth(
                     this._getColumnStorageViewId(),
-                    fieldName,
+                    columnKey,
                     width
                 );
             }
@@ -182,22 +231,24 @@ patch(ListRenderer.prototype, {
         }
     },
 
-    _reorderColumnsByName(sourceName, targetName) {
+    _reorderColumnsByKey(sourceKey, targetKey) {
         if (
             !this._canCustomizeColumns() ||
-            !sourceName ||
-            !targetName ||
-            sourceName === targetName
+            !sourceKey ||
+            !targetKey ||
+            sourceKey === targetKey
         ) {
             return;
         }
 
         const columns = [...this.state.columns];
         const sourceIndex = columns.findIndex(
-            (column) => column.type === "field" && column.name === sourceName
+            (column) =>
+                column.type === "field" && (column.layoutKey || column.name) === sourceKey
         );
         const targetIndex = columns.findIndex(
-            (column) => column.type === "field" && column.name === targetName
+            (column) =>
+                column.type === "field" && (column.layoutKey || column.name) === targetKey
         );
         if (sourceIndex < 0 || targetIndex < 0 || sourceIndex === targetIndex) {
             return;
@@ -207,8 +258,8 @@ patch(ListRenderer.prototype, {
         columns.splice(targetIndex, 0, sourceColumn);
         this.state.columns = columns;
         const order = columns
-            .filter((column) => column.type === "field" && column.name)
-            .map((column) => column.name);
+            .filter((column) => column.type === "field" && column.layoutKey)
+            .map((column) => column.layoutKey);
         this.columnLayoutService.saveOrder(this._getColumnStorageViewId(), order);
     },
 
@@ -221,7 +272,8 @@ patch(ListRenderer.prototype, {
         let tableWidth = table.getBoundingClientRect().width;
         let widthDelta = 0;
         for (const header of this._getColumnHeaders(table)) {
-            const width = widths[header.dataset.name];
+            const width =
+                widths[header.dataset.layoutKey] ?? widths[header.dataset.name];
             if (!(width > 0)) {
                 continue;
             }
@@ -245,6 +297,33 @@ patch(ListRenderer.prototype, {
         this.keepColumnWidths = false;
         this.columnWidths = null;
         this.state.columns = this.getActiveColumns(this.props.list);
+    },
+
+    openColumnLabelEditor(ev, column) {
+        ev.stopPropagation();
+        ev.preventDefault();
+        if (!this._canCustomizeColumns() || !column.layoutKey) {
+            return;
+        }
+        const labels = this._getColumnLayout()?.labels || {};
+        this.dialogService.add(ColumnLabelDialog, {
+            title: _t("Đổi tên cột"),
+            label: column.label || "",
+            defaultLabel: column.defaultLabel || column.label || "",
+            canReset: Object.prototype.hasOwnProperty.call(labels, column.layoutKey),
+            save: (label) =>
+                this.columnLayoutService.saveLabel(
+                    this._getColumnStorageViewId(),
+                    column.layoutKey,
+                    label
+                ),
+            reset: () =>
+                this.columnLayoutService.saveLabel(
+                    this._getColumnStorageViewId(),
+                    column.layoutKey,
+                    null
+                ),
+        });
     },
 
     resetColumnLayout() {

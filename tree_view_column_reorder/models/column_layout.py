@@ -19,6 +19,7 @@ class TreeViewColumnLayout(models.Model):
     res_model = fields.Char(related="view_id.model", store=True, readonly=True, index=True)
     column_order = fields.Json(default=lambda self: [])
     column_widths = fields.Json(default=lambda self: {})
+    column_labels = fields.Json(default=lambda self: {})
     revision = fields.Integer(default=1, readonly=True)
 
     _sql_constraints = [
@@ -51,6 +52,24 @@ class TreeViewColumnLayout(models.Model):
             result[name[:128]] = max(24, min(2000, round(width)))
         return result
 
+    @api.model
+    def _sanitize_label_updates(self, label_updates):
+        if not isinstance(label_updates, dict):
+            raise ValidationError(_("Column label updates must be an object."))
+        result = {}
+        for key, label in label_updates.items():
+            if not isinstance(key, str) or not key:
+                continue
+            key = key[:160]
+            if label is None or label is False:
+                result[key] = None
+                continue
+            if not isinstance(label, str):
+                continue
+            label = label.strip()
+            result[key] = label[:128] if label else None
+        return result
+
     def _format_layout(self):
         self.ensure_one()
         return {
@@ -58,6 +77,7 @@ class TreeViewColumnLayout(models.Model):
             "resModel": self.res_model,
             "order": self.column_order if isinstance(self.column_order, list) else [],
             "widths": self.column_widths if isinstance(self.column_widths, dict) else {},
+            "labels": self.column_labels if isinstance(self.column_labels, dict) else {},
             "revision": self.revision,
         }
 
@@ -69,7 +89,14 @@ class TreeViewColumnLayout(models.Model):
         }
 
     @api.model
-    def save_layout(self, view_id, column_order=None, width_updates=None, reset=False):
+    def save_layout(
+        self,
+        view_id,
+        column_order=None,
+        width_updates=None,
+        label_updates=None,
+        reset=False,
+    ):
         if not self.env.user._is_admin():
             raise AccessError(_("Only administrators can change shared column layouts."))
 
@@ -89,7 +116,7 @@ class TreeViewColumnLayout(models.Model):
         }
 
         if reset:
-            values.update({"column_order": [], "column_widths": {}})
+            values.update({"column_order": [], "column_widths": {}, "column_labels": {}})
         else:
             if column_order is not None:
                 values["column_order"] = self._sanitize_column_order(column_order)
@@ -101,6 +128,14 @@ class TreeViewColumnLayout(models.Model):
                     else:
                         widths[name] = width
                 values["column_widths"] = widths
+            if label_updates is not None:
+                labels = dict(layout.column_labels or {}) if layout else {}
+                for key, label in self._sanitize_label_updates(label_updates).items():
+                    if label is None:
+                        labels.pop(key, None)
+                    else:
+                        labels[key] = label
+                values["column_labels"] = labels
 
         if layout:
             layout.write(values)
