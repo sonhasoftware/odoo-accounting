@@ -20,6 +20,10 @@ function normalizeLayout(layout) {
             layout.widths && typeof layout.widths === "object" && !Array.isArray(layout.widths)
                 ? layout.widths
                 : {},
+        labels:
+            layout.labels && typeof layout.labels === "object" && !Array.isArray(layout.labels)
+                ? layout.labels
+                : {},
         revision: Number.isInteger(layout.revision) ? layout.revision : 0,
     };
 }
@@ -86,6 +90,9 @@ export const columnLayoutService = {
             },
             saveWidth(viewId, fieldName, width) {
                 return enqueueSave(viewId, { width_updates: { [fieldName]: width } });
+            },
+            saveLabel(viewId, columnKey, label) {
+                return enqueueSave(viewId, { label_updates: { [columnKey]: label } });
             },
             reset(viewId) {
                 return enqueueSave(viewId, { reset: true });
