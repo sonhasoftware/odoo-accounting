@@ -8,15 +8,24 @@ BUS_NOTIFICATION_TYPE = "tree_view_column_layout/updated"
 class TreeViewColumnLayout(models.Model):
     _name = "tree.view.column.layout"
     _description = "Shared Tree View Column Layout"
-    _order = "view_id"
+    _order = "scope, view_id, parent_model, parent_field"
 
     view_id = fields.Many2one(
         "ir.ui.view",
-        required=True,
         index=True,
         ondelete="cascade",
     )
-    res_model = fields.Char(related="view_id.model", store=True, readonly=True, index=True)
+    storage_key = fields.Char(index=True, copy=False)
+    scope = fields.Selection(
+        [("view", "List View"), ("x2many", "Nested List")],
+        default="view",
+        required=True,
+        index=True,
+    )
+    parent_view_id = fields.Many2one("ir.ui.view", index=True, ondelete="cascade")
+    parent_model = fields.Char(index=True)
+    parent_field = fields.Char(index=True)
+    res_model = fields.Char(index=True)
     column_order = fields.Json(default=lambda self: [])
     column_widths = fields.Json(default=lambda self: {})
     column_labels = fields.Json(default=lambda self: {})
@@ -24,7 +33,82 @@ class TreeViewColumnLayout(models.Model):
 
     _sql_constraints = [
         ("view_id_unique", "unique(view_id)", "A column layout already exists for this view."),
+        (
+            "storage_key_unique",
+            "unique(storage_key)",
+            "A column layout already exists for this storage key.",
+        ),
     ]
+
+    @api.model
+    def _storage_key_for_view(self, view_id):
+        return f"view:{int(view_id)}"
+
+    @api.model
+    def _sanitize_storage_key(self, storage_key):
+        if not isinstance(storage_key, str):
+            raise ValidationError(_("Invalid column layout storage key."))
+        storage_key = storage_key.strip()
+        if not storage_key or len(storage_key) > 512:
+            raise ValidationError(_("Invalid column layout storage key."))
+        if not (storage_key.startswith("view:") or storage_key.startswith("x2many:")):
+            raise ValidationError(_("Unsupported column layout storage key."))
+        return storage_key
+
+    @api.model
+    def _prepare_storage_values(self, storage_key, layout_context=None):
+        storage_key = self._sanitize_storage_key(storage_key)
+        layout_context = layout_context if isinstance(layout_context, dict) else {}
+        values = {"storage_key": storage_key}
+
+        if storage_key.startswith("view:"):
+            try:
+                view_id = int(storage_key.split(":", 1)[1])
+            except (TypeError, ValueError):
+                raise ValidationError(_("Invalid view identifier."))
+            view = self.env["ir.ui.view"].sudo().browse(view_id).exists()
+            if not view or view.type != "tree":
+                raise ValidationError(_("The selected view is not a list view."))
+            values.update(
+                {
+                    "scope": "view",
+                    "view_id": view.id,
+                    "parent_view_id": False,
+                    "parent_model": False,
+                    "parent_field": False,
+                    "res_model": view.model,
+                }
+            )
+            return values
+
+        parts = storage_key.split(":")
+        if len(parts) < 5:
+            raise ValidationError(_("Invalid nested list layout key."))
+        try:
+            parent_view_id = int(parts[1])
+        except (TypeError, ValueError):
+            raise ValidationError(_("Invalid parent view identifier."))
+        parent_view = self.env["ir.ui.view"].sudo().browse(parent_view_id).exists()
+        if not parent_view or parent_view.type != "form":
+            raise ValidationError(_("The parent view is not a form view."))
+
+        parent_model = str(layout_context.get("parentModel") or parts[2] or "")[:128]
+        parent_field = str(layout_context.get("parentField") or parts[3] or "")[:128]
+        res_model = str(layout_context.get("resModel") or ":".join(parts[4:]) or "")[:128]
+        if not parent_model or not parent_field or not res_model:
+            raise ValidationError(_("Invalid nested list layout context."))
+
+        values.update(
+            {
+                "scope": "x2many",
+                "view_id": False,
+                "parent_view_id": parent_view.id,
+                "parent_model": parent_model,
+                "parent_field": parent_field,
+                "res_model": res_model,
+            }
+        )
+        return values
 
     @api.model
     def _sanitize_column_order(self, column_order):
@@ -72,9 +156,17 @@ class TreeViewColumnLayout(models.Model):
 
     def _format_layout(self):
         self.ensure_one()
+        storage_key = self.storage_key or (
+            self.view_id and self._storage_key_for_view(self.view_id.id)
+        )
         return {
+            "storageKey": storage_key,
             "viewId": self.view_id.id,
             "resModel": self.res_model,
+            "scope": self.scope,
+            "parentViewId": self.parent_view_id.id,
+            "parentModel": self.parent_model,
+            "parentField": self.parent_field,
             "order": self.column_order if isinstance(self.column_order, list) else [],
             "widths": self.column_widths if isinstance(self.column_widths, dict) else {},
             "labels": self.column_labels if isinstance(self.column_labels, dict) else {},
@@ -83,10 +175,12 @@ class TreeViewColumnLayout(models.Model):
 
     @api.model
     def _get_layout_map(self):
-        return {
-            str(layout.view_id.id): layout._format_layout()
-            for layout in self.sudo().search([])
-        }
+        result = {}
+        for layout in self.sudo().search([]):
+            formatted = layout._format_layout()
+            if formatted["storageKey"]:
+                result[formatted["storageKey"]] = formatted
+        return result
 
     @api.model
     def save_layout(
@@ -97,21 +191,36 @@ class TreeViewColumnLayout(models.Model):
         label_updates=None,
         reset=False,
     ):
+        return self.save_layout_by_key(
+            self._storage_key_for_view(view_id),
+            column_order=column_order,
+            width_updates=width_updates,
+            label_updates=label_updates,
+            reset=reset,
+        )
+
+    @api.model
+    def save_layout_by_key(
+        self,
+        storage_key,
+        layout_context=None,
+        column_order=None,
+        width_updates=None,
+        label_updates=None,
+        reset=False,
+    ):
         if not self.env.user._is_admin():
             raise AccessError(_("Only administrators can change shared column layouts."))
 
-        try:
-            view_id = int(view_id)
-        except (TypeError, ValueError):
-            raise ValidationError(_("Invalid view identifier."))
+        storage_values = self._prepare_storage_values(storage_key, layout_context)
 
-        view = self.env["ir.ui.view"].sudo().browse(view_id).exists()
-        if not view or view.type != "tree":
-            raise ValidationError(_("The selected view is not a list view."))
-
-        layout = self.sudo().search([("view_id", "=", view.id)], limit=1)
+        layout = self.sudo().search(
+            [("storage_key", "=", storage_values["storage_key"])], limit=1
+        )
+        if not layout and storage_values.get("view_id"):
+            layout = self.sudo().search([("view_id", "=", storage_values["view_id"])], limit=1)
         values = {
-            "view_id": view.id,
+            **storage_values,
             "revision": (layout.revision if layout else 0) + 1,
         }
 
