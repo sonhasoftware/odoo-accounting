@@ -28,8 +28,38 @@ patch(ListRenderer.prototype, {
         return Number.isInteger(viewId) ? viewId : null;
     },
 
+    _getColumnStorageKey() {
+        const viewId = this._getColumnStorageViewId();
+        const nested = this.props.nestedKeyOptionalFieldsData;
+        const resModel = this.props.list?.resModel;
+        if (viewId && nested?.field && nested?.model && resModel) {
+            return `x2many:${viewId}:${nested.model}:${nested.field}:${resModel}`;
+        }
+        return viewId ? `view:${viewId}` : null;
+    },
+
+    _getColumnLayoutContext() {
+        const storageKey = this._getColumnStorageKey();
+        const nested = this.props.nestedKeyOptionalFieldsData;
+        const resModel = this.props.list?.resModel || "";
+        if (storageKey?.startsWith("x2many:")) {
+            return {
+                scope: "x2many",
+                parentViewId: this._getColumnStorageViewId(),
+                parentModel: nested.model,
+                parentField: nested.field,
+                resModel,
+            };
+        }
+        return {
+            scope: "view",
+            viewId: this._getColumnStorageViewId(),
+            resModel,
+        };
+    },
+
     _getColumnLayout() {
-        return this.env.services.tree_view_column_layout.get(this._getColumnStorageViewId());
+        return this.env.services.tree_view_column_layout.get(this._getColumnStorageKey());
     },
 
     _getColumnHeaders(table) {
@@ -40,7 +70,7 @@ patch(ListRenderer.prototype, {
 
     _canCustomizeColumns() {
         return Boolean(
-            this.env.services.tree_view_column_layout.isAdmin && this._getColumnStorageViewId()
+            this.env.services.tree_view_column_layout.isAdmin && this._getColumnStorageKey()
         );
     },
 
@@ -216,12 +246,16 @@ patch(ListRenderer.prototype, {
             if (!header.isConnected) {
                 return;
             }
-            const width = Math.round(header.getBoundingClientRect().width);
+            const width =
+                parseInt(header.style.width, 10) ||
+                parseInt(header.style.maxWidth, 10) ||
+                Math.round(header.getBoundingClientRect().width);
             if (width > 0) {
                 this.columnLayoutService.saveWidth(
-                    this._getColumnStorageViewId(),
+                    this._getColumnStorageKey(),
                     columnKey,
-                    width
+                    width,
+                    this._getColumnLayoutContext()
                 );
             }
         };
@@ -260,7 +294,11 @@ patch(ListRenderer.prototype, {
         const order = columns
             .filter((column) => column.type === "field" && column.layoutKey)
             .map((column) => column.layoutKey);
-        this.columnLayoutService.saveOrder(this._getColumnStorageViewId(), order);
+        this.columnLayoutService.saveOrder(
+            this._getColumnStorageKey(),
+            order,
+            this._getColumnLayoutContext()
+        );
     },
 
     _applySharedColumnWidths(table) {
@@ -269,29 +307,32 @@ patch(ListRenderer.prototype, {
             return;
         }
 
-        let tableWidth = table.getBoundingClientRect().width;
-        let widthDelta = 0;
+        const getPositiveWidth = (...values) => values.find((value) => value > 0) || 0;
+        let tableWidth = 0;
         for (const header of this._getColumnHeaders(table)) {
-            const width =
-                widths[header.dataset.layoutKey] ?? widths[header.dataset.name];
+            const width = getPositiveWidth(
+                widths[header.dataset.layoutKey] ??
+                    widths[header.dataset.name],
+                parseInt(header.style.width, 10),
+                parseInt(header.style.minWidth, 10)
+            );
             if (!(width > 0)) {
                 continue;
             }
-            const currentWidth = header.getBoundingClientRect().width;
-            widthDelta += width - currentWidth;
             const widthValue = `${width}px`;
             header.style.width = widthValue;
+            header.style.minWidth = widthValue;
             header.style.maxWidth = widthValue;
+            tableWidth += width;
         }
-        tableWidth += widthDelta;
         if (tableWidth > 0) {
-            table.style.width = `${Math.round(tableWidth)}px`;
+            table.style.width = `${tableWidth}px`;
             table.style.tableLayout = "fixed";
         }
     },
 
     _onSharedColumnLayoutUpdated({ detail: layout }) {
-        if (layout.viewId !== this._getColumnStorageViewId()) {
+        if (layout.storageKey !== this._getColumnStorageKey()) {
             return;
         }
         this.keepColumnWidths = false;
@@ -313,22 +354,27 @@ patch(ListRenderer.prototype, {
             canReset: Object.prototype.hasOwnProperty.call(labels, column.layoutKey),
             save: (label) =>
                 this.columnLayoutService.saveLabel(
-                    this._getColumnStorageViewId(),
+                    this._getColumnStorageKey(),
                     column.layoutKey,
-                    label
+                    label,
+                    this._getColumnLayoutContext()
                 ),
             reset: () =>
                 this.columnLayoutService.saveLabel(
-                    this._getColumnStorageViewId(),
+                    this._getColumnStorageKey(),
                     column.layoutKey,
-                    null
+                    null,
+                    this._getColumnLayoutContext()
                 ),
         });
     },
 
     resetColumnLayout() {
         if (this._canCustomizeColumns()) {
-            this.columnLayoutService.reset(this._getColumnStorageViewId());
+            this.columnLayoutService.reset(
+                this._getColumnStorageKey(),
+                this._getColumnLayoutContext()
+            );
         }
     },
 });

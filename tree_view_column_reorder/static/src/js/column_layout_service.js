@@ -9,12 +9,26 @@ const MODEL = "tree.view.column.layout";
 const NOTIFICATION_TYPE = "tree_view_column_layout/updated";
 
 function normalizeLayout(layout) {
-    if (!layout || !Number.isInteger(layout.viewId)) {
+    if (!layout) {
+        return null;
+    }
+    const storageKey =
+        typeof layout.storageKey === "string" && layout.storageKey
+            ? layout.storageKey
+            : Number.isInteger(layout.viewId)
+            ? `view:${layout.viewId}`
+            : null;
+    if (!storageKey) {
         return null;
     }
     return {
+        storageKey,
         viewId: layout.viewId,
         resModel: layout.resModel || "",
+        scope: layout.scope || "view",
+        parentViewId: layout.parentViewId || null,
+        parentModel: layout.parentModel || "",
+        parentField: layout.parentField || "",
         order: Array.isArray(layout.order) ? layout.order : [],
         widths:
             layout.widths && typeof layout.widths === "object" && !Array.isArray(layout.widths)
@@ -39,7 +53,7 @@ export const columnLayoutService = {
         for (const layout of Object.values(session.tree_view_column_layouts || {})) {
             const normalized = normalizeLayout(layout);
             if (normalized) {
-                layouts.set(normalized.viewId, normalized);
+                layouts.set(normalized.storageKey, normalized);
             }
         }
 
@@ -48,22 +62,27 @@ export const columnLayoutService = {
             if (!normalized) {
                 return null;
             }
-            const current = layouts.get(normalized.viewId);
+            const current = layouts.get(normalized.storageKey);
             if (current && current.revision >= normalized.revision) {
                 return current;
             }
-            layouts.set(normalized.viewId, normalized);
+            layouts.set(normalized.storageKey, normalized);
             eventBus.trigger("updated", normalized);
             return normalized;
         };
 
-        const enqueueSave = (viewId, values) => {
-            if (!user.isAdmin || !Number.isInteger(viewId)) {
+        const enqueueSave = (storageKey, values, layoutContext = {}) => {
+            if (!user.isAdmin || typeof storageKey !== "string" || !storageKey) {
                 return Promise.resolve(null);
             }
             const execute = async () => {
                 try {
-                    const layout = await orm.call(MODEL, "save_layout", [viewId], values);
+                    const layout = await orm.call(
+                        MODEL,
+                        "save_layout_by_key",
+                        [storageKey],
+                        { ...values, layout_context: layoutContext }
+                    );
                     return applyLayout(layout);
                 } catch (error) {
                     notification.add(_t("Could not save the shared column layout."), {
@@ -82,20 +101,28 @@ export const columnLayoutService = {
         return {
             bus: eventBus,
             isAdmin: user.isAdmin,
-            get(viewId) {
-                return Number.isInteger(viewId) ? layouts.get(viewId) || null : null;
+            get(storageKey) {
+                return typeof storageKey === "string" ? layouts.get(storageKey) || null : null;
             },
-            saveOrder(viewId, order) {
-                return enqueueSave(viewId, { column_order: order });
+            saveOrder(storageKey, order, layoutContext) {
+                return enqueueSave(storageKey, { column_order: order }, layoutContext);
             },
-            saveWidth(viewId, fieldName, width) {
-                return enqueueSave(viewId, { width_updates: { [fieldName]: width } });
+            saveWidth(storageKey, fieldName, width, layoutContext) {
+                return enqueueSave(
+                    storageKey,
+                    { width_updates: { [fieldName]: width } },
+                    layoutContext
+                );
             },
-            saveLabel(viewId, columnKey, label) {
-                return enqueueSave(viewId, { label_updates: { [columnKey]: label } });
+            saveLabel(storageKey, columnKey, label, layoutContext) {
+                return enqueueSave(
+                    storageKey,
+                    { label_updates: { [columnKey]: label } },
+                    layoutContext
+                );
             },
-            reset(viewId) {
-                return enqueueSave(viewId, { reset: true });
+            reset(storageKey, layoutContext) {
+                return enqueueSave(storageKey, { reset: true }, layoutContext);
             },
         };
     },
