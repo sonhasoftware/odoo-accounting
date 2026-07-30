@@ -52,6 +52,7 @@
         'views/nl_acc_hdbh_h_views.xml',
         'views/nl_acc_vcnb_h_views.xml',
         'views/acc_bao_cao_views.xml',
+        'views/acc_bao_cao_menu_views.xml',
         'views/nl_acc_bao_cao_views.xml',
         'views/acc_kchuyen_ct_views.xml',
         'views/nl_acc_ap_h_bn_views.xml',
