@@ -153,12 +153,17 @@ div[name="ACC_SP_D"] .arrow {
  * Report-only fly-out menu
  * --------------------------------------------------------------------------
  * Scope the Chrome-like fly-out behavior to Accounting > Báo cáo only.
- * The direct menu children remain normal Odoo menu records, but nested report
- * groups open as horizontal fly-outs so deeper parent/child report structures
- * can be added without changing any other Accounting menu behavior.
+ *
+ * The report entries are still stored as normal ir.ui.menu records generated
+ * from acc.bao.cao.menu. This CSS only changes how nested Báo cáo menus open:
+ * - click Báo cáo to show the first-level report groups;
+ * - hover a parent group to open its children in a panel on the right;
+ * - keep further levels opening to the right as well, like the Chrome menu in
+ *   the customer sample.
  */
 .o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu,
-.o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu {
+.o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu,
+.o_main_navbar .o_menu_systray [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu {
     overflow: visible !important;
 }
 
@@ -177,11 +182,15 @@ div[name="ACC_SP_D"] .arrow {
 .o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu .o-dropdown > .o-dropdown--menu {
     top: 0;
     left: calc(100% - 2px);
+    right: auto;
     margin-top: 0;
     margin-left: 0;
-    min-width: 260px;
+    min-width: 280px;
+    width: max-content;
+    max-width: min(480px, 90vw);
     max-height: min(80vh, 720px);
     overflow-y: auto;
+    z-index: 1080;
 }
 
 .o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu .dropdown:hover > .dropdown-menu,
@@ -196,7 +205,7 @@ div[name="ACC_SP_D"] .arrow {
 .o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu .o-dropdown:focus-within > .dropdown-menu,
 .o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu .o-dropdown:hover > .o-dropdown--menu,
 .o_main_navbar [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] .dropdown-menu .o-dropdown:focus-within > .o-dropdown--menu {
-    display: block;
+    display: block !important;
 }
 
 .o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu .dropdown-toggle,
@@ -205,6 +214,7 @@ div[name="ACC_SP_D"] .arrow {
     align-items: center;
     justify-content: space-between;
     gap: 16px;
+    white-space: nowrap;
 }
 
 .o_main_navbar .o_menu_sections [data-menu-xmlid="sonha_ke_toan.menu_bao_cao"] + .dropdown-menu .dropdown-toggle::after,
@@ -212,3 +222,4 @@ div[name="ACC_SP_D"] .arrow {
     transform: rotate(-90deg);
     margin-left: auto;
 }
+

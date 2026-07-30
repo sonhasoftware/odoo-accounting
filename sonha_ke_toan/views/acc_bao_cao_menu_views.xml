@@ -5,6 +5,9 @@
         <field name="model">acc.bao.cao.menu</field>
         <field name="arch" type="xml">
             <tree string="Cấu hình menu báo cáo">
+                <header>
+                    <button name="action_sync_menu" type="object" string="Đồng bộ menu Báo cáo" class="oe_highlight"/>
+                </header>
                 <field name="sequence" widget="handle"/>
                 <field name="name"/>
                 <field name="parent_id"/>
@@ -20,6 +23,10 @@
         <field name="model">acc.bao.cao.menu</field>
         <field name="arch" type="xml">
             <form string="Cấu hình menu báo cáo">
+                <header>
+                    <button name="action_sync_menu" type="object" string="Đồng bộ menu Báo cáo" class="oe_highlight"/>
+                    <button name="action_open_odoo_menu" type="object" string="Mở menu Odoo" attrs="{'invisible': [('menu_id', '=', False)]}"/>
+                </header>
                 <sheet>
                     <group>
                         <group>
@@ -36,13 +43,14 @@
                     </group>
                     <notebook>
                         <page string="Menu con">
-                            <field name="child_ids">
+                            <field name="child_ids" context="{'default_parent_id': active_id}">
                                 <tree editable="bottom">
                                     <field name="sequence" widget="handle"/>
                                     <field name="name"/>
                                     <field name="report_id"/>
                                     <field name="report_type"/>
                                     <field name="active"/>
+                                    <button name="action_sync_menu" type="object" string="Đồng bộ"/>
                                 </tree>
                             </field>
                         </page>
@@ -52,9 +60,32 @@
         </field>
     </record>
 
+    <record id="view_acc_bao_cao_menu_search" model="ir.ui.view">
+        <field name="name">acc.bao.cao.menu.search</field>
+        <field name="model">acc.bao.cao.menu</field>
+        <field name="arch" type="xml">
+            <search string="Tìm cấu hình menu báo cáo">
+                <field name="name"/>
+                <field name="parent_id"/>
+                <field name="report_id"/>
+                <filter name="root_menu" string="Menu cha cấp 1" domain="[('parent_id', '=', False)]"/>
+                <filter name="active_menu" string="Đang dùng" domain="[('active', '=', True)]"/>
+                <group expand="0" string="Nhóm theo">
+                    <filter name="group_parent" string="Menu cha" context="{'group_by': 'parent_id'}"/>
+                    <filter name="group_report_type" string="Loại báo cáo" context="{'group_by': 'report_type'}"/>
+                </group>
+            </search>
+        </field>
+    </record>
+
     <record id="acc_bao_cao_menu_action" model="ir.actions.act_window">
         <field name="name">Cấu hình menu báo cáo</field>
         <field name="res_model">acc.bao.cao.menu</field>
         <field name="view_mode">tree,form</field>
+        <field name="context">{'search_default_root_menu': 1}</field>
+        <field name="help" type="html">
+            <p class="o_view_nocontent_smiling_face">Tạo menu cha/con cho Báo cáo</p>
+            <p>Nhập menu cha, thêm các menu con ở tab Menu con, chọn Báo cáo nếu dòng đó là menu chạy báo cáo. Bấm Đồng bộ để tạo/cập nhật menu dưới Kế toán &gt; Báo cáo.</p>
+        </field>
     </record>
 </odoo>
