@@ -165,6 +165,13 @@
               action="danh_muc_phieu_in_action"
               sequence="25"/>
 
+
+    <menuitem id="menu_danh_muc_acc_bao_cao_menu"
+              name="Cấu hình menu báo cáo"
+              parent="menu_danh_muc_accounting"
+              action="acc_bao_cao_menu_action"
+              sequence="26"/>
+
 <!--    <menuitem id="menu_acc_bao_cao"-->
 <!--              name="Danh mục báo cáo"-->
 <!--              parent="menu_danh_muc_accounting"-->

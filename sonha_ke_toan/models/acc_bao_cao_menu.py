@@ -81,6 +81,33 @@ class AccBaoCaoMenu(models.Model):
         self._sync_menu()
         return result
 
+    def action_sync_menu(self):
+        records = self if self else self.search([])
+        records._sync_menu()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Đã đồng bộ menu báo cáo'),
+                'message': _('Các menu trong Báo cáo đã được tạo/cập nhật từ màn hình cấu hình cha con.'),
+                'type': 'success',
+                'sticky': False,
+            },
+        }
+
+    def action_open_odoo_menu(self):
+        self.ensure_one()
+        if not self.menu_id:
+            self._sync_menu()
+        return {
+            'type': 'ir.actions.act_window',
+            'name': _('Menu Odoo'),
+            'res_model': 'ir.ui.menu',
+            'view_mode': 'form',
+            'res_id': self.menu_id.id,
+            'target': 'current',
+        }
+
     def unlink(self):
         menus = self.mapped('menu_id')
         result = super().unlink()
