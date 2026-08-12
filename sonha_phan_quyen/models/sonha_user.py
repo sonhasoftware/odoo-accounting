@@ -1,4 +1,5 @@
 from odoo import api, fields, models
+from odoo.http import root, request
 
 
 class SonhaUser(models.Model):
@@ -36,6 +37,32 @@ class SonhaUser(models.Model):
                             'NGUOI_DUNG': r.NGUOI_DUNG.id or 0,
                             'SONHA_USER': r.id or 0,
                         })
+
+    def action_logout_other_users(self):
+        current_uid = self.env.user.id
+        current_sid = getattr(request.session, 'sid', False) if request else False
+        session_store = root.session_store
+        logged_out_count = 0
+
+        for sid in session_store.list():
+            if sid == current_sid:
+                continue
+
+            session = session_store.get(sid)
+            if session.get('uid') and session.get('uid') != current_uid:
+                session_store.delete(session)
+                logged_out_count += 1
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Đăng xuất user khác',
+                'message': 'Đã đăng xuất %s phiên đăng nhập của các user khác.' % logged_out_count,
+                'type': 'success',
+                'sticky': False,
+            },
+        }
 
     def create(self, vals):
         if 'QUYEN_SUA' in vals:
