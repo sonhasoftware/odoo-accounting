@@ -136,3 +136,5 @@ access_acc_bao_cao_menu,acc.bao.cao.menu,model_acc_bao_cao_menu,,1,1,1,1
 
 
 access_gia_thanh,gia.thanh,model_gia_thanh,,1,1,1,1
+access_acc_nhom_gt,acc.nhom.gt,model_acc_nhom_gt,,1,1,1,1
+access_acc_tk_gt,acc.tk.gt,model_acc_tk_gt,,1,1,1,1

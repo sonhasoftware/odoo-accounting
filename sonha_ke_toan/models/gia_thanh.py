@@ -5,9 +5,9 @@ class GiaThanh(models.Model):
     _name = 'gia.thanh'
     _description = 'Giá thành'
 
-    nhom = fields.Char(string='Nhóm')
+    nhom = fields.Many2one('acc.nhom.gt', string="Nhóm")
 
-    tai_khoan = fields.Char(string='TK')
+    tai_khoan = fields.Many2one('acc.tk.gt', string="Tài khoản")
 
     tk_auto = fields.Boolean(string='Auto', default=False)
 
@@ -66,3 +66,6 @@ class GiaThanh(models.Model):
 
     def action_handle(self):
         return {'type': 'ir.actions.act_window_close'}
+
+    def action_xu_ly(self):
+        pass

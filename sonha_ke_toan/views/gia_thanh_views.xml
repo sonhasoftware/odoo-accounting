@@ -9,7 +9,6 @@
                 <field name="thang"/>
                 <field name="nam"/>
                 <field name="tai_khoan"/>
-                <field name="tk_auto"/>
                 <field name="dg_theo_tien"/>
             </tree>
         </field>
@@ -21,16 +20,18 @@
         <field name="arch" type="xml">
             <form string="Giá thành">
                 <sheet>
-                    <group col="12">
-                        <field name="nhom" colspan="8"/>
-                        <field name="tai_khoan" colspan="2"/>
-                        <field name="tk_auto" colspan="2"/>
-
-                        <field name="thang" colspan="2"/>
-                        <field name="nam" colspan="2"/>
-                        <div colspan="2"/>
-                        <button string="Xử lý" type="object" name="action_handle" class="oe_highlight" colspan="3"/>
-                        <button string="Xem/Hủy" special="cancel" colspan="3"/>
+                    <group>
+                        <group>
+                            <field name="nhom"/>
+                            <field name="thang"/>
+                            <field name="nam"/>
+                        </group>
+                        <group>
+                            <field name="tai_khoan"/>
+                            <field name="tk_auto"/>
+                            <button string="Xử lý" type="object" name="action_xu_ly" class="btn-primary"/>
+                            <button string="Hủy" class="btn-secondary" special="cancel"/>
+                        </group>
                     </group>
 
                     <separator/>

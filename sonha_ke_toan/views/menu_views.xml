@@ -9,6 +9,18 @@
               parent="menu_sonha_accounting"
               sequence="10"/>
 
+    <menuitem id="menu_acc_nhom_gt"
+              name="Nhóm GT"
+              parent="menu_danh_muc_accounting"
+              action="acc_nhom_gt_action"
+              sequence="100"/>
+
+    <menuitem id="menu_acc_tk_gt"
+              name="TK GT"
+              parent="menu_danh_muc_accounting"
+              action="acc_tk_gt_action"
+              sequence="101"/>
+
     <menuitem id="menu_acc_tai_khoan"
               name="Danh mục tài khoản"
               parent="menu_danh_muc_accounting"
@@ -166,11 +178,11 @@
               sequence="25"/>
 
 
-    <menuitem id="menu_danh_muc_acc_bao_cao_menu"
-              name="Cấu hình menu báo cáo"
-              parent="menu_danh_muc_accounting"
-              action="acc_bao_cao_menu_action"
-              sequence="26"/>
+<!--    <menuitem id="menu_danh_muc_acc_bao_cao_menu"-->
+<!--              name="Cấu hình menu báo cáo"-->
+<!--              parent="menu_danh_muc_accounting"-->
+<!--              action="acc_bao_cao_menu_action"-->
+<!--              sequence="26"/>-->
 
 <!--    <menuitem id="menu_acc_bao_cao"-->
 <!--              name="Danh mục báo cáo"-->
@@ -261,11 +273,11 @@
               parent="menu_sonha_accounting"
               sequence="11"/>
 
-    <menuitem id="menu_bao_cao_cau_hinh"
-              name="Cấu hình menu báo cáo"
-              parent="menu_bao_cao"
-              action="acc_bao_cao_menu_action"
-              sequence="999"/>
+<!--    <menuitem id="menu_bao_cao_cau_hinh"-->
+<!--              name="Cấu hình menu báo cáo"-->
+<!--              parent="menu_bao_cao"-->
+<!--              action="acc_bao_cao_menu_action"-->
+<!--              sequence="999"/>-->
 
     <menuitem id="menu_phieu_tscd"
               name="Phiếu TSCĐ"

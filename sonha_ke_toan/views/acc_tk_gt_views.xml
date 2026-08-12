@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_acc_tk_gt_tree" model="ir.ui.view">
+        <field name="name">acc.tk.gt.tree</field>
+        <field name="model">acc.tk.gt</field>
+        <field name="arch" type="xml">
+            <tree string="TK GT" editable="bottom">
+                <field name="tu_tk" optional="show"/>
+                <field name="sang_tk" optional="show"/>
+                <field name="ghi_chu" optional="show"/>
+                <field name="nhom_gt" optional="show"/>
+                <field name="create_uid" string="Người tạo" optional="hide"/>
+                <field name="write_uid" string="Người sửa" optional="hide"/>
+                <field name="create_date" string="Ngày tạo" optional="hide"/>
+                <field name="write_date" string="Ngày sửa" optional="hide"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="acc_tk_gt_action" model="ir.actions.act_window">
+        <field name="name">TK GT</field>
+        <field name="res_model">acc.tk.gt</field>
+        <field name="view_mode">tree</field>
+    </record>
+
+</odoo>

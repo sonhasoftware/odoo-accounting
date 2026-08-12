@@ -54,6 +54,8 @@
         # 'views/acc_bao_cao_views.xml',
         # 'views/acc_bao_cao_menu_views.xml',
         'views/nl_acc_bao_cao_views.xml',
+        'views/acc_nhom_gt_views.xml',
+        'views/acc_tk_gt_views.xml',
         'views/acc_kchuyen_ct_views.xml',
         'views/gia_thanh_views.xml',
         'views/nl_acc_ap_h_bn_views.xml',
