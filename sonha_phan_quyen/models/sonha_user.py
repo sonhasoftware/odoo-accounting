@@ -38,31 +38,6 @@ class SonhaUser(models.Model):
                             'SONHA_USER': r.id or 0,
                         })
 
-    def action_logout_other_users(self):
-        current_uid = self.env.user.id
-        current_sid = getattr(request.session, 'sid', False) if request else False
-        session_store = root.session_store
-        logged_out_count = 0
-
-        for sid in session_store.list():
-            if sid == current_sid:
-                continue
-
-            session = session_store.get(sid)
-            if session.get('uid') and session.get('uid') != current_uid:
-                session_store.delete(session)
-                logged_out_count += 1
-
-        return {
-            'type': 'ir.actions.client',
-            'tag': 'display_notification',
-            'params': {
-                'title': 'Đăng xuất user khác',
-                'message': 'Đã đăng xuất %s phiên đăng nhập của các user khác.' % logged_out_count,
-                'type': 'success',
-                'sticky': False,
-            },
-        }
 
     def create(self, vals):
         if 'QUYEN_SUA' in vals:
@@ -109,6 +84,33 @@ class SonhaUser(models.Model):
 class ResUsers(models.Model):
 
     _inherit = "res.users"
+
+    @api.model
+    def action_logout_other_users(self):
+        current_uid = self.env.user.id
+        current_sid = getattr(request.session, 'sid', False) if request else False
+        session_store = root.session_store
+        logged_out_count = 0
+
+        for sid in session_store.list():
+            if sid == current_sid:
+                continue
+
+            session = session_store.get(sid)
+            if session.get('uid') and session.get('uid') != current_uid:
+                session_store.delete(session)
+                logged_out_count += 1
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Đăng xuất user khác',
+                'message': 'Đã đăng xuất %s phiên đăng nhập của các user khác.' % logged_out_count,
+                'type': 'success',
+                'sticky': False,
+            },
+        }
 
     def create(self, vals):
         user = super(ResUsers, self).create(vals)
