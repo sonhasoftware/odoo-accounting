@@ -313,11 +313,17 @@
               action="gia_von_action"
               sequence="2"/>
 
+    <menuitem id="menu_gia_thanh"
+              name="Tính Giá Thành"
+              parent="menu_kc_cuoi_thang"
+              action="gia_thanh_action"
+              sequence="3"/>
+
     <menuitem id="menu_kc_lai_lo"
               name="KC lãi lỗ"
               parent="menu_kc_cuoi_thang"
               action="kc_lai_lo_action"
-              sequence="3"/>
+              sequence="4"/>
 
     <menuitem id="menu_thu_chi"
               name="Phiếu thu/chi"

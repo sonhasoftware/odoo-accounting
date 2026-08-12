@@ -7,7 +7,9 @@ class GiaThanh(models.Model):
 
     nhom = fields.Char(string='Nhóm')
 
-    tk_auto = fields.Boolean(string='TK Auto',default=False)
+    tai_khoan = fields.Char(string='TK')
+
+    tk_auto = fields.Boolean(string='Auto', default=False)
 
     thang = fields.Integer(string='Tháng')
 
@@ -61,3 +63,6 @@ class GiaThanh(models.Model):
         string='Tiền',
         default=False
     )
+
+    def action_handle(self):
+        return {'type': 'ir.actions.act_window_close'}
