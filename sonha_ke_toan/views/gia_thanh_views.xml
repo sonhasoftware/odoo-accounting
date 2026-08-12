@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<odoo>
+    <record id="view_gia_thanh_form" model="ir.ui.view">
+        <field name="name">view.gia.thanh.form</field>
+        <field name="model">gia.thanh</field>
+        <field name="arch" type="xml">
+            <form string="Giá thành">
+                <group>
+                    <group>
+                        <field name="thang"/>
+                        <group colspan="3">
+                            <field name="nhom"/>
+                        </group>
+                        <group colspan="1">
+                            <field name="tai_khoan"/>
+                            <field name="auto"/>
+                        </group>
+                    </group>
+                    <group>
+                        <field name="nam"/>
+                        <group colspan="2">
+                            <field name="thang"/>
+                            <field name="nam"/>
+                        </group>
+                        <group colspan="2">
+                            <button string="Xử lý" type="object" name="action_handle" class="oe_highlight"/>
+                            <button string="Xem/Hủy" special="cancel"/>
+                        </group>
+                    </group>
+                </group>
+                <footer>
+                    <button string="Xử lý" type="object" name="action_handle" class="oe_highlight"/>
+                </footer>
+                    <group>
+                        <field name="dg_theo_tien"/>
+                    </group>
+                    <group col="2">
+                        <group string="KC chi tiết theo">
+                            <field name="kc_bo_phan"/>
+                            <field name="kc_vu_viec"/>
+                            <field name="kc_khach_hang"/>
+                            <field name="kc_tscd"/>
+                            <field name="kc_khoan_muc"/>
+                            <field name="kc_phan_xuong"/>
+                            <field name="kc_dtcp_tp"/>
+                            <field name="kc_vlsphh"/>
+                            <field name="kc_kho"/>
+                        </group>
+                        <group string="Phân bổ theo">
+                            <field name="pb_bo_phan"/>
+                            <field name="pb_vu_viec"/>
+                            <field name="pb_khach_hang"/>
+                            <field name="pb_tscd"/>
+                            <field name="pb_khoan_muc"/>
+                            <field name="pb_phan_xuong"/>
+                            <field name="pb_dtcp_tp"/>
+                            <field name="pb_vlsphh"/>
+                            <field name="pb_kho"/>
+                            <group string="Tiêu thức phân bổ">
+                                <field name="tieu_thuc_so_luong"/>
+                                <field name="tieu_thuc_tien"/>
+                            </group>
+                        </group>
+                    </group>
+            </form>
+        </field>
+    </record>
+</odoo>
