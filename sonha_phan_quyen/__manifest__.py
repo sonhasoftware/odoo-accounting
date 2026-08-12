@@ -17,6 +17,7 @@
     'assets': {
         'web.assets_backend': [
             'sonha_phan_quyen/static/src/js/sonha_user_list_buttons.js',
+            'sonha_phan_quyen/static/src/js/session_alive_service.js',
             'sonha_phan_quyen/static/src/xml/sonha_user_list_buttons.xml',
         ],
     },
