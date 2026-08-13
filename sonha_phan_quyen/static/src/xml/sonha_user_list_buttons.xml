@@ -2,8 +2,11 @@
 <templates>
     <t t-name="sonha_phan_quyen.SonhaUserListView.Buttons" t-inherit="web.ListView.Buttons">
         <xpath expr="//div[hasclass('o_list_buttons')]" position="after">
-            <button type="button" class="btn btn-secondary ms-2" t-on-click="onLogoutOtherUsersClick">
-                Đăng xuất user khác
+            <button type="button" class="btn btn-danger ms-2" t-on-click="onLockUserLoginsClick">
+                Lock
+            </button>
+            <button type="button" class="btn btn-success ms-2" t-on-click="onUnlockUserLoginsClick">
+                Unlock
             </button>
         </xpath>
     </t>
