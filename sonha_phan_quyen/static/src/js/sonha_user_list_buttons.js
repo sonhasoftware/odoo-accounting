@@ -12,10 +12,22 @@ export class SonhaUserListController extends ListController {
         this.orm = useService("orm");
     }
 
-    async onLogoutOtherUsersClick() {
+    async onLockUserLoginsClick() {
         const action = await this.orm.call(
             "res.users",
-            "action_logout_other_users",
+            "action_lock_user_logins",
+            []
+        );
+
+        if (action) {
+            await this.actionService.doAction(action);
+        }
+    }
+
+    async onUnlockUserLoginsClick() {
+        const action = await this.orm.call(
+            "res.users",
+            "action_unlock_user_logins",
             []
         );
 

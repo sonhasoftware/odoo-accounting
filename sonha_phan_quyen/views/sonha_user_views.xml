@@ -17,8 +17,8 @@
         </field>
     </record>
 
-    <record id="view_res_users_tree_logout_other_users" model="ir.ui.view">
-        <field name="name">res.users.tree.logout.other.users</field>
+    <record id="view_res_users_tree_lock_unlock_logins" model="ir.ui.view">
+        <field name="name">res.users.tree.lock.unlock.logins</field>
         <field name="model">res.users</field>
         <field name="inherit_id" ref="base.view_users_tree"/>
         <field name="arch" type="xml">

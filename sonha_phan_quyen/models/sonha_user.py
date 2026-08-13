@@ -1,4 +1,5 @@
-from odoo import api, fields, models
+from odoo import api, fields, models, registry
+from odoo.exceptions import AccessDenied
 from odoo.http import root, request
 
 
@@ -85,9 +86,21 @@ class ResUsers(models.Model):
 
     _inherit = "res.users"
 
+    SONHA_LOGIN_LOCK_PARAM = 'sonha_phan_quyen.login_locked'
+
     @api.model
-    def action_logout_other_users(self):
-        current_uid = self.env.user.id
+    def _sonha_is_login_locked(self):
+        return self.env['ir.config_parameter'].sudo().get_param(self.SONHA_LOGIN_LOCK_PARAM) == '1'
+
+    @api.model
+    def _sonha_set_login_lock(self, locked):
+        self.env['ir.config_parameter'].sudo().set_param(
+            self.SONHA_LOGIN_LOCK_PARAM,
+            '1' if locked else '0',
+        )
+
+    @api.model
+    def _sonha_logout_non_admin_sessions(self):
         current_sid = getattr(request.session, 'sid', False) if request else False
         session_store = root.session_store
         logged_out_count = 0
@@ -97,16 +110,62 @@ class ResUsers(models.Model):
                 continue
 
             session = session_store.get(sid)
-            if session.get('uid') and session.get('uid') != current_uid:
+            session_uid = session.get('uid')
+            if not session_uid:
+                continue
+
+            session_user = self.sudo().browse(session_uid)
+            if session_user.exists() and not session_user.has_group('base.group_system'):
                 session_store.delete(session)
                 logged_out_count += 1
+
+        return logged_out_count
+
+    @classmethod
+    def _login(cls, db, *args, **kwargs):
+        uid = super()._login(db, *args, **kwargs)
+
+        with registry(db).cursor() as cr:
+            env = api.Environment(cr, uid, {})
+            user = env['res.users'].sudo().browse(uid)
+            login_locked = env['ir.config_parameter'].sudo().get_param(cls.SONHA_LOGIN_LOCK_PARAM) == '1'
+            if login_locked and user.exists() and not user.has_group('base.group_system'):
+                raise AccessDenied()
+
+        return uid
+
+    @api.model
+    def action_lock_user_logins(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise AccessDenied()
+
+        self._sonha_set_login_lock(True)
+        logged_out_count = self._sonha_logout_non_admin_sessions()
 
         return {
             'type': 'ir.actions.client',
             'tag': 'display_notification',
             'params': {
-                'title': 'Đăng xuất user khác',
-                'message': 'Đã đăng xuất %s phiên đăng nhập của các user khác.' % logged_out_count,
+                'title': 'Lock đăng nhập',
+                'message': 'Đã khóa đăng nhập và đăng xuất %s phiên của user không phải admin.' % logged_out_count,
+                'type': 'success',
+                'sticky': False,
+            },
+        }
+
+    @api.model
+    def action_unlock_user_logins(self):
+        if not self.env.user.has_group('base.group_system'):
+            raise AccessDenied()
+
+        self._sonha_set_login_lock(False)
+
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': 'Unlock đăng nhập',
+                'message': 'Đã mở khóa đăng nhập. User có thể đăng nhập lại bình thường.',
                 'type': 'success',
                 'sticky': False,
             },
